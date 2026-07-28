@@ -91,7 +91,14 @@ mechanic exists.
   `compareStat`'s `value`. night-raid's discard amount reuses `{dynamic:
   conflictParticipantCount, role: attacker}` directly as a gameAction param value, not
   just inside a predicate - dynamic values are usable anywhere a valueRef is, no new
-  vocabulary needed. restoration-of-balance's discard amount is `{dynamic:
+  vocabulary needed. the-mountain-does-not-fall's cardLastingEffect params include a
+  `condition` key alongside `duration`/`effect` (a delayed/conditional lasting effect:
+  "doesn't bow while defending" checked at recalculation time, not cast time). This is a
+  judgment call, not schema-validated either way (params are free-form) - the implicit
+  candidate for that nested `condition` is the effect's own resolved target, by analogy
+  with how persistentEffect's top-level `condition` evaluates against its own subject.
+  Documented here as the first precedent for this shape rather than left silently
+  ambiguous. restoration-of-balance's discard amount is `{dynamic:
   countCardsInHand, for: opponent, offset: -4}`, which can go negative when the opponent
   has fewer than 4 cards - relying on chosenDiscard's own implementation to clamp a
   negative amount to 0 (an "amount" arg is a card-agnostic input-validation concern for

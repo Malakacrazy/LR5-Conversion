@@ -181,6 +181,10 @@ public class CoreSetCardsTests
     [TestCase("supernatural-storm")]
     [TestCase("the-art-of-peace")]
     [TestCase("the-art-of-war")]
+    [TestCase("the-mountain-does-not-fall")]
+    [TestCase("the-perfect-gift")]
+    [TestCase("togashi-kazue")]
+    [TestCase("togashi-yokuni")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -280,6 +284,9 @@ public class CoreSetCardsTests
     [TestCase("spyglass", typeof(SpyglassDrawOnParentJoiningConflict))]
     [TestCase("stand-your-ground", typeof(StandYourGroundDiscardTokenInsteadOfLeavingPlay))]
     [TestCase("strength-in-numbers", typeof(StrengthInNumbersSendHomeLowGloryDefender))]
+    [TestCase("the-perfect-gift", typeof(ThePerfectGiftRevealAndGiveEachPlayerACard))]
+    [TestCase("togashi-kazue", typeof(TogashiKazuePlayAsAttachmentOrCharacter))]
+    [TestCase("togashi-yokuni", typeof(TogashiYokuniCopyAnotherCharactersAbility))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

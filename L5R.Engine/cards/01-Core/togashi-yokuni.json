@@ -1,0 +1,16 @@
+{
+  "id": "togashi-yokuni",
+  "name": "Togashi Yokuni",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi", "shugenja", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 5,
+  "political": 5,
+  "glory": 3,
+  "scriptOverride": {
+    "reason": "Uses target.mode 'ability' (choose one of another card's printed triggered abilities) - explicitly excluded from the schema's mode enum as engine-internal, along with the abilityCondition filter and gainAbility(targetAbility) effect that copies an entire ability object, none of which the closed vocabulary can express.",
+    "handler": "L5R.Engine.Cards.Scripts.TogashiYokuniCopyAnotherCharactersAbility"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "the-mountain-does-not-fall",
+  "name": "The Mountain Does Not Fall",
+  "type": "event",
+  "faction": "crab",
+  "traits": ["technique"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Choose a character to not bow when defending",
+        "target": {
+          "cardType": "character",
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": {
+              "duration": "untilEndOfPhase",
+              "condition": { "op": "hasStatus", "status": "isDefending" },
+              "effect": { "name": "doesNotBow" }
+            }
+          }
+        },
+        "max": { "per": "round", "max": 1 }
+      }
+    ]
+  }
+}

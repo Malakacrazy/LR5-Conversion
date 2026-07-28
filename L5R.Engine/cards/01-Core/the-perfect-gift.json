@@ -1,0 +1,14 @@
+{
+  "id": "the-perfect-gift",
+  "name": "The Perfect Gift",
+  "type": "event",
+  "faction": "crane",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 1,
+  "scriptOverride": {
+    "reason": "Uses a 'sequential' combinator chaining two lookAt reveals, two separate cardMenu selections (one per player's revealed cards), and a deck shuffle - the schema has no 'sequential' combinator and no way to express two independent nested card-menu selections in one action.",
+    "handler": "L5R.Engine.Cards.Scripts.ThePerfectGiftRevealAndGiveEachPlayerACard"
+  }
+}

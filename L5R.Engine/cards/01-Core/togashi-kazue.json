@@ -1,0 +1,16 @@
+{
+  "id": "togashi-kazue",
+  "name": "Togashi Kazue",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["monk", "tattooed"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 3,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "May be played as an attachment instead of a character (a custom PlayAttachmentAction subclass that temporarily overrides printedType) - the same alternate/permanent play-mode gap already flagged on tattooed-wanderer, for which no generic schema concept exists.",
+    "handler": "L5R.Engine.Cards.Scripts.TogashiKazuePlayAsAttachmentOrCharacter"
+  }
+}
