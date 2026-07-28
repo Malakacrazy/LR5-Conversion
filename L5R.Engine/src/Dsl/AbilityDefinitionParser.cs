@@ -47,7 +47,13 @@ public static class AbilityDefinitionParser
             ? conditionElement.Clone()
             : null;
 
-        return new ActionDefinition(title, costs, target, gameActions, condition);
+        // ringteki CardAction.js: this.phase = properties.phase || 'any' - "any" means
+        // unrestricted, so it's represented here as the absence of a restriction (null).
+        string? phase = action.TryGetProperty("phase", out var phaseElement) && phaseElement.GetString() != "any"
+            ? phaseElement.GetString()
+            : null;
+
+        return new ActionDefinition(title, costs, target, gameActions, condition, phase);
     }
 
     private static IReadOnlyList<CostDefinition> ParseCosts(JsonElement costElement)

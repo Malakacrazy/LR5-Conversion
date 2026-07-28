@@ -30,6 +30,10 @@ public sealed class AbilityExecutor
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
 
+        if (action.Phase is not null && Phases.Parse(action.Phase) != context.Game.CurrentPhase)
+            throw new InvalidOperationException(
+                $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
+
         context.CostTarget = chosenCostTarget;
 
         foreach (var cost in action.Costs)

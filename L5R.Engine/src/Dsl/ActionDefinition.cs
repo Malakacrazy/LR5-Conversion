@@ -14,7 +14,8 @@ public sealed record ActionDefinition(
     IReadOnlyList<CostDefinition> Costs,
     TargetDefinition? Target,
     IReadOnlyList<GameActionDefinition> GameActions,
-    JsonElement? Condition);
+    JsonElement? Condition,
+    string? Phase);
 
 public sealed record CostDefinition(string Name, JsonElement? Params);
 
