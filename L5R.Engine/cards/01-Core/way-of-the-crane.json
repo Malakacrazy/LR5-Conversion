@@ -1,0 +1,22 @@
+{
+  "id": "way-of-the-crane",
+  "name": "Way of the Crane",
+  "type": "event",
+  "faction": "crane",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Honor a character",
+        "target": {
+          "cardType": "character",
+          "controller": "self",
+          "cardCondition": { "op": "hasFaction", "faction": "crane" },
+          "gameAction": { "name": "honor" }
+        }
+      }
+    ]
+  }
+}

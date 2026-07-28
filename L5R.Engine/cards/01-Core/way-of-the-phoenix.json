@@ -1,0 +1,13 @@
+{
+  "id": "way-of-the-phoenix",
+  "name": "Way of the Phoenix",
+  "type": "event",
+  "faction": "phoenix",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 0,
+  "scriptOverride": {
+    "reason": "gameAction targets a computed list of ring objects (every ring sharing the chosen ring's element) via a ring-scoped equivalent of allCardsMatching that doesn't exist, and cannotDeclareRing's value is a player-filter function rather than a plain valueRef - neither is expressible in the closed vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.WayOfThePhoenixPreventOpponentDeclaringRingElement"
+  }
+}

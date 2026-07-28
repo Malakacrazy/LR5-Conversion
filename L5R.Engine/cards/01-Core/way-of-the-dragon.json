@@ -1,0 +1,26 @@
+{
+  "id": "way-of-the-dragon",
+  "name": "Way of the Dragon",
+  "type": "attachment",
+  "faction": "dragon",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 2,
+  "militaryBonus": 1,
+  "politicalBonus": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "sourceLocation": "any",
+        "effect": [
+          { "name": "attachmentLimit", "value": 1 },
+          { "name": "attachmentMyControlOnly" }
+        ]
+      }
+    ],
+    "whileAttached": [
+      { "effect": { "name": "increaseLimitOnAbilities" } }
+    ]
+  }
+}

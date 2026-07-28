@@ -1,0 +1,28 @@
+{
+  "id": "way-of-the-lion",
+  "name": "Way of the Lion",
+  "type": "event",
+  "faction": "lion",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Double the base military of a character",
+        "condition": { "op": "isDuringConflict" },
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasFaction", "faction": "lion" },
+              { "op": "compareStat", "stat": "baseMilitarySkill", "comparator": "gt", "value": 0 }
+            ]
+          },
+          "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "modifyBaseMilitarySkillMultiplier", "value": 2 } } }
+        }
+      }
+    ]
+  }
+}

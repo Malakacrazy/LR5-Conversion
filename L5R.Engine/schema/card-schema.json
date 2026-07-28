@@ -39,6 +39,8 @@
     "glory": { "type": ["integer", "null"] },
     "strength": { "type": ["integer", "null"], "description": "Province base strength." },
     "strengthBonus": { "type": ["integer", "null"] },
+    "militaryBonus": { "type": ["integer", "null"], "description": "Attachment's printed military skill bonus to the attached character, applied automatically by ringteki's base attachment framework - not scripted per-card. emeralddb field: military_bonus." },
+    "politicalBonus": { "type": ["integer", "null"], "description": "Attachment's printed political skill bonus to the attached character, applied automatically by ringteki's base attachment framework - not scripted per-card. emeralddb field: political_bonus." },
     "fate": { "type": ["integer", "null"], "description": "Stronghold starting fate." },
     "honor": { "type": ["integer", "null"], "description": "Stronghold starting honor." },
     "influenceCost": { "type": ["integer", "null"], "description": "Role influence cost." },
