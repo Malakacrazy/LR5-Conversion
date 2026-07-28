@@ -1,0 +1,19 @@
+{
+  "id": "entrenched-position",
+  "name": "Entrenched Position",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["earth"],
+  "strength": 5,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "isDuringConflict", "type": "military" },
+        "effect": { "name": "modifyProvinceStrength", "value": 5 }
+      }
+    ]
+  }
+}

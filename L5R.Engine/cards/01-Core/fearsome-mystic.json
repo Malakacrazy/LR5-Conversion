@@ -1,0 +1,25 @@
+{
+  "id": "fearsome-mystic",
+  "name": "Fearsome Mystic",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "air"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 2,
+  "political": 4,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "isDuringConflict", "type": "air" },
+        "effect": { "name": "modifyGlory", "value": 2 }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "The 'remove 1 fate from each participating character your opponent controls with lower glory than this character' action targets a computed set filtered by comparing each candidate's own glory against this card's glory - allCardsMatching/anyCardMatches's 'of' predicate has no way to reference 'the candidate's own stat' (only source/player/target/targets contextPaths and literals), only compareStat's candidate-vs-literal shape. The persistentEffect (+2 glory during air conflicts) above is expressed generically; only this action is scripted.",
+    "handler": "L5R.Engine.Cards.Scripts.FearsomeMysticRemoveFateFromLowerGloryOpponents"
+  }
+}

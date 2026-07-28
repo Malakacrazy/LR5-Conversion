@@ -1,0 +1,21 @@
+{
+  "id": "favorable-ground",
+  "name": "Favorable Ground",
+  "type": "holding",
+  "faction": "neutral",
+  "traits": ["battlefield"],
+  "unique": false,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Move a character into or out of the conflict",
+        "cost": [{ "name": "sacrificeSelf" }],
+        "target": {
+          "cardType": "character",
+          "controller": "self",
+          "gameAction": [{ "name": "sendHome" }, { "name": "moveToConflict" }]
+        }
+      }
+    ]
+  }
+}

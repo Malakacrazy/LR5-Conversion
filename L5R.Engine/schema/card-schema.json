@@ -386,7 +386,10 @@
           "op": { "const": "isSelf" } } },
         { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
           "op": { "const": "isDuringConflict" },
-          "type": { "enum": ["military", "political"], "description": "Omit to match either conflict type." } } },
+          "type": {
+            "enum": ["military", "political", "air", "earth", "fire", "water", "void"],
+            "description": "Omit to match any current conflict. ringteki's isDuringConflict(types) checks both conflictType and the conflict's ring elements against the same list (currentConflict.elements.concat(conflictType)) - e.g. fearsome-mystic's 'during air conflicts' uses an element, not a conflict type, so both live in one enum rather than splitting into a separate 'element' field."
+          } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "value"], "properties": {
           "op": { "const": "isSameAs" }, "value": { "$ref": "#/$defs/valueRef" } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "stat", "comparator", "value"], "properties": {

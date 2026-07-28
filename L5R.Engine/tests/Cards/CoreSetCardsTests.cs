@@ -79,6 +79,10 @@ public class CoreSetCardsTests
     [TestCase("elemental-fury")]
     [TestCase("endless-plains")]
     [TestCase("enlightened-warrior")]
+    [TestCase("entrenched-position")]
+    [TestCase("fallen-in-battle")]
+    [TestCase("favorable-ground")]
+    [TestCase("fearsome-mystic")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -122,6 +126,8 @@ public class CoreSetCardsTests
     [TestCase("display-of-power", typeof(DisplayOfPowerCancelAndClaimRing))]
     [TestCase("endless-plains", typeof(EndlessPlainsBreakAndDiscardAttacker))]
     [TestCase("enlightened-warrior", typeof(EnlightenedWarriorGainFateOnOpponentRingSelect))]
+    [TestCase("fallen-in-battle", typeof(FallenInBattleDiscardOnDecisiveMilitaryWin))]
+    [TestCase("fearsome-mystic", typeof(FearsomeMysticRemoveFateFromLowerGloryOpponents))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

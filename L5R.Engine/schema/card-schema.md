@@ -67,6 +67,11 @@ mechanic exists.
   (elemental-fury). This is deliberately narrow: it's the one event field common and
   uniform enough across event types to generalize; anything else (`event.conflict.*`,
   `event.ringFate`, ...) still needs scriptOverride (endless-plains, enlightened-warrior).
+  `isDuringConflict`'s `type` enum grew to also accept ring elements
+  (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
+  `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(
+  conflictType)`) regardless of which kind of value is passed, so fearsome-mystic's
+  "during air conflicts" is the same op, not a new one.
 - **This schema validates shape, not every ringteki invariant.** For example, the doc says
   "player effects should not have a match property" — that's a runtime invariant the C#
   loader checks (since whether an effect name is card/ring/player-scoped lives in the
