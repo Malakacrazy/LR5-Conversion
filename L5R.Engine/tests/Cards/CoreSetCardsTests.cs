@@ -114,6 +114,10 @@ public class CoreSetCardsTests
     [TestCase("kakita-kaezin")]
     [TestCase("keeper-initiate")]
     [TestCase("keeper-of-earth")]
+    [TestCase("keeper-of-fire")]
+    [TestCase("keeper-of-void")]
+    [TestCase("keeper-of-water")]
+    [TestCase("kitsu-spiritcaller")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -177,6 +181,10 @@ public class CoreSetCardsTests
     [TestCase("kakita-kaezin", typeof(KakitaKaezinDuelAndSendHomeByOutcome))]
     [TestCase("keeper-initiate", typeof(KeeperInitiatePutIntoPlayOnMatchingRingClaim))]
     [TestCase("keeper-of-earth", typeof(KeeperOfEarthGainFateOnEarthDefenseWin))]
+    [TestCase("keeper-of-fire", typeof(KeeperOfFireGainFateOnFireDefenseWin))]
+    [TestCase("keeper-of-void", typeof(KeeperOfVoidGainFateOnVoidDefenseWin))]
+    [TestCase("keeper-of-water", typeof(KeeperOfWaterGainFateOnWaterDefenseWin))]
+    [TestCase("kitsu-spiritcaller", typeof(KitsuSpiritcallerResurrectUntilConflictEnd))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,16 @@
+{
+  "id": "kitsu-spiritcaller",
+  "name": "Kitsu Spiritcaller",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["shugenja", "water"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Uses a 'then' chained follow-up (a delayedEffect with its own nested when: onConflictFinished) to return the resurrected character to the bottom of its deck if it's still in play at the end of the conflict - neither 'then' chaining nor delayedEffect's nested when are modeled by the schema, and omitting the follow-up would materially change the card's balance (a permanent resurrection instead of a temporary one).",
+    "handler": "L5R.Engine.Cards.Scripts.KitsuSpiritcallerResurrectUntilConflictEnd"
+  }
+}

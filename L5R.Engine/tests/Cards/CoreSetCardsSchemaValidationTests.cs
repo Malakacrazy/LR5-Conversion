@@ -113,6 +113,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("kakita-kaezin")]
     [TestCase("keeper-initiate")]
     [TestCase("keeper-of-earth")]
+    [TestCase("keeper-of-fire")]
+    [TestCase("keeper-of-void")]
+    [TestCase("keeper-of-water")]
+    [TestCase("kitsu-spiritcaller")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));
