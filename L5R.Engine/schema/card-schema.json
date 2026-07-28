@@ -405,7 +405,10 @@
         { "type": "object", "additionalProperties": false, "required": ["dynamic"], "properties": {
           "dynamic": { "type": "string", "description": "Name of an engine-registered dynamic value function, e.g. countOpponentClaimedRings." },
           "multiplier": { "type": "number", "default": 1 },
-          "offset": { "type": "number", "default": 0 } } }
+          "offset": { "type": "number", "default": 0 } } },
+        { "type": "object", "additionalProperties": true,
+          "not": { "anyOf": [{ "required": ["contextPath"] }, { "required": ["dynamic"] }] },
+          "description": "A structured parameter bag for effects whose value is inherently an options object rather than a scalar - e.g. cardCannot/playerCannot/immunity's restriction properties (ringteki Effects/restriction.js), such as { \"cannot\": \"play\", \"restricts\": \"events\" }." }
       ]
     },
 

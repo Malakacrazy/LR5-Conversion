@@ -30,6 +30,10 @@ public class CoreSetCardsTests
     [TestCase("agasha-swordsmith")]
     [TestCase("shiba-tsukune")]
     [TestCase("niten-master")]
+    [TestCase("guest-of-honor")]
+    [TestCase("hida-guardian")]
+    [TestCase("grasp-of-earth")]
+    [TestCase("cautious-scout")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -61,6 +65,8 @@ public class CoreSetCardsTests
     [TestCase("shiba-yojimbo", typeof(ShibaYojimboCancelShugenjaTargetedAbility))]
     [TestCase("shiba-tsukune", typeof(ShibaTsukuneResolveUpToTwoRings))]
     [TestCase("niten-master", typeof(NitenMasterReadyOnWeaponAttached))]
+    [TestCase("grasp-of-earth", typeof(GraspOfEarthPreventOpponentCardsJoiningConflict))]
+    [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,25 @@
+{
+  "id": "grasp-of-earth",
+  "name": "Grasp of Earth",
+  "type": "attachment",
+  "faction": "phoenix",
+  "traits": ["spell", "earth"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "attachmentMyControlOnly" }
+      },
+      {
+        "match": "self",
+        "effect": { "name": "attachmentTraitRestriction", "value": "shugenja" }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Action's gameAction target is an entire collection resolved directly from context (context.player.opponent.cardsInPlay.toArray()) rather than a single value or a player-selected target - gameActionEntry.target is a valueRef (one value, e.g. a contextPath), not a collection-returning expression. The paired playerLastingEffect targeting all opponent cards via targetController fits the schema, but the bulk cardsInPlay target does not.",
+    "handler": "L5R.Engine.Cards.Scripts.GraspOfEarthPreventOpponentCardsJoiningConflict"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "hida-guardian",
+  "name": "Hida Guardian",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give a participating character a bonus for each holding",
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasStatus", "status": "isParticipating" },
+              { "op": "not", "of": { "op": "isSelf" } }
+            ]
+          },
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": {
+              "effect": { "name": "modifyBothSkills", "value": { "dynamic": "countHoldingsInPlay", "multiplier": 2 } }
+            }
+          }
+        },
+        "effect": "give {0} a bonus for each holding they control",
+        "effectArgs": [{ "contextPath": "target" }]
+      }
+    ]
+  }
+}

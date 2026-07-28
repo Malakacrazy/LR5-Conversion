@@ -1,0 +1,16 @@
+{
+  "id": "cautious-scout",
+  "name": "Cautious Scout",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["bushi", "scout"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 0,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Persistent effect's match targets a specific dynamic reference (the current conflict's province, this.game.currentConflict.conflictProvince) rather than a property-based predicate - the closed vocabulary has no 'is the conflict province' primitive. Its condition also needs this.game.currentConflict.getNumberOfParticipantsFor('attacker') === 1, a conflict-state count method beyond compareStat/compareValues/anyCardMatches.",
+    "handler": "L5R.Engine.Cards.Scripts.CautiousScoutBlankLoneAttackersProvince"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "guest-of-honor",
+  "name": "Guest of Honor",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 1,
+  "political": 4,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "targetController": "opponent",
+        "effect": { "name": "playerCannot", "value": { "cannot": "play", "restricts": "events" } }
+      }
+    ]
+  }
+}
