@@ -118,6 +118,10 @@ public class CoreSetCardsTests
     [TestCase("keeper-of-void")]
     [TestCase("keeper-of-water")]
     [TestCase("kitsu-spiritcaller")]
+    [TestCase("kitsuki-investigator")]
+    [TestCase("know-the-world")]
+    [TestCase("kuroi-mori")]
+    [TestCase("let-go")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,27 @@
+{
+  "id": "kuroi-mori",
+  "name": "Kuroi Mori",
+  "type": "province",
+  "faction": "phoenix",
+  "traits": [],
+  "unique": false,
+  "elements": ["void"],
+  "strength": 4,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Switch the conflict type or ring",
+        "target": {
+          "mode": "select",
+          "choices": {
+            "Switch the contested ring": {
+              "name": "selectRing",
+              "params": { "gameAction": { "name": "switchConflictElement" } }
+            },
+            "Switch the conflict type": { "name": "switchConflictType" }
+          }
+        }
+      }
+    ]
+  }
+}

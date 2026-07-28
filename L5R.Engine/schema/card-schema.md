@@ -68,7 +68,19 @@ mechanic exists.
   uniform enough across event types to generalize; anything else (`event.conflict.*`,
   `event.ringFate`, ...) still needs scriptOverride (endless-plains, enlightened-warrior).
   ishiken-initiate's `{dynamic: countClaimedRings}` is another free-form dynamic name
-  needing no schema change, same as countUnclaimedRings.
+  needing no schema change, same as countUnclaimedRings. kitsuki-investigator's
+  `{dynamic: countCardsInHand, for: opponent}` reuses the existing `for` subject
+  parameter for a new counter. know-the-world (switch a claimed ring for an unclaimed
+  one) uses the multi-target `targets` map with two `mode: "ring"` entries instead of a
+  single `target` - ringteki's `joint()` combinator for two independent ring selections
+  maps directly onto targets we already support, no schema change needed. kuroi-mori and
+  kitsuki-investigator also show that `target.choices` / `gameAction` values aren't
+  limited to "simple" registered names - `selectRing`/`lookAt`/`cardMenu` are just
+  gameActionEntry values like any other, with their own free-form nested params (which
+  CardReferenceCollector still walks and validates recursively) - not every "choose X,
+  then do Y with it" shape needs scriptOverride, only ones needing a *nested target*
+  (controller/cardCondition on a second card selection), which choices/gameActionEntry
+  params can't hold. See card-games/giver-of-gifts for the genuine two-level-select case.
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(

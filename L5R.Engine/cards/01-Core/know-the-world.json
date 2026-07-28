@@ -1,0 +1,29 @@
+{
+  "id": "know-the-world",
+  "name": "Know the World",
+  "type": "event",
+  "faction": "phoenix",
+  "traits": ["spell", "void"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Switch a claimed ring with an unclaimed one",
+        "targets": {
+          "returnedRing": {
+            "mode": "ring",
+            "ringCondition": { "op": "isController" , "controller": "self" },
+            "gameAction": { "name": "returnRing" }
+          },
+          "takenRing": {
+            "mode": "ring",
+            "ringCondition": { "op": "not", "of": { "op": "isController", "controller": "any" } },
+            "gameAction": { "name": "takeRing", "params": { "takeFate": true } }
+          }
+        }
+      }
+    ]
+  }
+}

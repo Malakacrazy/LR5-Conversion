@@ -1,0 +1,40 @@
+{
+  "id": "kitsuki-investigator",
+  "name": "Kitsuki Investigator",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Look at opponent's hand and discard a card from it",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isParticipating" },
+            { "op": "isDuringConflict", "type": "political" },
+            { "op": "compareValues", "left": { "dynamic": "countCardsInHand", "for": "opponent" }, "comparator": "gt", "right": 0 }
+          ]
+        },
+        "cost": [{ "name": "payFateToRing" }],
+        "gameAction": [
+          { "name": "lookAt", "params": { "target": { "contextPath": "player.opponent.hand" } } },
+          {
+            "name": "cardMenu",
+            "params": {
+              "cards": { "contextPath": "player.opponent.hand" },
+              "targets": true,
+              "gameAction": { "name": "discardCard" }
+            }
+          }
+        ],
+        "max": { "per": "conflict", "max": 1 }
+      }
+    ]
+  }
+}

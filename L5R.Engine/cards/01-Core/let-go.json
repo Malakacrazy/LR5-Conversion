@@ -1,0 +1,21 @@
+{
+  "id": "let-go",
+  "name": "Let Go",
+  "type": "event",
+  "faction": "dragon",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard an attachment",
+        "target": {
+          "cardType": "attachment",
+          "gameAction": { "name": "discardFromPlay" }
+        }
+      }
+    ]
+  }
+}
