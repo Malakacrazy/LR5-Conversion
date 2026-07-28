@@ -1,0 +1,25 @@
+{
+  "id": "savvy-politician",
+  "name": "Savvy Politician",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 1,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Honor a character",
+        "when": { "onCardHonored": { "op": "isSelf" } },
+        "target": {
+          "cardType": "character",
+          "gameAction": { "name": "honor" }
+        }
+      }
+    ]
+  }
+}

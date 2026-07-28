@@ -1,0 +1,21 @@
+{
+  "id": "sashimono",
+  "name": "Sashimono",
+  "type": "attachment",
+  "faction": "lion",
+  "traits": ["item", "banner"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 2,
+  "abilities": {
+    "persistentEffects": [
+      { "match": "self", "effect": { "name": "attachmentTraitRestriction", "value": "bushi" } }
+    ],
+    "whileAttached": [
+      {
+        "condition": { "op": "isDuringConflict", "type": "military" },
+        "effect": { "name": "doesNotBow" }
+      }
+    ]
+  }
+}

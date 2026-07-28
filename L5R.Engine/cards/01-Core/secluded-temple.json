@@ -1,0 +1,13 @@
+{
+  "id": "secluded-temple",
+  "name": "Secluded Temple",
+  "type": "holding",
+  "faction": "dragon",
+  "traits": ["shrine"],
+  "unique": false,
+  "strengthBonus": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.phase (a scalar event field, same gap as forgotten-library) and additionally compares cards-in-play counts between both players - a per-player card count comparison beyond the closed predicate vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.SecludedTempleRemoveFateWhenOutnumbered"
+  }
+}

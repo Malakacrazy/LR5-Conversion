@@ -150,6 +150,10 @@ public class CoreSetCardsTests
     [TestCase("reprieve")]
     [TestCase("restoration-of-balance")]
     [TestCase("rout")]
+    [TestCase("sashimono")]
+    [TestCase("savvy-politician")]
+    [TestCase("secluded-temple")]
+    [TestCase("secret-cache")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -233,6 +237,8 @@ public class CoreSetCardsTests
     [TestCase("rebuild", typeof(RebuildReplaceProvinceCardWithHolding))]
     [TestCase("reprieve", typeof(ReprieveDiscardInsteadOfParentLeavingPlay))]
     [TestCase("rout", typeof(RoutSendHomeOutclassedByBushi))]
+    [TestCase("secluded-temple", typeof(SecludedTempleRemoveFateWhenOutnumbered))]
+    [TestCase("secret-cache", typeof(SecretCacheSearchTopFiveOnConflictDeclared))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
