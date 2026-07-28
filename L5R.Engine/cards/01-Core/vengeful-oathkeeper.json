@@ -1,0 +1,15 @@
+{
+  "id": "vengeful-oathkeeper",
+  "name": "Vengeful Oathkeeper",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 2,
+  "glory": 0,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.loser/conflictType - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.VengefulOathkeeperPutIntoPlayOnMilitaryLoss"
+  }
+}

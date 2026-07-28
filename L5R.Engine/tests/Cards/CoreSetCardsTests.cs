@@ -189,6 +189,9 @@ public class CoreSetCardsTests
     [TestCase("utaku-infantry")]
     [TestCase("utaku-yumino")]
     [TestCase("vanguard-warrior")]
+    [TestCase("vengeful-berserker")]
+    [TestCase("vengeful-oathkeeper")]
+    [TestCase("voice-of-honor")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -291,6 +294,8 @@ public class CoreSetCardsTests
     [TestCase("the-perfect-gift", typeof(ThePerfectGiftRevealAndGiveEachPlayerACard))]
     [TestCase("togashi-kazue", typeof(TogashiKazuePlayAsAttachmentOrCharacter))]
     [TestCase("togashi-yokuni", typeof(TogashiYokuniCopyAnotherCharactersAbility))]
+    [TestCase("vengeful-berserker", typeof(VengefulBerserkerDoubleMilitaryOnAllyLeavingPlay))]
+    [TestCase("vengeful-oathkeeper", typeof(VengefulOathkeeperPutIntoPlayOnMilitaryLoss))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

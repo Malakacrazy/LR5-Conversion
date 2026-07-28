@@ -1,0 +1,33 @@
+{
+  "id": "voice-of-honor",
+  "name": "Voice of Honor",
+  "type": "event",
+  "faction": "crane",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "wouldInterrupt",
+        "title": "Cancel an event",
+        "when": {
+          "onInitiateAbilityEffects": {
+            "op": "and",
+            "of": [
+              { "op": "isType", "type": "event" },
+              {
+                "op": "compareValues",
+                "left": { "dynamic": "countCardsMatching", "controller": "self", "of": { "op": "hasStatus", "status": "isHonored" } },
+                "comparator": "gt",
+                "right": { "dynamic": "countCardsMatching", "controller": "opponent", "of": { "op": "hasStatus", "status": "isHonored" } }
+              }
+            ]
+          }
+        },
+        "gameAction": { "name": "cancel" }
+      }
+    ]
+  }
+}

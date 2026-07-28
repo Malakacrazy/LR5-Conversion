@@ -1,0 +1,15 @@
+{
+  "id": "vengeful-berserker",
+  "name": "Vengeful Berserker",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi", "berserker"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "glory": 0,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.cardStateWhenLeftPlay (a snapshot field specific to onCardLeavesPlay, not the event.card the isSelf convention covers) plus this.game.isDuringConflict() combined at the event level.",
+    "handler": "L5R.Engine.Cards.Scripts.VengefulBerserkerDoubleMilitaryOnAllyLeavingPlay"
+  }
+}
