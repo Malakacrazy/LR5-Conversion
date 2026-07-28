@@ -1,0 +1,13 @@
+{
+  "id": "way-of-the-unicorn",
+  "name": "Way of the Unicorn",
+  "type": "event",
+  "faction": "unicorn",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 0,
+  "scriptOverride": {
+    "reason": "wouldInterrupt's when clause inspects event.player (compared against context.player.opponent) - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention.",
+    "handler": "L5R.Engine.Cards.Scripts.WayOfTheUnicornKeepFirstPlayerToken"
+  }
+}

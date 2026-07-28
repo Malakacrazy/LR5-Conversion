@@ -200,6 +200,10 @@ public class CoreSetCardsTests
     [TestCase("way-of-the-dragon")]
     [TestCase("way-of-the-lion")]
     [TestCase("way-of-the-phoenix")]
+    [TestCase("way-of-the-scorpion")]
+    [TestCase("way-of-the-unicorn")]
+    [TestCase("yogo-hiroue")]
+    [TestCase("yogo-outcast")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -306,6 +310,8 @@ public class CoreSetCardsTests
     [TestCase("vengeful-oathkeeper", typeof(VengefulOathkeeperPutIntoPlayOnMilitaryLoss))]
     [TestCase("watch-commander", typeof(WatchCommanderLoseHonorOnOpponentCardPlayed))]
     [TestCase("way-of-the-phoenix", typeof(WayOfThePhoenixPreventOpponentDeclaringRingElement))]
+    [TestCase("way-of-the-unicorn", typeof(WayOfTheUnicornKeepFirstPlayerToken))]
+    [TestCase("yogo-hiroue", typeof(YogoHiroueMoveThenMayDishonorOnWin))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

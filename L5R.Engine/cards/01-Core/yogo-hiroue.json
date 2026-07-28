@@ -1,0 +1,16 @@
+{
+  "id": "yogo-hiroue",
+  "name": "Yogo Hiroue",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 0,
+  "political": 4,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Uses a 'sequential' combinator (move to conflict, then attach a delayedEffect keyed on afterConflict) whose payload is itself a menuPrompt with a conditional target - none of sequential, nested delayedEffect-with-when, or menuPrompt are modeled by the closed vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.YogoHiroueMoveThenMayDishonorOnWin"
+  }
+}

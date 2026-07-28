@@ -1,0 +1,27 @@
+{
+  "id": "way-of-the-scorpion",
+  "name": "Way of the Scorpion",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Dishonor a participating character",
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasStatus", "status": "isParticipating" },
+              { "op": "not", "of": { "op": "hasFaction", "faction": "scorpion" } }
+            ]
+          },
+          "gameAction": { "name": "dishonor" }
+        }
+      }
+    ]
+  }
+}

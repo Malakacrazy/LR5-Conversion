@@ -1,0 +1,26 @@
+{
+  "id": "yogo-outcast",
+  "name": "Yogo Outcast",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["shugenja", "air"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": {
+          "op": "compareValues",
+          "left": { "contextPath": "player.honor" },
+          "comparator": "lt",
+          "right": { "contextPath": "player.opponent.honor" }
+        },
+        "effect": { "name": "modifyBothSkills", "value": 1 }
+      }
+    ]
+  }
+}
