@@ -84,6 +84,45 @@ public class CardSchemaTests
             "schema only checks shape; unknown effect names are caught by the engine's EffectRegistry at load time, not here");
     }
 
+    [Test]
+    public void KnownKeyword_ValidatesAgainstTheSchema()
+    {
+        var schema = LoadSchema();
+        using var document = JsonDocument.Parse("""
+            {
+              "id": "example-card",
+              "name": "Example Card",
+              "type": "attachment",
+              "keywords": ["ancestral", "restricted"]
+            }
+            """);
+
+        var result = schema.Evaluate(document.RootElement);
+
+        Assert.That(result.IsValid, Is.True, "ancestral/restricted are real rules-glossary keywords");
+    }
+
+    [Test]
+    public void UnknownKeyword_FailsValidation()
+    {
+        // keywords is a closed enum (unlike traits, which is free-form) because each
+        // keyword carries a fixed rule the engine enforces generically - a typoed or
+        // made-up keyword name would silently do nothing instead of failing loudly.
+        var schema = LoadSchema();
+        using var document = JsonDocument.Parse("""
+            {
+              "id": "example-card",
+              "name": "Example Card",
+              "type": "character",
+              "keywords": ["bravery"]
+            }
+            """);
+
+        var result = schema.Evaluate(document.RootElement);
+
+        Assert.That(result.IsValid, Is.False, "'bravery' is not one of the 13 official keywords");
+    }
+
     private static IEnumerable<string> CollectErrors(EvaluationResults result)
     {
         // Only descend into branches that actually failed - a oneOf's non-matching

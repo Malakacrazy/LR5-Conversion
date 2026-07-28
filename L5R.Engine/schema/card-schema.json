@@ -26,6 +26,14 @@
       "items": { "type": "string" },
       "default": []
     },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "enum": ["ancestral", "composure", "courtesy", "covert", "dire", "disguised", "eminent", "limited", "pride", "rally", "restricted", "sincerity", "support"]
+      },
+      "default": [],
+      "description": "Printed keywords (rules-glossary terms shown in the text box, distinct from traits - they carry their own fixed rule rather than being pure flavor/targeting text, and cards like cloud-the-mind that blank a card's text remove keywords but not traits). Each keyword's rule is enforced generically by the engine keyed off this list (e.g. 'any card with keywords: [ancestral] returns to hand instead of being discarded when it leaves play') - it is never re-implemented per-card, the same way ringteki itself checks card.hasKeyword(...) in shared code rather than scripting it per card. A card's own persistentEffects can still *grant* a keyword to another card dynamically via the existing addKeyword effect (e.g. magnificent-kimono granting 'pride') - that is unrelated to this field, which is only for keywords the card has printed on itself."
+    },
     "unique": { "type": "boolean", "default": false },
     "elements": {
       "type": "array",

@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "phoenix",
   "traits": ["courtier", "scholar"],
+  "keywords": ["sincerity"],
   "unique": false,
   "printedCost": 1,
   "political": 2,

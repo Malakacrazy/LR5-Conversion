@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "lion",
   "traits": ["bushi"],
+  "keywords": ["pride"],
   "unique": false,
   "printedCost": 2,
   "military": 2,

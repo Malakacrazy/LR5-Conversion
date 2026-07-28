@@ -4,6 +4,7 @@
   "type": "attachment",
   "faction": "dragon",
   "traits": ["technique"],
+  "keywords": ["ancestral", "restricted"],
   "unique": false,
   "printedCost": 1,
   "influenceCost": 2,

@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "crab",
   "traits": ["bushi"],
+  "keywords": ["courtesy", "sincerity"],
   "unique": false,
   "printedCost": 1,
   "military": 1,

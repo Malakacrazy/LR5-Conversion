@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "crane",
   "traits": ["courtier", "shugenja", "air"],
+  "keywords": ["sincerity"],
   "unique": false,
   "printedCost": 4,
   "military": 2,

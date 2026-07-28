@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "crane",
   "traits": ["courtier"],
+  "keywords": ["covert"],
   "unique": false,
   "printedCost": 3,
   "political": 3,

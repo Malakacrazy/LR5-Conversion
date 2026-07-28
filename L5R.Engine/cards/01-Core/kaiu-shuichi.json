@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "crab",
   "traits": ["bushi", "engineer"],
+  "keywords": ["covert"],
   "unique": true,
   "printedCost": 4,
   "military": 3,

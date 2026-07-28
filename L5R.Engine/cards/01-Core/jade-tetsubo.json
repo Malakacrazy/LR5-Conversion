@@ -4,6 +4,7 @@
   "type": "attachment",
   "faction": "crab",
   "traits": ["jade", "weapon"],
+  "keywords": ["restricted"],
   "unique": false,
   "printedCost": 2,
   "influenceCost": 2,

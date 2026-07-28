@@ -4,6 +4,7 @@
   "type": "attachment",
   "faction": "neutral",
   "traits": ["weapon"],
+  "keywords": ["restricted"],
   "unique": false,
   "printedCost": 0,
   "influenceCost": 0,

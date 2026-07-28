@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "scorpion",
   "traits": ["bushi", "yojimbo"],
+  "keywords": ["covert"],
   "unique": false,
   "printedCost": 3,
   "military": 3,

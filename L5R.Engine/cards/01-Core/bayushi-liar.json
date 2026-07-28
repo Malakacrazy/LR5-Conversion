@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "scorpion",
   "traits": ["courtier"],
+  "keywords": ["sincerity"],
   "unique": false,
   "printedCost": 1,
   "political": 3,

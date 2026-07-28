@@ -4,6 +4,7 @@
   "type": "character",
   "faction": "dragon",
   "traits": ["shugenja", "fire"],
+  "keywords": ["limited"],
   "unique": false,
   "printedCost": 1,
   "military": 3,

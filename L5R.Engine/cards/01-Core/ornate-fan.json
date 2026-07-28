@@ -4,6 +4,7 @@
   "type": "attachment",
   "faction": "neutral",
   "traits": ["item"],
+  "keywords": ["restricted"],
   "unique": false,
   "printedCost": 0,
   "influenceCost": 0,
