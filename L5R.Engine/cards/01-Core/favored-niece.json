@@ -1,0 +1,22 @@
+{
+  "id": "favored-niece",
+  "name": "Favored Niece",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard then draw a card",
+        "limit": { "per": "round", "max": 2 },
+        "cost": [{ "name": "discardCard", "params": { "location": "hand" } }],
+        "gameAction": { "name": "draw" }
+      }
+    ]
+  }
+}

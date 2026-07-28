@@ -1,0 +1,28 @@
+{
+  "id": "agasha-swordsmith",
+  "name": "Agasha Swordsmith",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["shugenja", "fire"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Search the top of the deck for an attachment",
+        "limit": { "per": "round", "max": 1 },
+        "effect": "look at the top five cards of their deck",
+        "gameAction": {
+          "name": "deckSearch",
+          "params": {
+            "amount": 5,
+            "cardCondition": { "op": "isType", "type": "attachment" }
+          }
+        }
+      }
+    ]
+  }
+}

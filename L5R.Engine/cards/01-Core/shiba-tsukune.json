@@ -1,0 +1,16 @@
+{
+  "id": "shiba-tsukune",
+  "name": "Shiba Tsukune",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["bushi", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 4,
+  "political": 4,
+  "glory": 4,
+  "scriptOverride": {
+    "reason": "Interrupt handler runs a fully custom, stateful two-step ring-selection prompt (choose a first unclaimed ring, then optionally a second excluding the first, resolving each via resolveRingEffect) rather than a declarative gameAction/target. This is exactly the kind of bespoke, multi-step player-interaction flow the generic target/gameAction vocabulary isn't meant to cover.",
+    "handler": "L5R.Engine.Cards.Scripts.ShibaTsukuneResolveUpToTwoRings"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "niten-master",
+  "name": "Niten Master",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 3,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Reaction trigger needs event.parent, event.card.hasTrait, and event.card.controller (a weapon being attached specifically to this character, controlled by this player) - event-shaped fields the closed predicate vocabulary deliberately doesn't generalize.",
+    "handler": "L5R.Engine.Cards.Scripts.NitenMasterReadyOnWeaponAttached"
+  }
+}
