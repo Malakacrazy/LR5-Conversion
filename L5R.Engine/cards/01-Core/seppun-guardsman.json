@@ -1,0 +1,29 @@
+{
+  "id": "seppun-guardsman",
+  "name": "Seppun Guardsman",
+  "type": "character",
+  "faction": "neutral",
+  "traits": ["bushi", "imperial"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 2,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "sourceLocation": "any",
+        "condition": {
+          "op": "not",
+          "of": {
+            "op": "compareValues",
+            "left": { "contextPath": "player.opponent.imperialFavor" },
+            "comparator": "eq",
+            "right": ""
+          }
+        },
+        "effect": { "name": "cannotParticipateAsAttacker" }
+      }
+    ]
+  }
+}

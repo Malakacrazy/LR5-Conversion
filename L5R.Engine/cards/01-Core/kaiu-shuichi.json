@@ -1,0 +1,16 @@
+{
+  "id": "kaiu-shuichi",
+  "name": "Kaiu Shuichi",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi", "engineer"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 3,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Action condition requires either player to control at least one holding (a dynamic per-player count compared against a literal, needed for two different players in the same expression). valueRef's 'dynamic' form has no way to specify which player a named counter is computed for - it assumes a single implicit subject - so this doesn't fit compareValues/anyCardMatches as currently designed.",
+    "handler": "L5R.Engine.Cards.Scripts.KaiuShuichiGainFateIfEitherControlsAHolding"
+  }
+}

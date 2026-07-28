@@ -109,6 +109,11 @@
           "default": "play area",
           "description": "implementing-cards.md 'Applying effects to cards which aren't in play'. E.g. 'hand', 'province'."
         },
+        "sourceLocation": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+          "default": "play area",
+          "description": "ringteki Effect.js 'location' property: where the card providing this effect must itself be for the effect to be active - distinct from targetLocation, which is about the cards the effect applies to. 'any' means the effect stays active even from hand/discard (e.g. seppun-guardsman)."
+        },
         "effect": {
           "description": "implementing-cards.md 'Applying multiple effects at once' allows an array.",
           "oneOf": [

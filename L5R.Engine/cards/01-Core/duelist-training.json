@@ -1,0 +1,13 @@
+{
+  "id": "duelist-training",
+  "name": "Duelist Training",
+  "type": "attachment",
+  "faction": "crane",
+  "traits": ["technique"],
+  "unique": false,
+  "printedCost": 1,
+  "scriptOverride": {
+    "reason": "Grants a gained action (gainAbility) whose gameAction is a duel with a custom costHandler comparing both players' honor bids and prompting the loser to pay the difference in honor or discarded cards - a fully bespoke, stateful cost-resolution flow with no equivalent in the cost/target vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.DuelistTrainingGrantMilitaryDuelAction"
+  }
+}

@@ -34,6 +34,10 @@ public class CoreSetCardsTests
     [TestCase("hida-guardian")]
     [TestCase("grasp-of-earth")]
     [TestCase("cautious-scout")]
+    [TestCase("seppun-guardsman")]
+    [TestCase("duelist-training")]
+    [TestCase("tattooed-wanderer")]
+    [TestCase("kaiu-shuichi")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -67,6 +71,9 @@ public class CoreSetCardsTests
     [TestCase("niten-master", typeof(NitenMasterReadyOnWeaponAttached))]
     [TestCase("grasp-of-earth", typeof(GraspOfEarthPreventOpponentCardsJoiningConflict))]
     [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
+    [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
+    [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
+    [TestCase("kaiu-shuichi", typeof(KaiuShuichiGainFateIfEitherControlsAHolding))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

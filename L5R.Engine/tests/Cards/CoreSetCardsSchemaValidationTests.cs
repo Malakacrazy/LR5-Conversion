@@ -33,6 +33,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("hida-guardian")]
     [TestCase("grasp-of-earth")]
     [TestCase("cautious-scout")]
+    [TestCase("seppun-guardsman")]
+    [TestCase("duelist-training")]
+    [TestCase("tattooed-wanderer")]
+    [TestCase("kaiu-shuichi")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

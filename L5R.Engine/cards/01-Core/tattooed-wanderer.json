@@ -1,0 +1,23 @@
+{
+  "id": "tattooed-wanderer",
+  "name": "Tattooed Wanderer",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["monk", "tattooed"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 2,
+  "political": 1,
+  "glory": 0,
+  "abilities": {
+    "whileAttached": [
+      {
+        "effect": { "name": "addKeyword", "value": "covert" }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Card can alternatively be played as an attachment via a custom PlayAttachmentAction subclass that changes the card's own type for the rest of the game (Durations.Custom, canChangeZoneOnce) when played that way. There's no generic 'alternate play mode that permanently reclassifies this card' concept in the schema - playCard/attach are separate, fixed game actions, not a player-facing choice between two ways to play the same card.",
+    "handler": "L5R.Engine.Cards.Scripts.TattooedWandererPlayAsAttachment"
+  }
+}
