@@ -1,0 +1,22 @@
+{
+  "id": "rally-to-the-cause",
+  "name": "Rally to the Cause",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["water"],
+  "strength": 4,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Switch the conflict type",
+        "when": {
+          "onCardRevealed": { "op": "and", "of": [{ "op": "isSelf" }, { "op": "isDuringConflict" }] }
+        },
+        "gameAction": { "name": "switchConflictType" }
+      }
+    ]
+  }
+}

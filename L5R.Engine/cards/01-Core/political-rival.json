@@ -1,0 +1,21 @@
+{
+  "id": "political-rival",
+  "name": "Political Rival",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "political": 3,
+  "glory": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "hasStatus", "status": "isDefending" },
+        "effect": { "name": "modifyPoliticalSkill", "value": 3 }
+      }
+    ]
+  }
+}

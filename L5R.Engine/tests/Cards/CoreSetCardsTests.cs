@@ -142,6 +142,10 @@ public class CoreSetCardsTests
     [TestCase("outwit")]
     [TestCase("pacifism")]
     [TestCase("pilgrimage")]
+    [TestCase("political-rival")]
+    [TestCase("radiant-orator")]
+    [TestCase("rally-to-the-cause")]
+    [TestCase("ready-for-battle")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -220,6 +224,8 @@ public class CoreSetCardsTests
     [TestCase("outwit", typeof(OutwitSendHomeOutclassedByCourtier))]
     [TestCase("pacifism", typeof(PacifismCannotPlayDuringConflict))]
     [TestCase("pilgrimage", typeof(PilgrimageCancelRingEffectsAtThisProvince))]
+    [TestCase("radiant-orator", typeof(RadiantOratorSendHomeWhenAheadOnGlory))]
+    [TestCase("ready-for-battle", typeof(ReadyForBattleReadyOnOpponentOrRingBow))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

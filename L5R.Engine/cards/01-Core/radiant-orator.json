@@ -1,0 +1,16 @@
+{
+  "id": "radiant-orator",
+  "name": "Radiant Orator",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 2,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Condition sums glory across each player's ready, participating characters and compares the totals - a sum aggregate over a set of cards, beyond countCardsMatching's plain count. Not generalizing a sum-aggregate concept from a single card.",
+    "handler": "L5R.Engine.Cards.Scripts.RadiantOratorSendHomeWhenAheadOnGlory"
+  }
+}

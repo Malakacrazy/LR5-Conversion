@@ -1,0 +1,14 @@
+{
+  "id": "ready-for-battle",
+  "name": "Ready for Battle",
+  "type": "event",
+  "faction": "lion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.card.controller and event.context.source.type/event.context.player - event and context fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention. Its gameAction also targets event.card directly (the character that was bowed) rather than a player-chosen target, which the schema has no way to express.",
+    "handler": "L5R.Engine.Cards.Scripts.ReadyForBattleReadyOnOpponentOrRingBow"
+  }
+}
