@@ -1,0 +1,12 @@
+{
+  "id": "artisan-academy",
+  "name": "Artisan Academy",
+  "type": "holding",
+  "faction": "crane",
+  "traits": ["academy"],
+  "unique": false,
+  "scriptOverride": {
+    "reason": "Action grants a custom-duration lasting effect (Durations.Custom in ringteki) whose expiry is driven by three separate event listeners (the top conflict-deck card moving, the conflict phase ending, or the deck being shuffled) tracking one specific card instance captured at activation time. card-schema.json's lastingEffect duration values are the fixed untilEndOfConflict/Phase/Round set - there's no generic way to express an ad hoc multi-event 'until' clause tied to a runtime-captured reference.",
+    "handler": "L5R.Engine.Cards.Scripts.ArtisanAcademyRevealTopCard"
+  }
+}

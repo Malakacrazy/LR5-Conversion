@@ -18,6 +18,10 @@ public class CoreSetCardsTests
     [TestCase("cloud-the-mind")]
     [TestCase("assassination")]
     [TestCase("court-mask")]
+    [TestCase("ancestral-lands")]
+    [TestCase("city-of-the-open-hand")]
+    [TestCase("artisan-academy")]
+    [TestCase("keeper-of-air")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -40,6 +44,20 @@ public class CoreSetCardsTests
 
         Assert.That(card.ScriptOverride, Is.Not.Null);
         Assert.That(card.ScriptOverride!.HandlerType, Is.EqualTo(typeof(CloudTheMindPlayRestriction)));
+        Assert.That(card.ScriptOverride!.Reason, Is.Not.Empty, "scriptOverride must document why it was needed");
+    }
+
+    [TestCase("artisan-academy", typeof(ArtisanAcademyRevealTopCard))]
+    [TestCase("keeper-of-air", typeof(KeeperOfAirGainFateOnDefendedWin))]
+    public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
+    {
+        var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
+        var path = Path.Combine(CardsDir, $"{cardId}.json");
+
+        var card = loader.Load(File.ReadAllText(path));
+
+        Assert.That(card.ScriptOverride, Is.Not.Null);
+        Assert.That(card.ScriptOverride!.HandlerType, Is.EqualTo(expectedHandlerType));
         Assert.That(card.ScriptOverride!.Reason, Is.Not.Empty, "scriptOverride must document why it was needed");
     }
 }

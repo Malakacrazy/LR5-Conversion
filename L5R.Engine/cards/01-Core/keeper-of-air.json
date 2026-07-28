@@ -1,0 +1,13 @@
+{
+  "id": "keeper-of-air",
+  "name": "Keeper of Air",
+  "type": "role",
+  "faction": "neutral",
+  "traits": ["keeper", "air"],
+  "unique": false,
+  "elements": ["air"],
+  "scriptOverride": {
+    "reason": "Reaction trigger inspects three fields on the conflict event itself (event.conflict.elements, event.conflict.winner, event.conflict.defendingPlayer) to check the card holder both won and defended a conflict declared with a matching element. card-schema.json's predicate vocabulary covers card/player-level checks (isType, hasStatus, compareValues, ...) but deliberately doesn't try to generalize arbitrary per-event-type field access - event shapes differ too much between event names to model generically without effectively embedding a query language.",
+    "handler": "L5R.Engine.Cards.Scripts.KeeperOfAirGainFateOnDefendedWin"
+  }
+}

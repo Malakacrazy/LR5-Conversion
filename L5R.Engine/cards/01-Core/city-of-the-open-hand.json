@@ -1,0 +1,32 @@
+{
+  "id": "city-of-the-open-hand",
+  "name": "City of the Open Hand",
+  "type": "stronghold",
+  "faction": "scorpion",
+  "traits": ["city"],
+  "unique": true,
+  "fate": 7,
+  "honor": 10,
+  "influencePool": 10,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Gain 1 honor or make opponent lose 1 honor",
+        "cost": [{ "name": "bowSelf" }],
+        "condition": {
+          "op": "compareValues",
+          "left": { "contextPath": "player.honor" },
+          "comparator": "lt",
+          "right": { "contextPath": "player.opponent.honor" }
+        },
+        "target": {
+          "mode": "select",
+          "choices": {
+            "Gain 1 honor": { "name": "gainHonor" },
+            "Make opponent lose 1 honor": { "name": "loseHonor" }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "ancestral-lands",
+  "name": "Ancestral Lands",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "strength": 5,
+  "elements": ["earth"],
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "isDuringConflict", "type": "political" },
+        "effect": { "name": "modifyProvinceStrength", "value": 5 }
+      }
+    ]
+  }
+}

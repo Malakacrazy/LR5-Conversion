@@ -363,14 +363,20 @@
         { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
           "op": { "const": "isSelf" } } },
         { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
-          "op": { "const": "isDuringConflict" } } },
+          "op": { "const": "isDuringConflict" },
+          "type": { "enum": ["military", "political"], "description": "Omit to match either conflict type." } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "value"], "properties": {
           "op": { "const": "isSameAs" }, "value": { "$ref": "#/$defs/valueRef" } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "stat", "comparator", "value"], "properties": {
           "op": { "const": "compareStat" },
           "stat": { "type": "string" },
           "comparator": { "enum": ["lt", "lte", "eq", "gte", "gt"] },
-          "value": { "$ref": "#/$defs/valueRef" } } }
+          "value": { "$ref": "#/$defs/valueRef" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "left", "comparator", "right"], "properties": {
+          "op": { "const": "compareValues" },
+          "left": { "$ref": "#/$defs/valueRef" },
+          "comparator": { "enum": ["lt", "lte", "eq", "gte", "gt"] },
+          "right": { "$ref": "#/$defs/valueRef" } } }
       ]
     },
 
