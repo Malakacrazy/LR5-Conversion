@@ -94,7 +94,9 @@ anything else needing a bespoke handler function is a `scriptOverride` candidate
 `mode` selects between plain card targeting (default), `ring` (`ringCondition` applies,
 see `gamesteps/selectringprompt.js`), and `select` (`choices` applies). `gameAction`
 restricting legality is the doc's "restrict the card chosen to those for which that game
-action is legal" behavior.
+action is legal" behavior. `dependsOn` (added porting for-shame, which chooses a character
+target then a `select` target whose choices act on that character) names another key in
+the same ability's `targets` map that must resolve first.
 
 ## `limit` → doc "Ability limits", `abilitylimit.js`
 

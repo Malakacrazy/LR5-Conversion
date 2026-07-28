@@ -1,9 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- LangVersion defaults per-TFM (netstandard2.1 defaults to C# 8), but the syntax
+         used here (required members, init-only setters, records) needs 11+. PolySharp
+         supplies the compiler-required polyfill types netstandard2.1 lacks natively. -->
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
+
+  <!-- Nullable reference type annotations need the compiler to embed
+       Microsoft.CodeAnalysis.EmbeddedAttribute on a TFM that doesn't ship it, which
+       collides with PolySharp generating the same marker for its own polyfills (CS8336).
+       Nullable is a compile-time analysis only - runtime behavior is identical either
+       way - so it's simplest to keep full nullable checking on net8.0 and skip it for
+       the netstandard2.1 leg rather than fight the generator interaction. -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <!-- System.Text.Json ships as part of the net8.0 shared framework but isn't part of
+         the netstandard2.1 reference assembly set - CardLoader/CardReferenceCollector
+         need it explicitly for that leg. -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
 
 </Project>

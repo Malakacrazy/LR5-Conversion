@@ -1,0 +1,16 @@
+{
+  "id": "shiba-yojimbo",
+  "name": "Shiba Yojimbo",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["bushi", "yojimbo"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "'Would' interrupt cancels a triggered ability whose targets include a 'shugenja' character the acting player controls in play - requires inspecting event.context.ability.isTriggeredAbility() and event.cardTargets, both event-shaped fields the closed predicate vocabulary deliberately doesn't generalize.",
+    "handler": "L5R.Engine.Cards.Scripts.ShibaYojimboCancelShugenjaTargetedAbility"
+  }
+}

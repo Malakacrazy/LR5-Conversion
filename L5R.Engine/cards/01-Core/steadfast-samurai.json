@@ -1,0 +1,16 @@
+{
+  "id": "steadfast-samurai",
+  "name": "Steadfast Samurai",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Forced reaction trigger requires the acting player's honor to be at least 5 more than their opponent's (a threshold comparison with a fixed offset applied to one side), evaluated inside a when clause on the fate phase starting. compareValues compares two ValueRefs directly but has no arithmetic (e.g. 'opponent.honor + 5'), and when clauses inspecting event fields already go to scriptOverride per policy - this stacks both gaps.",
+    "handler": "L5R.Engine.Cards.Scripts.SteadfastSamuraiHonorThresholdProtection"
+  }
+}

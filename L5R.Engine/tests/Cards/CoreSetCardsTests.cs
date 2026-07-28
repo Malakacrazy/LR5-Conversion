@@ -22,6 +22,10 @@ public class CoreSetCardsTests
     [TestCase("city-of-the-open-hand")]
     [TestCase("artisan-academy")]
     [TestCase("keeper-of-air")]
+    [TestCase("magnificent-kimono")]
+    [TestCase("for-shame")]
+    [TestCase("steadfast-samurai")]
+    [TestCase("shiba-yojimbo")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -49,6 +53,8 @@ public class CoreSetCardsTests
 
     [TestCase("artisan-academy", typeof(ArtisanAcademyRevealTopCard))]
     [TestCase("keeper-of-air", typeof(KeeperOfAirGainFateOnDefendedWin))]
+    [TestCase("steadfast-samurai", typeof(SteadfastSamuraiHonorThresholdProtection))]
+    [TestCase("shiba-yojimbo", typeof(ShibaYojimboCancelShugenjaTargetedAbility))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

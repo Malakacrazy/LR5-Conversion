@@ -1,0 +1,16 @@
+{
+  "id": "magnificent-kimono",
+  "name": "Magnificent Kimono",
+  "type": "attachment",
+  "faction": "phoenix",
+  "traits": ["item"],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "whileAttached": [
+      {
+        "effect": { "name": "addKeyword", "value": "pride" }
+      }
+    ]
+  }
+}

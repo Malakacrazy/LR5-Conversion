@@ -1,0 +1,44 @@
+{
+  "id": "for-shame",
+  "name": "For Shame",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Dishonor or bow an opponent's character",
+        "condition": {
+          "op": "anyCardMatches",
+          "controller": "self",
+          "of": {
+            "op": "and",
+            "of": [
+              { "op": "isType", "type": "character" },
+              { "op": "hasTrait", "trait": "courtier" },
+              { "op": "hasStatus", "status": "isParticipating" }
+            ]
+          }
+        },
+        "targets": {
+          "character": {
+            "cardType": "character",
+            "controller": "opponent",
+            "cardCondition": { "op": "hasStatus", "status": "isParticipating" }
+          },
+          "select": {
+            "mode": "select",
+            "dependsOn": "character",
+            "player": "opponent",
+            "choices": {
+              "Dishonor this character": { "name": "dishonor", "target": { "contextPath": "targets.character" } },
+              "Bow this character": { "name": "bow", "target": { "contextPath": "targets.character" } }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

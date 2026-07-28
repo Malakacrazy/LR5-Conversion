@@ -230,6 +230,10 @@
           "enum": ["self", "opponent"],
           "default": "self",
           "description": "Which player makes this choice - almost always self, but e.g. an opponent chooses which card to discard on some cards."
+        },
+        "dependsOn": {
+          "type": "string",
+          "description": "Name of another key in this ability's `targets` map that must be resolved first; this target (commonly mode: 'select', with choices referencing the dependency via contextPath e.g. 'targets.character') only resolves afterwards."
         }
       }
     },
@@ -376,7 +380,13 @@
           "op": { "const": "compareValues" },
           "left": { "$ref": "#/$defs/valueRef" },
           "comparator": { "enum": ["lt", "lte", "eq", "gte", "gt"] },
-          "right": { "$ref": "#/$defs/valueRef" } } }
+          "right": { "$ref": "#/$defs/valueRef" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "of"], "properties": {
+          "op": { "const": "anyCardMatches" },
+          "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+          "location": { "type": "string", "default": "play area" },
+          "of": { "$ref": "#/$defs/predicate" } },
+          "description": "Existential check over a set of cards, e.g. 'does the player control any participating character with trait X' - condition/cardCondition otherwise evaluate a single implicit subject, not a collection." }
       ]
     },
 
