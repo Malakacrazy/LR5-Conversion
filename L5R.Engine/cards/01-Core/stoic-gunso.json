@@ -1,0 +1,23 @@
+{
+  "id": "stoic-gunso",
+  "name": "Stoic Gunsō",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 1,
+  "glory": 1,
+  "influenceCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Sacrifice a character for +3/+0",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "sacrifice", "params": { "cardType": "character" } }],
+        "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "modifyMilitarySkill", "value": 3 } } }
+      }
+    ]
+  }
+}

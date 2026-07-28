@@ -1,0 +1,24 @@
+{
+  "id": "steadfast-witch-hunter",
+  "name": "Steadfast Witch Hunter",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["shugenja", "earth"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 4,
+  "political": 2,
+  "glory": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Ready character",
+        "cost": [{ "name": "sacrifice", "params": { "cardType": "character" } }],
+        "target": {
+          "cardType": "character",
+          "gameAction": { "name": "ready" }
+        }
+      }
+    ]
+  }
+}

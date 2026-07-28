@@ -1,0 +1,23 @@
+{
+  "id": "steward-of-law",
+  "name": "Steward of Law",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier", "scholar"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 0,
+  "influenceCost": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "targetController": "any",
+        "match": { "op": "isType", "type": "character" },
+        "effect": { "name": "cardCannot", "value": { "cannot": "receiveDishonorToken" } }
+      }
+    ]
+  }
+}

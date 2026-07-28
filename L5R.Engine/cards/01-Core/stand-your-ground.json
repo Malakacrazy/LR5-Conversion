@@ -1,0 +1,14 @@
+{
+  "id": "stand-your-ground",
+  "name": "Stand Your Ground",
+  "type": "event",
+  "faction": "lion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "wouldInterrupt's when clause inspects event.card.controller/event.card.isHonored - event fields beyond the closed predicate vocabulary. Its cancel gameAction also substitutes a replacementGameAction (discard the honored status token instead of the character leaving play), the same cancel-and-replace shape flagged on reprieve.",
+    "handler": "L5R.Engine.Cards.Scripts.StandYourGroundDiscardTokenInsteadOfLeavingPlay"
+  }
+}

@@ -173,6 +173,10 @@ public class CoreSetCardsTests
     [TestCase("spies-at-court")]
     [TestCase("spyglass")]
     [TestCase("staging-ground")]
+    [TestCase("stand-your-ground")]
+    [TestCase("steadfast-witch-hunter")]
+    [TestCase("steward-of-law")]
+    [TestCase("stoic-gunso")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -270,6 +274,7 @@ public class CoreSetCardsTests
     [TestCase("shrewd-yasuki", typeof(ShrewdYasukiLookAtTopTwoKeepOne))]
     [TestCase("spies-at-court", typeof(SpiesAtCourtDiscardTwoOnPoliticalWin))]
     [TestCase("spyglass", typeof(SpyglassDrawOnParentJoiningConflict))]
+    [TestCase("stand-your-ground", typeof(StandYourGroundDiscardTokenInsteadOfLeavingPlay))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
