@@ -1,0 +1,14 @@
+{
+  "id": "court-games",
+  "name": "Court Games",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "scriptOverride": {
+    "reason": "mode: 'select' choices are each a full nested card selection (their own controller/cardCondition/gameAction, and the second choice even switches which player makes the pick), not a plain predicate or gameAction leaf value - the schema's target.choices only supports the latter (see city-of-the-open-hand). A two-level 'choose which action, then choose a card for it' selection has no generic representation yet, consistent with the bespoke multi-step prompt handlers on duelist-training/shiba-tsukune.",
+    "handler": "L5R.Engine.Cards.Scripts.CourtGamesHonorOrDishonorParticipant"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "daimyo-s-favor",
+  "name": "Daimyō's Favor",
+  "type": "attachment",
+  "faction": "dragon",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "persistentEffects": [
+      { "match": "self", "effect": { "name": "attachmentMyControlOnly" } }
+    ],
+    "actions": [
+      {
+        "title": "Bow to reduce attachment cost",
+        "cost": [{ "name": "bowSelf" }],
+        "gameAction": {
+          "name": "playerLastingEffect",
+          "params": {
+            "duration": "untilEndOfPhase",
+            "effect": {
+              "name": "reduceCost",
+              "value": {
+                "amount": 1,
+                "cardType": "attachment",
+                "appliesTo": { "op": "isSameAs", "value": { "contextPath": "source.parent" } },
+                "limit": { "fixed": 1 }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

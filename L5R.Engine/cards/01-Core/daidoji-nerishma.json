@@ -1,0 +1,25 @@
+{
+  "id": "daidoji-nerishma",
+  "name": "Daidoji Nerishma",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["bushi", "scout"],
+  "unique": true,
+  "printedCost": 2,
+  "military": 3,
+  "political": 1,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Flip a card faceup",
+        "target": {
+          "controller": "self",
+          "location": "province",
+          "cardCondition": { "op": "hasStatus", "status": "isFacedown" },
+          "gameAction": { "name": "flipDynasty" }
+        }
+      }
+    ]
+  }
+}

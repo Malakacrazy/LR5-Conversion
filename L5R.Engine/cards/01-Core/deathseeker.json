@@ -1,0 +1,16 @@
+{
+  "id": "deathseeker",
+  "name": "Deathseeker",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 1,
+  "glory": 0,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.loser, an event field beyond the closed predicate vocabulary. Its handler also branches between removeFate and discardFromPlay based on the target's current fate - ringteki itself has no generic action for this (its own source has a 'TODO: RemoveFateOrDiscard action?' comment), so this isn't a gap worth generalizing yet.",
+    "handler": "L5R.Engine.Cards.Scripts.DeathseekerRemoveFateOrDiscardOnLoss"
+  }
+}
