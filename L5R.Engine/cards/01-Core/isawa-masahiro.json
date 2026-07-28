@@ -1,0 +1,32 @@
+{
+  "id": "isawa-masahiro",
+  "name": "Isawa Masahiro",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "fire"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow to discard an enemy character",
+        "condition": { "op": "isDuringConflict", "type": "fire" },
+        "cost": [{ "name": "bowSelf" }],
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "compareStat", "stat": "printedCost", "comparator": "lt", "value": 3 },
+              { "op": "hasStatus", "status": "isParticipating" }
+            ]
+          },
+          "gameAction": { "name": "discardFromPlay" }
+        }
+      }
+    ]
+  }
+}

@@ -103,6 +103,10 @@ public class CoreSetCardsTests
     [TestCase("ikoma-prodigy")]
     [TestCase("imperial-storehouse")]
     [TestCase("indomitable-will")]
+    [TestCase("intimidating-hida")]
+    [TestCase("isawa-atsuko")]
+    [TestCase("isawa-masahiro")]
+    [TestCase("isawa-mori-seido")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -160,6 +164,7 @@ public class CoreSetCardsTests
     [TestCase("ikoma-eiji", typeof(IkomaEijiPutBushiIntoPlayOnPoliticalLoss))]
     [TestCase("ikoma-prodigy", typeof(IkomaProdigyGainHonorWhenFateAddedOrMoved))]
     [TestCase("indomitable-will", typeof(IndomitableWillPreventBowOnSoloWin))]
+    [TestCase("intimidating-hida", typeof(IntimidatingHidaLoseHonorOnOpponentPass))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

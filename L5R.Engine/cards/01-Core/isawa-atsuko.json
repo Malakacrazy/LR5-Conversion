@@ -1,0 +1,36 @@
+{
+  "id": "isawa-atsuko",
+  "name": "Isawa Atsuko",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "void"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 3,
+  "political": 3,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Wield the power of the void",
+        "condition": { "op": "isDuringConflict", "type": "void" },
+        "gameAction": [
+          {
+            "name": "cardLastingEffect",
+            "params": {
+              "target": { "allCardsMatching": { "controller": "self", "of": { "op": "hasStatus", "status": "isParticipating" } } },
+              "effect": { "name": "modifyBothSkills", "value": 1 }
+            }
+          },
+          {
+            "name": "cardLastingEffect",
+            "params": {
+              "target": { "allCardsMatching": { "controller": "opponent", "of": { "op": "hasStatus", "status": "isParticipating" } } },
+              "effect": { "name": "modifyBothSkills", "value": -1 }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

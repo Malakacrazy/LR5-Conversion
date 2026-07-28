@@ -1,0 +1,16 @@
+{
+  "id": "intimidating-hida",
+  "name": "Intimidating Hida",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 4,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.attackingPlayer - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since onConflictPass events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.IntimidatingHidaLoseHonorOnOpponentPass"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "isawa-mori-seido",
+  "name": "Isawa Mori Seidō",
+  "type": "stronghold",
+  "faction": "phoenix",
+  "traits": ["shrine"],
+  "unique": true,
+  "fate": 7,
+  "honor": 11,
+  "influencePool": 10,
+  "strengthBonus": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow this stronghold",
+        "cost": [{ "name": "bowSelf" }],
+        "target": {
+          "cardType": "character",
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": { "duration": "untilEndOfPhase", "effect": { "name": "modifyGlory", "value": 2 } }
+          }
+        }
+      }
+    ]
+  }
+}
