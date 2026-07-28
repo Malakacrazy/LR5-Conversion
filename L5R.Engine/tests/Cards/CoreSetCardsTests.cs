@@ -134,6 +134,10 @@ public class CoreSetCardsTests
     [TestCase("mirumoto-raitsugu")]
     [TestCase("mirumoto-s-fury")]
     [TestCase("miya-mystic")]
+    [TestCase("mountain-s-anvil-castle")]
+    [TestCase("night-raid")]
+    [TestCase("niten-adept")]
+    [TestCase("noble-sacrifice")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -206,6 +210,8 @@ public class CoreSetCardsTests
     [TestCase("meddling-mediator", typeof(MeddlingMediatorTakeFateOrHonorWhenDoublyAttacked))]
     [TestCase("meishodo-wielder", typeof(MeishodoWielderReduceCostWhileFirstPlayer))]
     [TestCase("mirumoto-raitsugu", typeof(MirumotoRaitsuguDuelAndPunishLoser))]
+    [TestCase("mountain-s-anvil-castle", typeof(MountainsAnvilCastleBonusForAttachments))]
+    [TestCase("niten-adept", typeof(NitenAdeptBowAttachmentToBowUnattachedParticipant))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

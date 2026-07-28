@@ -133,6 +133,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("mirumoto-raitsugu")]
     [TestCase("mirumoto-s-fury")]
     [TestCase("miya-mystic")]
+    [TestCase("mountain-s-anvil-castle")]
+    [TestCase("night-raid")]
+    [TestCase("niten-adept")]
+    [TestCase("noble-sacrifice")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

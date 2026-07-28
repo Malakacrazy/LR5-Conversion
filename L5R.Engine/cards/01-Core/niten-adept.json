@@ -1,0 +1,16 @@
+{
+  "id": "niten-adept",
+  "name": "Niten Adept",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 1,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "The cost bows an attachment whose parent is source specifically (card.parent === context.source) - contextPath has no way to reference 'the cost candidate's parent', only source/player/target/targets. The condition also needs source's own attachment count, the same 'count attachments on a card' gap flagged on mountain-s-anvil-castle.",
+    "handler": "L5R.Engine.Cards.Scripts.NitenAdeptBowAttachmentToBowUnattachedParticipant"
+  }
+}

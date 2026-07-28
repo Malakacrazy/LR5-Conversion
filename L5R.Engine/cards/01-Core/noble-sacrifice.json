@@ -1,0 +1,23 @@
+{
+  "id": "noble-sacrifice",
+  "name": "Noble Sacrifice",
+  "type": "event",
+  "faction": "crane",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Sacrifice honored character to discard dishonored one",
+        "cost": [{ "name": "sacrifice", "params": { "cardType": "character", "cardCondition": { "op": "hasStatus", "status": "isHonored" } } }],
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "hasStatus", "status": "isDishonored" },
+          "gameAction": { "name": "discardFromPlay" }
+        }
+      }
+    ]
+  }
+}

@@ -88,7 +88,10 @@ mechanic exists.
   mirumoto-s-fury also confirms `compareStat`'s `value` was already a full `valueRef`
   (not just a literal), so "glory X or lower, X = your unrevealed provinces" needed no
   schema change at all - just a new `countFacedownProvinces` dynamic name as
-  `compareStat`'s `value`.
+  `compareStat`'s `value`. night-raid's discard amount reuses `{dynamic:
+  conflictParticipantCount, role: attacker}` directly as a gameAction param value, not
+  just inside a predicate - dynamic values are usable anywhere a valueRef is, no new
+  vocabulary needed.
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(

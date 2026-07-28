@@ -1,0 +1,23 @@
+{
+  "id": "night-raid",
+  "name": "Night Raid",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["fire"],
+  "strength": 4,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Force opponent to discard cards equal to the number of attackers",
+        "when": { "onCardRevealed": { "op": "isSelf" } },
+        "gameAction": {
+          "name": "chosenDiscard",
+          "params": { "amount": { "dynamic": "conflictParticipantCount", "role": "attacker" } }
+        }
+      }
+    ]
+  }
+}

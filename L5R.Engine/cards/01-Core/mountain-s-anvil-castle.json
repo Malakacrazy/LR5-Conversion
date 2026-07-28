@@ -1,0 +1,16 @@
+{
+  "id": "mountain-s-anvil-castle",
+  "name": "Mountain's Anvil Castle",
+  "type": "stronghold",
+  "faction": "dragon",
+  "traits": ["castle"],
+  "unique": true,
+  "fate": 7,
+  "honor": 11,
+  "influencePool": 10,
+  "strengthBonus": 2,
+  "scriptOverride": {
+    "reason": "Both the cardCondition (candidate must have 1+ attachments) and the effect value (min(target's attachment count, 2), scaling the skill bonus) need the candidate/target's own attachment count - no vocabulary exists for counting attachments on a card, and there's no min()-style computed valueRef.",
+    "handler": "L5R.Engine.Cards.Scripts.MountainsAnvilCastleBonusForAttachments"
+  }
+}
