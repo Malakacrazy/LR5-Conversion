@@ -37,6 +37,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("duelist-training")]
     [TestCase("tattooed-wanderer")]
     [TestCase("kaiu-shuichi")]
+    [TestCase("favored-mount")]
+    [TestCase("asahina-artisan")]
+    [TestCase("otomo-courtier")]
+    [TestCase("mirumoto-prodigy")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

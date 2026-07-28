@@ -38,6 +38,10 @@ public class CoreSetCardsTests
     [TestCase("duelist-training")]
     [TestCase("tattooed-wanderer")]
     [TestCase("kaiu-shuichi")]
+    [TestCase("favored-mount")]
+    [TestCase("asahina-artisan")]
+    [TestCase("otomo-courtier")]
+    [TestCase("mirumoto-prodigy")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -74,6 +78,7 @@ public class CoreSetCardsTests
     [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
     [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
     [TestCase("kaiu-shuichi", typeof(KaiuShuichiGainFateIfEitherControlsAHolding))]
+    [TestCase("mirumoto-prodigy", typeof(MirumotoProdigyRestrictDefendersWhenAttackingAlone))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

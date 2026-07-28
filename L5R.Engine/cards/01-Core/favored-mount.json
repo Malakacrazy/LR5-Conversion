@@ -1,0 +1,29 @@
+{
+  "id": "favored-mount",
+  "name": "Favored Mount",
+  "type": "attachment",
+  "faction": "unicorn",
+  "traits": ["creature"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "attachmentMyControlOnly" }
+      }
+    ],
+    "whileAttached": [
+      {
+        "effect": { "name": "addTrait", "value": "cavalry" }
+      }
+    ],
+    "actions": [
+      {
+        "title": "Move this character into the conflict",
+        "cost": [{ "name": "bowSelf" }],
+        "gameAction": { "name": "moveToConflict", "target": { "contextPath": "source.parent" } }
+      }
+    ]
+  }
+}

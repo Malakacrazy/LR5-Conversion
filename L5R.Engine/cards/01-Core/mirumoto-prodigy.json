@@ -1,0 +1,16 @@
+{
+  "id": "mirumoto-prodigy",
+  "name": "Mirumoto Prodigy",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi", "duelist"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Condition needs this.game.currentConflict.getNumberOfParticipantsFor('attacker') === 1, the same conflict-participant-count check already flagged on cautious-scout - beyond compareStat/compareValues/anyCardMatches.",
+    "handler": "L5R.Engine.Cards.Scripts.MirumotoProdigyRestrictDefendersWhenAttackingAlone"
+  }
+}

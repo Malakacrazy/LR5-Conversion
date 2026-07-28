@@ -1,0 +1,37 @@
+{
+  "id": "asahina-artisan",
+  "name": "Asahina Artisan",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["shugenja", "air"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 0,
+  "political": 0,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give a Crane character +3 political skill",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "bowSelf" }],
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "not", "of": { "op": "isSelf" } },
+              { "op": "hasFaction", "faction": "crane" }
+            ]
+          },
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": { "effect": { "name": "modifyPoliticalSkill", "value": 3 } }
+          }
+        },
+        "effect": "give {0} +3 political skill",
+        "effectArgs": [{ "contextPath": "target" }]
+      }
+    ]
+  }
+}
