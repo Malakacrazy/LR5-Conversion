@@ -1,0 +1,23 @@
+{
+  "id": "forged-edict",
+  "name": "Forged Edict",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "wouldInterrupt",
+        "title": "Cancel an event",
+        "when": {
+          "onInitiateAbilityEffects": { "op": "isType", "type": "event" }
+        },
+        "cost": [{ "name": "dishonor", "params": { "cardCondition": { "op": "hasTrait", "trait": "courtier" } } }],
+        "gameAction": { "name": "cancel" }
+      }
+    ]
+  }
+}

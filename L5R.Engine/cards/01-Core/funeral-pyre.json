@@ -1,0 +1,18 @@
+{
+  "id": "funeral-pyre",
+  "name": "Funeral Pyre",
+  "type": "holding",
+  "faction": "crab",
+  "traits": ["ritual"],
+  "unique": false,
+  "strengthBonus": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Sacrifice a character to draw",
+        "cost": [{ "name": "sacrifice", "params": { "cardType": "character" } }],
+        "gameAction": { "name": "draw" }
+      }
+    ]
+  }
+}

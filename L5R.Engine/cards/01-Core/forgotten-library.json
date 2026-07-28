@@ -1,0 +1,13 @@
+{
+  "id": "forgotten-library",
+  "name": "Forgotten Library",
+  "type": "holding",
+  "faction": "phoenix",
+  "traits": ["library", "shrine"],
+  "unique": false,
+  "strengthBonus": 0,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.phase (compared against Phases.Draw) - a scalar event field, not the event.card the 'isSelf/isType/...' when convention covers. Only one card needs a phase-start reaction so far; not generalizing a second event-field convention on a single data point.",
+    "handler": "L5R.Engine.Cards.Scripts.ForgottenLibraryDrawOnDrawPhase"
+  }
+}

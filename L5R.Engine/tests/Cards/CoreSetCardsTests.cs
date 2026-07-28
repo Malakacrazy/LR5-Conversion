@@ -83,6 +83,10 @@ public class CoreSetCardsTests
     [TestCase("fallen-in-battle")]
     [TestCase("favorable-ground")]
     [TestCase("fearsome-mystic")]
+    [TestCase("for-greater-glory")]
+    [TestCase("forged-edict")]
+    [TestCase("forgotten-library")]
+    [TestCase("funeral-pyre")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -128,6 +132,8 @@ public class CoreSetCardsTests
     [TestCase("enlightened-warrior", typeof(EnlightenedWarriorGainFateOnOpponentRingSelect))]
     [TestCase("fallen-in-battle", typeof(FallenInBattleDiscardOnDecisiveMilitaryWin))]
     [TestCase("fearsome-mystic", typeof(FearsomeMysticRemoveFateFromLowerGloryOpponents))]
+    [TestCase("for-greater-glory", typeof(ForGreaterGloryPlaceFateOnBushi))]
+    [TestCase("forgotten-library", typeof(ForgottenLibraryDrawOnDrawPhase))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
