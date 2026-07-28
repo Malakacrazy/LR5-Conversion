@@ -1,0 +1,12 @@
+{
+  "id": "kaiu-envoy",
+  "name": "Kaiu Envoy",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 0,
+  "glory": 1
+}

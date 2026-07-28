@@ -1,0 +1,12 @@
+{
+  "id": "fine-katana",
+  "name": "Fine Katana",
+  "type": "attachment",
+  "faction": "neutral",
+  "traits": ["weapon"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "militaryBonus": 2,
+  "politicalBonus": 0
+}

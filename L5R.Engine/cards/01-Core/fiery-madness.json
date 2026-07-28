@@ -1,0 +1,12 @@
+{
+  "id": "fiery-madness",
+  "name": "Fiery Madness",
+  "type": "attachment",
+  "faction": "scorpion",
+  "traits": ["poison"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "militaryBonus": -2,
+  "politicalBonus": -2
+}

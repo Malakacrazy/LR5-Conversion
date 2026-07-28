@@ -222,6 +222,13 @@ public class CoreSetCardsTests
     [TestCase("borderlands-fortifications")]
     [TestCase("doji-hotaru")]
     [TestCase("doji-whisperer")]
+    [TestCase("eager-scout")]
+    [TestCase("fiery-madness")]
+    [TestCase("fine-katana")]
+    [TestCase("kaiu-envoy")]
+    [TestCase("kitsuki-s-method")]
+    [TestCase("matsu-berserker")]
+    [TestCase("moto-horde")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

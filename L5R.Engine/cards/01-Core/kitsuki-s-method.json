@@ -1,0 +1,12 @@
+{
+  "id": "kitsuki-s-method",
+  "name": "Kitsuki's Method",
+  "type": "attachment",
+  "faction": "dragon",
+  "traits": ["technique"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "militaryBonus": 0,
+  "politicalBonus": 2
+}

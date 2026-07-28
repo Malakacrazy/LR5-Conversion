@@ -1,0 +1,12 @@
+{
+  "id": "eager-scout",
+  "name": "Eager Scout",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi", "scout"],
+  "unique": false,
+  "printedCost": 0,
+  "military": 0,
+  "political": 0,
+  "glory": 0
+}

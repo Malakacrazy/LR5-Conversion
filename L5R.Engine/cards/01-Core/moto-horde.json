@@ -1,0 +1,11 @@
+{
+  "id": "moto-horde",
+  "name": "Moto Horde",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "army", "cavalry"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 6,
+  "glory": 1
+}

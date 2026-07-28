@@ -1,0 +1,11 @@
+{
+  "id": "matsu-berserker",
+  "name": "Matsu Berserker",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi", "berserker"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 3,
+  "glory": 1
+}
