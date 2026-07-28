@@ -45,7 +45,9 @@ mechanic exists.
   province, which has no generic equivalent). `dynamic` is a free-form name (no enum), so
   born-in-war's `{dynamic: countUnclaimedRings}` needed no schema change, just a new
   engine-recognized name alongside `countHoldingsInPlay`/`conflictParticipantCount`.
-  Triggered-ability `when`
+  `role` gained a third value, `own` (brash-samurai: "my only participating character"
+  needs whichever role the source's controller currently holds, not a fixed literal like
+  mirumoto-prodigy/admit-defeat's `attacker`/`defender`). Triggered-ability `when`
   clauses that need to inspect *event* fields (not card/player state) keep landing on
   `scriptOverride` instead of growing the vocabulary — event shapes vary too much per
   event type to generalize cleanly, unlike the player/card comparisons above.

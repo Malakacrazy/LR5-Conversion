@@ -1,0 +1,14 @@
+{
+  "id": "calling-in-favors",
+  "name": "Calling in Favors",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "The attach's target is the specific character chosen to pay the dishonor() cost (context.costs.dishonor) - valueRef.contextPath has no way to reference a cost's chosen target, only source/player/target/targets. The ifAble/otherwise branching itself (attach-with-takeControl vs. discardFromPlay fallback) would be expressible with the registered ifAble gameAction once that gap is closed; not generalizing contextPath for this single cost-cross-reference case yet.",
+    "handler": "L5R.Engine.Cards.Scripts.CallingInFavorsAttachOrDiscard"
+  }
+}

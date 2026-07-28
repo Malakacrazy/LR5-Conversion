@@ -1,0 +1,20 @@
+{
+  "id": "captive-audience",
+  "name": "Captive Audience",
+  "type": "event",
+  "faction": "unicorn",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Change the conflict to military",
+        "condition": { "op": "isDuringConflict", "type": "political" },
+        "cost": [{ "name": "payHonor", "params": { "amount": 1 } }],
+        "gameAction": { "name": "switchConflictType" }
+      }
+    ]
+  }
+}

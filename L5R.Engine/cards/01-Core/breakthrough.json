@@ -1,0 +1,14 @@
+{
+  "id": "breakthrough",
+  "name": "Breakthrough",
+  "type": "event",
+  "faction": "unicorn",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict (attackingPlayer, winner, conflictProvince.isBroken) and counts the player's remaining unpassed conflicts via this.game.getConflicts(player) - both event-shaped field inspection and a conflict-collection query beyond the closed predicate vocabulary, consistent with the established 'when clauses inspecting event fields stay scriptOverride' policy.",
+    "handler": "L5R.Engine.Cards.Scripts.BreakthroughDeclareSecondConflict"
+  }
+}
