@@ -16,10 +16,30 @@
         "match": "self",
         "effect": { "name": "attachmentTraitRestriction", "value": "shugenja" }
       }
+    ],
+    "actions": [
+      {
+        "title": "Opponent's cards cannot join this conflict",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "bowSelf" }],
+        "effect": "prevent the opponent from bringing characters to the conflict",
+        "gameAction": [
+          {
+            "name": "cardLastingEffect",
+            "target": { "allCardsMatching": { "controller": "opponent" } },
+            "params": {
+              "effect": { "name": "cardCannot", "value": "moveToConflict" }
+            }
+          },
+          {
+            "name": "playerLastingEffect",
+            "params": {
+              "targetController": "opponent",
+              "effect": { "name": "playerCannot", "value": { "cannot": "playFromHand", "restricts": "characters" } }
+            }
+          }
+        ]
+      }
     ]
-  },
-  "scriptOverride": {
-    "reason": "Action's gameAction target is an entire collection resolved directly from context (context.player.opponent.cardsInPlay.toArray()) rather than a single value or a player-selected target - gameActionEntry.target is a valueRef (one value, e.g. a contextPath), not a collection-returning expression. The paired playerLastingEffect targeting all opponent cards via targetController fits the schema, but the bulk cardsInPlay target does not.",
-    "handler": "L5R.Engine.Cards.Scripts.GraspOfEarthPreventOpponentCardsJoiningConflict"
   }
 }

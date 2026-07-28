@@ -30,10 +30,16 @@ mechanic exists.
   real card: `isDuringConflict` (optionally scoped to `military`/`political`) for
   conflict-gated actions; `compareValues` for comparing two dynamic values against each
   other (e.g. a player's honor vs. their opponent's) rather than `compareStat`'s
-  candidate-card-vs-literal shape. Triggered-ability `when` clauses that need to inspect
-  *event* fields (not card/player state) keep landing on `scriptOverride` instead of
-  growing the vocabulary — event shapes vary too much per event type to generalize
-  cleanly, unlike the player/card comparisons above.
+  candidate-card-vs-literal shape; `anyCardMatches`, an existential check over a set of
+  cards. `valueRef`'s `dynamic` form gained a `for: self|opponent` subject parameter
+  (kaiu-shuichi needed the same counter evaluated per-player - `dynamic` previously
+  assumed one implicit subject) and a sibling `allCardsMatching` alternative for
+  gameAction targets that bulk-apply to an entire scope rather than a single value or a
+  player-chosen target (grasp-of-earth's "every card the opponent controls"). Both
+  retired the scriptOverride those two cards originally needed. Triggered-ability `when`
+  clauses that need to inspect *event* fields (not card/player state) keep landing on
+  `scriptOverride` instead of growing the vocabulary — event shapes vary too much per
+  event type to generalize cleanly, unlike the player/card comparisons above.
 - **This schema validates shape, not every ringteki invariant.** For example, the doc says
   "player effects should not have a match property" — that's a runtime invariant the C#
   loader checks (since whether an effect name is card/ring/player-scoped lives in the

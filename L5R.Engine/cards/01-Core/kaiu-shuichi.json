@@ -9,8 +9,25 @@
   "military": 3,
   "political": 3,
   "glory": 2,
-  "scriptOverride": {
-    "reason": "Action condition requires either player to control at least one holding (a dynamic per-player count compared against a literal, needed for two different players in the same expression). valueRef's 'dynamic' form has no way to specify which player a named counter is computed for - it assumes a single implicit subject - so this doesn't fit compareValues/anyCardMatches as currently designed.",
-    "handler": "L5R.Engine.Cards.Scripts.KaiuShuichiGainFateIfEitherControlsAHolding"
+  "abilities": {
+    "actions": [
+      {
+        "title": "Gain 1 fate",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isParticipating" },
+            {
+              "op": "or",
+              "of": [
+                { "op": "compareValues", "left": { "dynamic": "countHoldingsInPlay", "for": "self" }, "comparator": "gt", "right": 0 },
+                { "op": "compareValues", "left": { "dynamic": "countHoldingsInPlay", "for": "opponent" }, "comparator": "gt", "right": 0 }
+              ]
+            }
+          ]
+        },
+        "gameAction": { "name": "gainFate" }
+      }
+    ]
   }
 }

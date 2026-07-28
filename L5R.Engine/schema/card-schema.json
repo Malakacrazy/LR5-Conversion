@@ -408,11 +408,31 @@
             "pattern": "^(source|player|target|targets)(\\.[a-zA-Z][a-zA-Z0-9]*)*$"
           } } },
         { "type": "object", "additionalProperties": false, "required": ["dynamic"], "properties": {
-          "dynamic": { "type": "string", "description": "Name of an engine-registered dynamic value function, e.g. countOpponentClaimedRings." },
+          "dynamic": { "type": "string", "description": "Name of an engine-registered dynamic value function, e.g. countHoldingsInPlay." },
+          "for": {
+            "enum": ["self", "opponent"],
+            "default": "self",
+            "description": "Which player the named counter is computed for. Added porting kaiu-shuichi, whose condition needs the same counter evaluated once per player (e.g. compareValues on {dynamic, for: self} and {dynamic, for: opponent} combined with predicate 'or') - dynamic previously assumed a single implicit subject."
+          },
           "multiplier": { "type": "number", "default": 1 },
           "offset": { "type": "number", "default": 0 } } },
+        { "type": "object", "additionalProperties": false, "required": ["allCardsMatching"],
+          "description": "Resolves to an entire set of cards rather than a single value - for gameAction targets that bulk-apply to a whole scope (e.g. grasp-of-earth's 'every card the opponent controls') rather than a single value or a player-chosen target. Not valid outside a gameActionEntry.target position.",
+          "properties": {
+            "allCardsMatching": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+                "location": {
+                  "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+                  "default": "play area"
+                },
+                "of": { "$ref": "#/$defs/predicate" }
+              }
+            } } },
         { "type": "object", "additionalProperties": true,
-          "not": { "anyOf": [{ "required": ["contextPath"] }, { "required": ["dynamic"] }] },
+          "not": { "anyOf": [{ "required": ["contextPath"] }, { "required": ["dynamic"] }, { "required": ["allCardsMatching"] }] },
           "description": "A structured parameter bag for effects whose value is inherently an options object rather than a scalar - e.g. cardCannot/playerCannot/immunity's restriction properties (ringteki Effects/restriction.js), such as { \"cannot\": \"play\", \"restricts\": \"events\" }." }
       ]
     },

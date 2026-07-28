@@ -73,11 +73,9 @@ public class CoreSetCardsTests
     [TestCase("shiba-yojimbo", typeof(ShibaYojimboCancelShugenjaTargetedAbility))]
     [TestCase("shiba-tsukune", typeof(ShibaTsukuneResolveUpToTwoRings))]
     [TestCase("niten-master", typeof(NitenMasterReadyOnWeaponAttached))]
-    [TestCase("grasp-of-earth", typeof(GraspOfEarthPreventOpponentCardsJoiningConflict))]
     [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
     [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
     [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
-    [TestCase("kaiu-shuichi", typeof(KaiuShuichiGainFateIfEitherControlsAHolding))]
     [TestCase("mirumoto-prodigy", typeof(MirumotoProdigyRestrictDefendersWhenAttackingAlone))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
@@ -89,5 +87,20 @@ public class CoreSetCardsTests
         Assert.That(card.ScriptOverride, Is.Not.Null);
         Assert.That(card.ScriptOverride!.HandlerType, Is.EqualTo(expectedHandlerType));
         Assert.That(card.ScriptOverride!.Reason, Is.Not.Empty, "scriptOverride must document why it was needed");
+    }
+
+    [TestCase("kaiu-shuichi")]
+    [TestCase("grasp-of-earth")]
+    public void Card_NoLongerNeedsScriptOverride_AfterTheVocabularyGrewToCoverIt(string cardId)
+    {
+        // kaiu-shuichi needed a per-player dynamic count (valueRef "for"); grasp-of-earth
+        // needed a bulk-collection gameAction target ("allCardsMatching"). Both were
+        // originally scriptOverride; this pins down that they now load generically.
+        var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
+        var path = Path.Combine(CardsDir, $"{cardId}.json");
+
+        var card = loader.Load(File.ReadAllText(path));
+
+        Assert.That(card.ScriptOverride, Is.Null);
     }
 }
