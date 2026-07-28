@@ -1,0 +1,24 @@
+{
+  "id": "assassination",
+  "name": "Assassination",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard a cheap character",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "payHonor", "params": { "amount": 3 } }],
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "compareStat", "stat": "printedCost", "comparator": "lt", "value": 3 },
+          "gameAction": { "name": "discardFromPlay" }
+        },
+        "max": { "per": "round", "max": 1 }
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "court-mask",
+  "name": "Court Mask",
+  "type": "attachment",
+  "faction": "scorpion",
+  "traits": ["item", "mask"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "attachmentMyControlOnly" }
+      }
+    ],
+    "actions": [
+      {
+        "title": "Return this attachment to hand",
+        "effect": "return {0} to hand, dishonoring {1}",
+        "effectArgs": [{ "contextPath": "source" }, { "contextPath": "source.parent" }],
+        "gameAction": [
+          { "name": "returnToHand" },
+          { "name": "dishonor", "target": { "contextPath": "source.parent" } }
+        ]
+      }
+    ]
+  }
+}

@@ -12,13 +12,7 @@ public class CardSchemaTests
 {
     private static readonly string SchemaDir = Path.Combine(AppContext.BaseDirectory, "Schema");
 
-    // JsonSchema.Net registers schemas globally by $id; parsing the same file more than
-    // once throws "Overwriting registered schemas is not permitted." Load it once and
-    // share it across tests.
-    private static readonly JsonSchema Schema =
-        JsonSchema.FromFile(Path.Combine(SchemaDir, "card-schema.json"));
-
-    private static JsonSchema LoadSchema() => Schema;
+    private static JsonSchema LoadSchema() => SharedCardSchema.Instance;
 
     [Test]
     public void WorkedExample_ValidatesAgainstTheSchema()

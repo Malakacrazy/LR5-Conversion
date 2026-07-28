@@ -362,6 +362,8 @@
           "op": { "const": "isLocation" }, "location": { "type": "string" } } },
         { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
           "op": { "const": "isSelf" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
+          "op": { "const": "isDuringConflict" } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "value"], "properties": {
           "op": { "const": "isSameAs" }, "value": { "$ref": "#/$defs/valueRef" } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "stat", "comparator", "value"], "properties": {

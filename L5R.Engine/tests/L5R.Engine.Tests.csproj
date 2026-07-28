@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <None Include="..\schema\**\*.json" LinkBase="Schema" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\cards\**\*.json" LinkBase="Cards" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

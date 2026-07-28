@@ -26,7 +26,9 @@ mechanic exists.
   in the doc. A card whose condition needs something outside this vocabulary — or a
   dynamic value beyond a simple named counter — uses `scriptOverride`. Don't extend the
   vocabulary speculatively for hypothetical future cards; extend it when a real Core Set
-  card in task 9 needs an op that doesn't exist yet.
+  card in task 9 needs an op that doesn't exist yet. (`isDuringConflict` was added this
+  way — porting the "discard a cheap character during a conflict" pattern needed a
+  game-state-level check, not just card-level ones.)
 - **This schema validates shape, not every ringteki invariant.** For example, the doc says
   "player effects should not have a match property" — that's a runtime invariant the C#
   loader checks (since whether an effect name is card/ring/player-scoped lives in the

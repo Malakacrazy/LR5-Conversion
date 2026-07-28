@@ -1,0 +1,20 @@
+{
+  "id": "cloud-the-mind",
+  "name": "Cloud the Mind",
+  "type": "attachment",
+  "faction": "neutral",
+  "traits": ["spell", "air"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "whileAttached": [
+      {
+        "effect": { "name": "blank" }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Play restriction (can only be played if the controller has a character in play with the 'shugenja' trait) overrides DrawCard.canPlay in ringteki. card-schema.json has no generic 'play restriction' concept - persistentEffects/actions/triggeredAbilities all describe in-play behavior, not eligibility to play the card itself - so this needs a script hook rather than a schema extension.",
+    "handler": "L5R.Engine.Cards.Scripts.CloudTheMindPlayRestriction"
+  }
+}

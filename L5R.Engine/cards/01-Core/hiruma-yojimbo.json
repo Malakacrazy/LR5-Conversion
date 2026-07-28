@@ -1,0 +1,20 @@
+{
+  "id": "hiruma-yojimbo",
+  "name": "Hiruma Yojimbo",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi", "yojimbo"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 4,
+  "political": 3,
+  "glory": 2,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "cardCannot", "value": "declareAsAttacker" }
+      }
+    ]
+  }
+}
