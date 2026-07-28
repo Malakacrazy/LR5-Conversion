@@ -1,0 +1,27 @@
+{
+  "id": "golden-plains-outpost",
+  "name": "Golden Plains Outpost",
+  "type": "stronghold",
+  "faction": "unicorn",
+  "traits": ["outpost"],
+  "unique": true,
+  "fate": 7,
+  "honor": 10,
+  "influencePool": 10,
+  "strengthBonus": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Move a cavalry character to the conflict",
+        "cost": [{ "name": "bowSelf" }],
+        "condition": { "op": "isDuringConflict", "type": "military" },
+        "target": {
+          "cardType": "character",
+          "controller": "self",
+          "cardCondition": { "op": "hasTrait", "trait": "cavalry" },
+          "gameAction": { "name": "moveToConflict" }
+        }
+      }
+    ]
+  }
+}

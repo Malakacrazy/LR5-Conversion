@@ -1,0 +1,16 @@
+{
+  "id": "giver-of-gifts",
+  "name": "Giver of Gifts",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "The target's gameAction is itself a nested card selection (choose the attachment, then choose which other character to move it to, excluding its current parent) - the same two-level select gap flagged on court-games; target.gameAction only supports a plain gameActionEntry/array, not a nested target.",
+    "handler": "L5R.Engine.Cards.Scripts.GiverOfGiftsMoveAttachment"
+  }
+}

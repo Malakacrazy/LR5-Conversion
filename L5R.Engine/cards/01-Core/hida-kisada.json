@@ -1,0 +1,16 @@
+{
+  "id": "hida-kisada",
+  "name": "Hida Kisada",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 7,
+  "political": 2,
+  "glory": 0,
+  "scriptOverride": {
+    "reason": "Registers raw ringteki event listeners (onInitiateAbilityEffects at both wouldInterrupt and otherEffects stages, plus onConflictDeclared) and tracks mutable per-round state (firstActionEvent) across them to cancel the opponent's first triggered action ability each conflict, gated on the conflict record having no opponent win this phase - far beyond a single triggeredAbility's when/gameAction shape.",
+    "handler": "L5R.Engine.Cards.Scripts.HidaKisadaCancelOpponentsFirstActionEachConflict"
+  }
+}

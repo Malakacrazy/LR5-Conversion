@@ -87,6 +87,10 @@ public class CoreSetCardsTests
     [TestCase("forged-edict")]
     [TestCase("forgotten-library")]
     [TestCase("funeral-pyre")]
+    [TestCase("giver-of-gifts")]
+    [TestCase("golden-plains-outpost")]
+    [TestCase("good-omen")]
+    [TestCase("hida-kisada")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -134,6 +138,9 @@ public class CoreSetCardsTests
     [TestCase("fearsome-mystic", typeof(FearsomeMysticRemoveFateFromLowerGloryOpponents))]
     [TestCase("for-greater-glory", typeof(ForGreaterGloryPlaceFateOnBushi))]
     [TestCase("forgotten-library", typeof(ForgottenLibraryDrawOnDrawPhase))]
+    [TestCase("good-omen", typeof(GoodOmenCannotPlayWithoutComposure))]
+    [TestCase("giver-of-gifts", typeof(GiverOfGiftsMoveAttachment))]
+    [TestCase("hida-kisada", typeof(HidaKisadaCancelOpponentsFirstActionEachConflict))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

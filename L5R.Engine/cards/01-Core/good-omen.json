@@ -1,0 +1,26 @@
+{
+  "id": "good-omen",
+  "name": "Good Omen",
+  "type": "event",
+  "faction": "neutral",
+  "traits": ["omen"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Add a fate to a character",
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "compareStat", "stat": "printedCost", "comparator": "gt", "value": 2 },
+          "gameAction": { "name": "placeFate" }
+        }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Overrides DrawCard.canPlay to forbid playing this card unless the controller has composure (their honor bid is lower than their opponent's) - the same play-eligibility gap already flagged on cloud-the-mind/height-of-fashion/blackmail, so only the canPlay restriction is scripted; the target/gameAction above are expressed generically.",
+    "handler": "L5R.Engine.Cards.Scripts.GoodOmenCannotPlayWithoutComposure"
+  }
+}
