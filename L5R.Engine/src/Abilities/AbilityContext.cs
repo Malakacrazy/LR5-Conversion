@@ -11,4 +11,12 @@ public sealed class AbilityContext
 
     /// <summary>ringteki context.target - set once a target has been chosen, null before then.</summary>
     public Card? Target { get; set; }
+
+    /// <summary>
+    /// ringteki context.costs[gameAction.name] - the card chosen to satisfy a parameterized
+    /// cost (e.g. sacrifice's cardType/cardCondition selector), null before it's chosen.
+    /// Only one parameterized cost per action exists in cards ported so far, so a single
+    /// slot is enough; would need to key by cost name if that stops being true.
+    /// </summary>
+    public Card? CostTarget { get; set; }
 }

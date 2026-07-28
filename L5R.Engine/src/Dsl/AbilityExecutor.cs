@@ -25,10 +25,12 @@ public sealed class AbilityExecutor
     public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
         action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
 
-    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null)
+    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null)
     {
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
+
+        context.CostTarget = chosenCostTarget;
 
         foreach (var cost in action.Costs)
         {
