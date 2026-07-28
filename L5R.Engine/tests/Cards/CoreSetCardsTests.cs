@@ -218,6 +218,10 @@ public class CoreSetCardsTests
     [TestCase("bayushi-liar")]
     [TestCase("bayushi-manipulator")]
     [TestCase("bayushi-shoju")]
+    [TestCase("blackmail-artist")]
+    [TestCase("borderlands-fortifications")]
+    [TestCase("doji-hotaru")]
+    [TestCase("doji-whisperer")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -333,6 +337,9 @@ public class CoreSetCardsTests
     [TestCase("ascetic-visionary", typeof(AsceticVisionaryReadyMonkOrMonkAttachmentHolder))]
     [TestCase("banzai", typeof(BanzaiGrantMilitarySkillRepeatable))]
     [TestCase("bayushi-shoju", typeof(BayushiShojuReducePoliticalSkillWithDeathCheck))]
+    [TestCase("blackmail-artist", typeof(BlackmailArtistTakeHonorOnPoliticalWin))]
+    [TestCase("borderlands-fortifications", typeof(BorderlandsFortificationsSwapWithProvinceCard))]
+    [TestCase("doji-hotaru", typeof(DojiHotaruResolveRingOnClaimDuringPolitical))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

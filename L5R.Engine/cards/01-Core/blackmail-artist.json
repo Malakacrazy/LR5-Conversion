@@ -1,0 +1,16 @@
+{
+  "id": "blackmail-artist",
+  "name": "Blackmail Artist",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.winner/conflictType - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.BlackmailArtistTakeHonorOnPoliticalWin"
+  }
+}

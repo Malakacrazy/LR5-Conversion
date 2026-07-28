@@ -217,6 +217,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("bayushi-liar")]
     [TestCase("bayushi-manipulator")]
     [TestCase("bayushi-shoju")]
+    [TestCase("blackmail-artist")]
+    [TestCase("borderlands-fortifications")]
+    [TestCase("doji-hotaru")]
+    [TestCase("doji-whisperer")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

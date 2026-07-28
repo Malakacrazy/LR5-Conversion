@@ -1,0 +1,13 @@
+{
+  "id": "borderlands-fortifications",
+  "name": "Borderlands Fortifications",
+  "type": "holding",
+  "faction": "crab",
+  "traits": ["battlefield"],
+  "unique": false,
+  "strengthBonus": 2,
+  "scriptOverride": {
+    "reason": "Uses a bespoke handler that directly swaps this card's location with the chosen province card's location (manually manipulating both players' location piles) - no gameAction models 'swap two cards' locations.",
+    "handler": "L5R.Engine.Cards.Scripts.BorderlandsFortificationsSwapWithProvinceCard"
+  }
+}
