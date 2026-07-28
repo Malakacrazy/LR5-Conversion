@@ -1,0 +1,24 @@
+{
+  "id": "way-of-the-crab",
+  "name": "Way of the Crab",
+  "type": "event",
+  "faction": "crab",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Make your opponent sacrifice a character",
+        "cost": [{ "name": "sacrifice", "params": { "cardType": "character", "cardCondition": { "op": "hasFaction", "faction": "crab" } } }],
+        "target": {
+          "player": "opponent",
+          "cardType": "character",
+          "controller": "opponent",
+          "gameAction": { "name": "sacrifice" }
+        },
+        "max": { "per": "round", "max": 1 }
+      }
+    ]
+  }
+}

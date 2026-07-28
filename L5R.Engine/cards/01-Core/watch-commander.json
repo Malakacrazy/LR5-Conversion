@@ -1,0 +1,14 @@
+{
+  "id": "watch-commander",
+  "name": "Watch Commander",
+  "type": "attachment",
+  "faction": "crab",
+  "traits": ["follower"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 3,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.player (compared against context.player.opponent) - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention. attachmentConditions also specifies a 'limit: 1 per character' restriction with no equivalent in the persistentEffect-based attachmentMyControlOnly/attachmentTraitRestriction pattern, and the reaction uses an unlimitedPerConflict limit not modeled by the triggeredAbility schema.",
+    "handler": "L5R.Engine.Cards.Scripts.WatchCommanderLoseHonorOnOpponentCardPlayed"
+  }
+}

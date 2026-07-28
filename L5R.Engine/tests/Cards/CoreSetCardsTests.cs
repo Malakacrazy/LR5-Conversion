@@ -192,6 +192,10 @@ public class CoreSetCardsTests
     [TestCase("vengeful-berserker")]
     [TestCase("vengeful-oathkeeper")]
     [TestCase("voice-of-honor")]
+    [TestCase("wandering-ronin")]
+    [TestCase("warrior-poet")]
+    [TestCase("watch-commander")]
+    [TestCase("way-of-the-crab")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -296,6 +300,7 @@ public class CoreSetCardsTests
     [TestCase("togashi-yokuni", typeof(TogashiYokuniCopyAnotherCharactersAbility))]
     [TestCase("vengeful-berserker", typeof(VengefulBerserkerDoubleMilitaryOnAllyLeavingPlay))]
     [TestCase("vengeful-oathkeeper", typeof(VengefulOathkeeperPutIntoPlayOnMilitaryLoss))]
+    [TestCase("watch-commander", typeof(WatchCommanderLoseHonorOnOpponentCardPlayed))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

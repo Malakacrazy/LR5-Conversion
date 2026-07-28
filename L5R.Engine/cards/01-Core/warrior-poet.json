@@ -1,0 +1,27 @@
+{
+  "id": "warrior-poet",
+  "name": "Warrior Poet",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "cavalry"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Reduce skill of opponent's characters",
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "gameAction": {
+          "name": "cardLastingEffect",
+          "params": {
+            "target": { "allCardsMatching": { "controller": "opponent", "of": { "op": "hasStatus", "status": "isParticipating" } } },
+            "effect": { "name": "modifyBothSkills", "value": -1 }
+          }
+        }
+      }
+    ]
+  }
+}

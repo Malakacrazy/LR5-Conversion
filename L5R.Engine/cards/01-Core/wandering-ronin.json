@@ -1,0 +1,23 @@
+{
+  "id": "wandering-ronin",
+  "name": "Wandering Ronin",
+  "type": "character",
+  "faction": "neutral",
+  "traits": ["bushi", "ronin"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give this character +2/+2",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "removeFateFromSelf" }],
+        "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "modifyBothSkills", "value": 2 } } },
+        "limit": { "per": "conflict", "max": 2 }
+      }
+    ]
+  }
+}
