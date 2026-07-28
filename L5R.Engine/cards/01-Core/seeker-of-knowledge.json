@@ -1,0 +1,20 @@
+{
+  "id": "seeker-of-knowledge",
+  "name": "Seeker of Knowledge",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["courtier", "shugenja", "air"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 0,
+  "political": 2,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "addElementAsAttacker", "value": "air" }
+      }
+    ]
+  }
+}

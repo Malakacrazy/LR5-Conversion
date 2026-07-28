@@ -1,0 +1,13 @@
+{
+  "id": "height-of-fashion",
+  "name": "Height of Fashion",
+  "type": "attachment",
+  "faction": "crane",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 2,
+  "scriptOverride": {
+    "reason": "Overrides DrawCard.canPlay to forbid playing this card while any conflict is currently in progress - the same 'play eligibility' concept already flagged on cloud-the-mind, which the schema has no generic representation for (persistentEffects/actions/triggeredAbilities describe in-play behavior, not eligibility to play the card itself).",
+    "handler": "L5R.Engine.Cards.Scripts.HeightOfFashionCannotPlayDuringConflict"
+  }
+}

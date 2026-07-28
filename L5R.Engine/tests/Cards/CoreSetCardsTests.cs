@@ -46,6 +46,10 @@ public class CoreSetCardsTests
     [TestCase("guidance-of-the-ancestors")]
     [TestCase("togashi-initiate")]
     [TestCase("moto-youth")]
+    [TestCase("seeker-of-knowledge")]
+    [TestCase("fertile-fields")]
+    [TestCase("shinjo-outrider")]
+    [TestCase("height-of-fashion")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

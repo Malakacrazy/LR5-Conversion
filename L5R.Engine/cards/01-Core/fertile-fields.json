@@ -1,0 +1,17 @@
+{
+  "id": "fertile-fields",
+  "name": "Fertile Fields",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "strength": 4,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Draw a card",
+        "gameAction": { "name": "draw" }
+      }
+    ]
+  }
+}
