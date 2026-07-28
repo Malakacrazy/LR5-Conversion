@@ -1,0 +1,14 @@
+{
+  "id": "rebuild",
+  "name": "Rebuild",
+  "type": "event",
+  "faction": "crab",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "The cost's cardCondition needs each candidate's own province card status (is the province in that location unbroken), and the target's destination is conditioned on which specific location the cost consumed - both a candidate-relative province lookup and a cost-to-target cross-reference beyond the closed vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.RebuildReplaceProvinceCardWithHolding"
+  }
+}

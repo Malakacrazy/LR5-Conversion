@@ -1,0 +1,23 @@
+{
+  "id": "restoration-of-balance",
+  "name": "Restoration of Balance",
+  "type": "province",
+  "faction": "dragon",
+  "traits": [],
+  "unique": false,
+  "elements": ["fire"],
+  "strength": 3,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "interrupt",
+        "title": "Force opponent to discard to 4 cards",
+        "when": { "onBreakProvince": { "op": "isSelf" } },
+        "gameAction": {
+          "name": "chosenDiscard",
+          "params": { "amount": { "dynamic": "countCardsInHand", "for": "opponent", "offset": -4 } }
+        }
+      }
+    ]
+  }
+}

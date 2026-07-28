@@ -1,0 +1,14 @@
+{
+  "id": "reprieve",
+  "name": "Reprieve",
+  "type": "attachment",
+  "faction": "crab",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 1,
+  "scriptOverride": {
+    "reason": "wouldInterrupt's when clause compares event.card against source.parent (the attached character), not source itself, so the event.card 'isSelf' convention doesn't apply, and it also calls source.allowGameAction for a legality check not modeled by the vocabulary. Its cancel gameAction additionally substitutes a replacementGameAction (discard this attachment instead of the character leaving play) - a cancel-and-replace shape beyond the schema's plain cancel() handler.",
+    "handler": "L5R.Engine.Cards.Scripts.ReprieveDiscardInsteadOfParentLeavingPlay"
+  }
+}

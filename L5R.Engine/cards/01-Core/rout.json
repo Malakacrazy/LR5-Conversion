@@ -1,0 +1,14 @@
+{
+  "id": "rout",
+  "name": "Rout",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 0,
+  "scriptOverride": {
+    "reason": "cardCondition needs a double-candidate comparison: does the player control a participating Bushi whose militarySkill exceeds THIS candidate's militarySkill - the same gap already flagged on outwit (anyCardMatches's 'of' predicate has its own local candidate with no way to also reference the outer candidate).",
+    "handler": "L5R.Engine.Cards.Scripts.RoutSendHomeOutclassedByBushi"
+  }
+}

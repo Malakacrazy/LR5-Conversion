@@ -91,7 +91,12 @@ mechanic exists.
   `compareStat`'s `value`. night-raid's discard amount reuses `{dynamic:
   conflictParticipantCount, role: attacker}` directly as a gameAction param value, not
   just inside a predicate - dynamic values are usable anywhere a valueRef is, no new
-  vocabulary needed.
+  vocabulary needed. restoration-of-balance's discard amount is `{dynamic:
+  countCardsInHand, for: opponent, offset: -4}`, which can go negative when the opponent
+  has fewer than 4 cards - relying on chosenDiscard's own implementation to clamp a
+  negative amount to 0 (an "amount" arg is a card-agnostic input-validation concern for
+  the game action itself, not something every card needs to encode via a max()/clamp
+  primitive in the vocabulary).
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(

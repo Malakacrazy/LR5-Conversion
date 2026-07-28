@@ -146,6 +146,10 @@ public class CoreSetCardsTests
     [TestCase("radiant-orator")]
     [TestCase("rally-to-the-cause")]
     [TestCase("ready-for-battle")]
+    [TestCase("rebuild")]
+    [TestCase("reprieve")]
+    [TestCase("restoration-of-balance")]
+    [TestCase("rout")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -226,6 +230,9 @@ public class CoreSetCardsTests
     [TestCase("pilgrimage", typeof(PilgrimageCancelRingEffectsAtThisProvince))]
     [TestCase("radiant-orator", typeof(RadiantOratorSendHomeWhenAheadOnGlory))]
     [TestCase("ready-for-battle", typeof(ReadyForBattleReadyOnOpponentOrRingBow))]
+    [TestCase("rebuild", typeof(RebuildReplaceProvinceCardWithHolding))]
+    [TestCase("reprieve", typeof(ReprieveDiscardInsteadOfParentLeavingPlay))]
+    [TestCase("rout", typeof(RoutSendHomeOutclassedByBushi))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
