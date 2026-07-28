@@ -205,6 +205,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("yogo-outcast")]
     [TestCase("yojin-no-shiro")]
     [TestCase("young-rumormonger")]
+    [TestCase("adept-of-the-waves")]
+    [TestCase("aggressive-moto")]
+    [TestCase("akodo-gunso")]
+    [TestCase("akodo-toturi")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

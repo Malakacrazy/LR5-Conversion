@@ -1,0 +1,30 @@
+{
+  "id": "adept-of-the-waves",
+  "name": "Adept of the Waves",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "water"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Grant Covert to a character",
+        "target": {
+          "cardType": "character",
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": {
+              "duration": "untilEndOfPhase",
+              "condition": { "op": "isDuringConflict", "type": "water" },
+              "effect": { "name": "addKeyword", "value": "covert" }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

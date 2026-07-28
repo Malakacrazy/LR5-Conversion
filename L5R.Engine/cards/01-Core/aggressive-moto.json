@@ -1,0 +1,20 @@
+{
+  "id": "aggressive-moto",
+  "name": "Aggressive Moto",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "cavalry"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 3,
+  "political": 0,
+  "glory": 0,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "cardCannot", "value": { "cannot": "declareAsDefender" } }
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "akodo-toturi",
+  "name": "Akodo Toturi",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 6,
+  "political": 3,
+  "glory": 3,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.player (compared against context.player) - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since onClaimRing events carry a player field rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.AkodoToturiResolveRingOnClaimDuringMilitary"
+  }
+}

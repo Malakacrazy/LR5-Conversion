@@ -206,6 +206,10 @@ public class CoreSetCardsTests
     [TestCase("yogo-outcast")]
     [TestCase("yojin-no-shiro")]
     [TestCase("young-rumormonger")]
+    [TestCase("adept-of-the-waves")]
+    [TestCase("aggressive-moto")]
+    [TestCase("akodo-gunso")]
+    [TestCase("akodo-toturi")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -315,6 +319,8 @@ public class CoreSetCardsTests
     [TestCase("way-of-the-unicorn", typeof(WayOfTheUnicornKeepFirstPlayerToken))]
     [TestCase("yogo-hiroue", typeof(YogoHiroueMoveThenMayDishonorOnWin))]
     [TestCase("young-rumormonger", typeof(YoungRumormongerRedirectHonorOrDishonor))]
+    [TestCase("akodo-gunso", typeof(AkodoGunsoRefillProvinceOnEnteringFromProvince))]
+    [TestCase("akodo-toturi", typeof(AkodoToturiResolveRingOnClaimDuringMilitary))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

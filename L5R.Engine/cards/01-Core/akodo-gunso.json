@@ -1,0 +1,16 @@
+{
+  "id": "akodo-gunso",
+  "name": "Akodo Gunsō",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 1,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause checks event.originalLocation against an array of province locations (an array-membership check with no equivalent in the closed predicate vocabulary), and its gameAction references that same event field as a param value, which contextPath can't express (only source/player/target/targets).",
+    "handler": "L5R.Engine.Cards.Scripts.AkodoGunsoRefillProvinceOnEnteringFromProvince"
+  }
+}
