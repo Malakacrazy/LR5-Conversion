@@ -1,0 +1,16 @@
+{
+  "id": "seeker-initiate",
+  "name": "Seeker Initiate",
+  "type": "character",
+  "faction": "neutral",
+  "traits": ["monk"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 1,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.player/event.conflict/event.ring (an onClaimRing-specific shape, not the event.card the isSelf convention covers) and cross-references context.player.role's traits against the claimed ring's element - the same role-relative event gap already flagged on keeper-initiate.",
+    "handler": "L5R.Engine.Cards.Scripts.SeekerInitiateSearchTopFiveOnMatchingRingClaim"
+  }
+}

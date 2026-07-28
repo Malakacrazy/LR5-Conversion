@@ -154,6 +154,10 @@ public class CoreSetCardsTests
     [TestCase("savvy-politician")]
     [TestCase("secluded-temple")]
     [TestCase("secret-cache")]
+    [TestCase("seeker-initiate")]
+    [TestCase("seeker-of-air")]
+    [TestCase("seeker-of-earth")]
+    [TestCase("seeker-of-enlightenment")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -239,6 +243,10 @@ public class CoreSetCardsTests
     [TestCase("rout", typeof(RoutSendHomeOutclassedByBushi))]
     [TestCase("secluded-temple", typeof(SecludedTempleRemoveFateWhenOutnumbered))]
     [TestCase("secret-cache", typeof(SecretCacheSearchTopFiveOnConflictDeclared))]
+    [TestCase("seeker-initiate", typeof(SeekerInitiateSearchTopFiveOnMatchingRingClaim))]
+    [TestCase("seeker-of-air", typeof(SeekerOfAirGainFateOnMatchingProvinceReveal))]
+    [TestCase("seeker-of-earth", typeof(SeekerOfEarthGainFateOnMatchingProvinceReveal))]
+    [TestCase("seeker-of-enlightenment", typeof(SeekerOfEnlightenmentBonusForFateOnUnclaimedRings))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

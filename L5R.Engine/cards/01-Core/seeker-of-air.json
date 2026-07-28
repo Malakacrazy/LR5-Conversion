@@ -1,0 +1,12 @@
+{
+  "id": "seeker-of-air",
+  "name": "Seeker of Air",
+  "type": "role",
+  "faction": "neutral",
+  "traits": ["seeker", "air"],
+  "unique": false,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.card.controller/event.card.isProvince/event.card.getElement() and cross-references them against this role's own trait - event.card here is a different card (the revealed province) than source (this role), and the comparison needs source's own trait as the match key, beyond the isSelf/isType/hasTrait-against-event.card convention (which assumes event.card IS the subject being tested for its own type/trait, not cross-referenced against a second card).",
+    "handler": "L5R.Engine.Cards.Scripts.SeekerOfAirGainFateOnMatchingProvinceReveal"
+  }
+}
