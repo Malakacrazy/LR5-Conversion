@@ -1,0 +1,16 @@
+{
+  "id": "shrewd-yasuki",
+  "name": "Shrewd Yasuki",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Uses a bespoke handler (not a gameAction) that looks at the top 2 cards of the conflict deck, lets the player choose one for hand, and puts the other on the bottom - no vocabulary exists for 'look at N, keep one, bottom the rest'.",
+    "handler": "L5R.Engine.Cards.Scripts.ShrewdYasukiLookAtTopTwoKeepOne"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "shosuro-miyako",
+  "name": "Shosuro Miyako",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["bushi", "shinobi"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.player/event.playType (scalar event fields beyond the event.card-only 'isSelf' convention) alongside event.card.type. Its target's 'Dishonor a character' choice is also a nested card selection (a second full sub-target), the same two-level select gap flagged on court-games.",
+    "handler": "L5R.Engine.Cards.Scripts.ShosuroMiyakoDiscardOrDishonorOnCharacterPlayed"
+  }
+}

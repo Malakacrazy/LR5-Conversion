@@ -1,0 +1,23 @@
+{
+  "id": "sinister-soshi",
+  "name": "Sinister Soshi",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["shugenja", "air"],
+  "unique": false,
+  "printedCost": 1,
+  "glory": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give a character -2/-2",
+        "condition": { "op": "isDuringConflict" },
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "hasStatus", "status": "isParticipating" },
+          "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "modifyBothSkills", "value": -2 } } }
+        }
+      }
+    ]
+  }
+}

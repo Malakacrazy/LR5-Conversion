@@ -165,6 +165,10 @@ public class CoreSetCardsTests
     [TestCase("shinjo-tatsuo")]
     [TestCase("shiro-nishiyama")]
     [TestCase("shizuka-toshi")]
+    [TestCase("shosuro-actress")]
+    [TestCase("shosuro-miyako")]
+    [TestCase("shrewd-yasuki")]
+    [TestCase("sinister-soshi")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -258,6 +262,8 @@ public class CoreSetCardsTests
     [TestCase("shameful-display", typeof(ShamefulDisplayHonorOneDishonorOther))]
     [TestCase("shinjo-altansarnai", typeof(ShinjoAltansarnaiDiscardOnMilitaryProvinceBreak))]
     [TestCase("shinjo-tatsuo", typeof(ShinjoTatsuoMoveSelfAndOptionalAllyToConflict))]
+    [TestCase("shosuro-miyako", typeof(ShosuroMiyakoDiscardOrDishonorOnCharacterPlayed))]
+    [TestCase("shrewd-yasuki", typeof(ShrewdYasukiLookAtTopTwoKeepOne))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

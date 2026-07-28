@@ -1,0 +1,33 @@
+{
+  "id": "shosuro-actress",
+  "name": "Shosuro Actress",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier", "shinobi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Put an opponent's character into play",
+        "cost": [{ "name": "sacrificeSelf" }],
+        "target": {
+          "cardType": "character",
+          "location": ["conflict discard pile", "dynasty discard pile"],
+          "controller": "opponent",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "compareStat", "stat": "printedCost", "comparator": "lt", "value": 4 },
+              { "op": "not", "of": { "op": "hasTrait", "trait": "shinobi" } }
+            ]
+          },
+          "gameAction": { "name": "putIntoConflict" }
+        }
+      }
+    ]
+  }
+}
