@@ -106,6 +106,9 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("isawa-atsuko")]
     [TestCase("isawa-masahiro")]
     [TestCase("isawa-mori-seido")]
+    [TestCase("ishiken-initiate")]
+    [TestCase("iuchi-wayfinder")]
+    [TestCase("jade-tetsubo")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

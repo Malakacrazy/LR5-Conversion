@@ -1,0 +1,19 @@
+{
+  "id": "jade-tetsubo",
+  "name": "Jade Tetsubō",
+  "type": "attachment",
+  "faction": "crab",
+  "traits": ["jade", "weapon"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 2,
+  "abilities": {
+    "persistentEffects": [
+      { "match": "self", "effect": { "name": "attachmentMyControlOnly" } }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "The action's condition needs source.parent's status (is the attached character participating), not source's own status - hasStatus has no candidate override beyond the implicit source. Its cardCondition also compares each candidate's militarySkill against source.parent's militarySkill - a candidate-vs-non-source dynamic reference, extending the candidate-vs-source gap already flagged on fearsome-mystic to candidate-vs-source.parent.",
+    "handler": "L5R.Engine.Cards.Scripts.JadeTetsuboReturnFateFromLowerMilitaryParticipant"
+  }
+}

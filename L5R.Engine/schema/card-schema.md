@@ -67,6 +67,8 @@ mechanic exists.
   (elemental-fury). This is deliberately narrow: it's the one event field common and
   uniform enough across event types to generalize; anything else (`event.conflict.*`,
   `event.ringFate`, ...) still needs scriptOverride (endless-plains, enlightened-warrior).
+  ishiken-initiate's `{dynamic: countClaimedRings}` is another free-form dynamic name
+  needing no schema change, same as countUnclaimedRings.
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(

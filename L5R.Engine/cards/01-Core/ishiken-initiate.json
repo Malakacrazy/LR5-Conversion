@@ -1,0 +1,21 @@
+{
+  "id": "ishiken-initiate",
+  "name": "Ishiken Initiate",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "void"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 1,
+  "glory": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "modifyBothSkills", "value": { "dynamic": "countClaimedRings" } }
+      }
+    ]
+  }
+}

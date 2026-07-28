@@ -107,6 +107,9 @@ public class CoreSetCardsTests
     [TestCase("isawa-atsuko")]
     [TestCase("isawa-masahiro")]
     [TestCase("isawa-mori-seido")]
+    [TestCase("ishiken-initiate")]
+    [TestCase("iuchi-wayfinder")]
+    [TestCase("jade-tetsubo")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -165,6 +168,7 @@ public class CoreSetCardsTests
     [TestCase("ikoma-prodigy", typeof(IkomaProdigyGainHonorWhenFateAddedOrMoved))]
     [TestCase("indomitable-will", typeof(IndomitableWillPreventBowOnSoloWin))]
     [TestCase("intimidating-hida", typeof(IntimidatingHidaLoseHonorOnOpponentPass))]
+    [TestCase("jade-tetsubo", typeof(JadeTetsuboReturnFateFromLowerMilitaryParticipant))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

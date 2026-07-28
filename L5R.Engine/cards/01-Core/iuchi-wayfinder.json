@@ -1,0 +1,29 @@
+{
+  "id": "iuchi-wayfinder",
+  "name": "Iuchi Wayfinder",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["shugenja", "water", "cavalry"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 0,
+  "influenceCost": 1,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Look at a province",
+        "when": { "onCharacterEntersPlay": { "op": "isSelf" } },
+        "target": {
+          "cardType": "province",
+          "location": "province",
+          "controller": "opponent",
+          "cardCondition": { "op": "hasStatus", "status": "isFacedown" },
+          "gameAction": { "name": "lookAt" }
+        }
+      }
+    ]
+  }
+}
