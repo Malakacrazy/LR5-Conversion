@@ -1,0 +1,16 @@
+{
+  "id": "shinjo-tatsuo",
+  "name": "Shinjo Tatsuo",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "cavalry", "scout"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 3,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Uses a two-entry targets map where the second entry is individually optional (up to 1 other character, independent of the first forced self-target) - target.mode has no 'optional' concept for an individual entry within a targets map (upTo/exactly apply to how many cards a single target selects, not to whether a whole named target can be skipped).",
+    "handler": "L5R.Engine.Cards.Scripts.ShinjoTatsuoMoveSelfAndOptionalAllyToConflict"
+  }
+}

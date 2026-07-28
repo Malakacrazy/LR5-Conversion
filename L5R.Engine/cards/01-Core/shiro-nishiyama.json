@@ -1,0 +1,28 @@
+{
+  "id": "shiro-nishiyama",
+  "name": "Shiro Nishiyama",
+  "type": "stronghold",
+  "faction": "crab",
+  "traits": ["castle"],
+  "unique": true,
+  "fate": 7,
+  "honor": 10,
+  "influencePool": 10,
+  "strengthBonus": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give defending characters +1/+1",
+        "cost": [{ "name": "bowSelf" }],
+        "condition": { "op": "isDuringConflict" },
+        "gameAction": {
+          "name": "cardLastingEffect",
+          "params": {
+            "target": { "allCardsMatching": { "controller": "self", "of": { "op": "hasStatus", "status": "isDefending" } } },
+            "effect": { "name": "modifyBothSkills", "value": 1 }
+          }
+        }
+      }
+    ]
+  }
+}

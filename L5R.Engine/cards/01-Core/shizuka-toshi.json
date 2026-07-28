@@ -1,0 +1,32 @@
+{
+  "id": "shizuka-toshi",
+  "name": "Shizuka Toshi",
+  "type": "stronghold",
+  "faction": "crane",
+  "traits": ["city"],
+  "unique": true,
+  "fate": 7,
+  "honor": 11,
+  "influencePool": 10,
+  "strengthBonus": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow a character",
+        "condition": { "op": "isDuringConflict", "type": "political" },
+        "cost": [{ "name": "bowSelf" }],
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasStatus", "status": "isParticipating" },
+              { "op": "compareStat", "stat": "politicalSkill", "comparator": "lte", "value": 2 }
+            ]
+          },
+          "gameAction": { "name": "bow" }
+        }
+      }
+    ]
+  }
+}

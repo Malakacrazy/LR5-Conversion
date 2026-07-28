@@ -1,0 +1,16 @@
+{
+  "id": "shinjo-altansarnai",
+  "name": "Shinjo Altansarnai",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "cavalry", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 5,
+  "political": 4,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.conflictType - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since onBreakProvince events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.ShinjoAltansarnaiDiscardOnMilitaryProvinceBreak"
+  }
+}

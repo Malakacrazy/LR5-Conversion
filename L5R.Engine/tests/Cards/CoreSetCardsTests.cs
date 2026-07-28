@@ -161,6 +161,10 @@ public class CoreSetCardsTests
     [TestCase("seeker-of-fire")]
     [TestCase("shameful-display")]
     [TestCase("shiba-peacemaker")]
+    [TestCase("shinjo-altansarnai")]
+    [TestCase("shinjo-tatsuo")]
+    [TestCase("shiro-nishiyama")]
+    [TestCase("shizuka-toshi")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -252,6 +256,8 @@ public class CoreSetCardsTests
     [TestCase("seeker-of-enlightenment", typeof(SeekerOfEnlightenmentBonusForFateOnUnclaimedRings))]
     [TestCase("seeker-of-fire", typeof(SeekerOfFireGainFateOnMatchingProvinceReveal))]
     [TestCase("shameful-display", typeof(ShamefulDisplayHonorOneDishonorOther))]
+    [TestCase("shinjo-altansarnai", typeof(ShinjoAltansarnaiDiscardOnMilitaryProvinceBreak))]
+    [TestCase("shinjo-tatsuo", typeof(ShinjoTatsuoMoveSelfAndOptionalAllyToConflict))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
