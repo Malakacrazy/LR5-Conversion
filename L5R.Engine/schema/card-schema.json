@@ -221,7 +221,11 @@
           "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
           "default": "play area"
         },
-        "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+        "controller": {
+          "enum": ["self", "opponent", "any"],
+          "default": "any",
+          "description": "ringteki's BaseCardSelector.js: `this.controller = properties.controller || Players.Any` - an omitted controller on a card target defaults to 'any', not 'self'. Every ported card that omits this field was transcribed with that in mind (present when the source JS specified it, omitted when the source JS omitted it), so this default matters for correctness, not just documentation."
+        },
         "cardCondition": { "$ref": "#/$defs/predicate" },
         "gameAction": {
           "description": "Restricts legal targets to those this game action (or any, if an array) could legally affect.",
@@ -414,7 +418,7 @@
           "right": { "$ref": "#/$defs/valueRef" } } },
         { "type": "object", "additionalProperties": false, "required": ["op", "of"], "properties": {
           "op": { "const": "anyCardMatches" },
-          "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+          "controller": { "enum": ["self", "opponent", "any"], "default": "any" },
           "location": { "type": "string", "default": "play area" },
           "of": { "$ref": "#/$defs/predicate" } },
           "description": "Existential check over a set of cards, e.g. 'does the player control any participating character with trait X' - condition/cardCondition otherwise evaluate a single implicit subject, not a collection." }
@@ -447,7 +451,7 @@
           "controller": {
             "enum": ["self", "opponent", "any"],
             "default": "self",
-            "description": "Whose cards are counted, for aggregate dynamic names like countCardsMatching - the counting equivalent of allCardsMatching's controller. Added porting matsu-beiona, whose condition needs 'how many bushi characters do I control' rather than a plain named counter."
+            "description": "Whose cards are counted, for aggregate dynamic names like countCardsMatching - the counting equivalent of allCardsMatching's controller. Added porting matsu-beiona, whose condition needs 'how many bushi characters do I control' rather than a plain named counter. Deliberately defaults to 'self' here (unlike target.controller/allCardsMatching.controller, which default to 'any' to match ringteki's BaseCardSelector.js) - a bare count with no explicit subject reads naturally as 'how many of my own cards', and no ported card has ever omitted this field to test the alternative."
           },
           "of": {
             "$ref": "#/$defs/predicate",
@@ -462,7 +466,7 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+                "controller": { "enum": ["self", "opponent", "any"], "default": "any" },
                 "location": {
                   "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
                   "default": "play area"

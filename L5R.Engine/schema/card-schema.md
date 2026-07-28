@@ -114,6 +114,19 @@ mechanic exists.
   loader checks (since whether an effect name is card/ring/player-scoped lives in the
   registry, not in this schema), not something expressible as a JSON Schema conditional
   here.
+- **`target.controller` (and `anyCardMatches`/`allCardsMatching`'s `controller`) default
+  to `any`, not `self`.** Caught while building the runtime interpreter, by reading
+  ringteki's `BaseCardSelector.js`: `this.controller = properties.controller ||
+  Players.Any`. The schema had documented `self` as the default since the original
+  authoring pass - wrong, but harmless in practice, because every ported card was
+  transcribed by cross-referencing the real ringteki source card-by-card: `controller` is
+  present in the JSON exactly when the source JS specified it, and omitted exactly when
+  the source JS omitted it (which - per the real default - means "any", e.g.
+  sinister-soshi's "-2/-2 to a participating character" targets *either* player's
+  character). No card file needed changing, only this default declaration, since nothing
+  ever executed against the wrong default before now. `countCardsMatching`'s `controller`
+  (on `valueRef.dynamic`) is the one exception, left at `self` - see its own description
+  for why.
 
 ## Top-level fields
 
