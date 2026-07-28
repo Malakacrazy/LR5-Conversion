@@ -91,6 +91,10 @@ public class CoreSetCardsTests
     [TestCase("golden-plains-outpost")]
     [TestCase("good-omen")]
     [TestCase("hida-kisada")]
+    [TestCase("hida-tomonatsu")]
+    [TestCase("hiruma-ambusher")]
+    [TestCase("honored-blade")]
+    [TestCase("honored-general")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -141,6 +145,8 @@ public class CoreSetCardsTests
     [TestCase("good-omen", typeof(GoodOmenCannotPlayWithoutComposure))]
     [TestCase("giver-of-gifts", typeof(GiverOfGiftsMoveAttachment))]
     [TestCase("hida-kisada", typeof(HidaKisadaCancelOpponentsFirstActionEachConflict))]
+    [TestCase("hida-tomonatsu", typeof(HidaTomonatsuReturnAttackerToDeckOnDefendedWin))]
+    [TestCase("honored-blade", typeof(HonoredBladeGainHonorWhenParentWins))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

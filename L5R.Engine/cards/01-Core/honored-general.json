@@ -1,0 +1,36 @@
+{
+  "id": "honored-general",
+  "name": "Honored General",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi", "commander"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 3,
+  "political": 1,
+  "glory": 2,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "match": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isParticipating" },
+            { "op": "hasFaction", "faction": "lion" },
+            { "op": "not", "of": { "op": "isSelf" } }
+          ]
+        },
+        "effect": { "name": "modifyMilitarySkill", "value": 1 }
+      }
+    ],
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Honor this character",
+        "when": { "onCharacterEntersPlay": { "op": "isSelf" } },
+        "gameAction": { "name": "honor" }
+      }
+    ]
+  }
+}
