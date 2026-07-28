@@ -28,8 +28,23 @@ public static class PredicateEvaluator
             "hasFaction" => candidate.Faction == predicate.GetProperty("faction").GetString(),
             "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate),
             "compareStat" => EvaluateCompareStat(predicate, candidate, context),
+            "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
+    }
+
+    /// <summary>
+    /// ringteki IsDuringConflict.js: with no "type", just checks game.currentConflict
+    /// exists - here, that we're in the conflict phase. A "type" filter (military/
+    /// political) needs an actual Conflict object we don't model yet, so it throws
+    /// rather than silently ignoring the type restriction.
+    /// </summary>
+    private static bool EvaluateIsDuringConflict(JsonElement predicate, AbilityContext context)
+    {
+        if (predicate.TryGetProperty("type", out _))
+            throw new NotSupportedException("PredicateEvaluator does not yet support isDuringConflict's 'type' filter (needs conflict state).");
+
+        return context.Game.CurrentPhase == Phase.Conflict;
     }
 
     private static bool EvaluateHasStatus(string status, Card candidate) => status switch

@@ -59,4 +59,25 @@ public class FuneralPyreTests
         // controller would default to Players.Any.
         Assert.Throws<InvalidOperationException>(() => executor.Execute(action, context));
     }
+
+    [Test]
+    public void CannotPayCost_WhenOwnCharacterIsOnlyInHand_NotInPlay()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1, CurrentPhase = Phase.Conflict };
+        var pyre = new Card { Id = "funeral-pyre", Type = CardType.Holding, Controller = p1 };
+        var characterInHand = new Card { Id = "character-in-hand", Type = CardType.Character, Controller = p1, Location = "hand" };
+        p1.PlayArea.Add(pyre);
+        p1.Hand.Add(characterInHand);
+
+        var action = LoadFirstAction();
+        var context = new AbilityContext { Game = game, Player = p1, Source = pyre };
+        var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
+
+        // GameActions.sacrifice() is DiscardFromPlayAction under the hood, whose canAffect
+        // requires the card to already be in the play area - a same-type card sitting in
+        // hand must not satisfy the cost.
+        Assert.Throws<InvalidOperationException>(() => executor.Execute(action, context));
+    }
 }

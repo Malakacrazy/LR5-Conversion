@@ -13,6 +13,7 @@ public sealed class CostRegistry
     {
         ["sacrificeSelf"] = new SacrificeSelfCostHandler(),
         ["sacrifice"] = new SacrificeCostHandler(),
+        ["discardCard"] = new DiscardCardCostHandler(),
         ["payHonor"] = new PayHonorCostHandler()
     };
 
