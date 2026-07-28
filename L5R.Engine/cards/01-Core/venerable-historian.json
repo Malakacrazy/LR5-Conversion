@@ -1,0 +1,26 @@
+{
+  "id": "venerable-historian",
+  "name": "Venerable Historian",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["courtier", "scholar"],
+  "unique": false,
+  "printedCost": 2,
+  "political": 1,
+  "glory": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Honor this character",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isParticipating" },
+            { "op": "compareValues", "left": { "contextPath": "player.opponent.honor" }, "comparator": "lt", "right": { "contextPath": "player.honor" } }
+          ]
+        },
+        "gameAction": { "name": "honor" }
+      }
+    ]
+  }
+}

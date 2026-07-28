@@ -42,6 +42,10 @@ public class CoreSetCardsTests
     [TestCase("asahina-artisan")]
     [TestCase("otomo-courtier")]
     [TestCase("mirumoto-prodigy")]
+    [TestCase("venerable-historian")]
+    [TestCase("guidance-of-the-ancestors")]
+    [TestCase("togashi-initiate")]
+    [TestCase("moto-youth")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

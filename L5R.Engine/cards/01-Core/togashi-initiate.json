@@ -1,0 +1,22 @@
+{
+  "id": "togashi-initiate",
+  "name": "Togashi Initiate",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["monk", "tattooed"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Honor this character",
+        "condition": { "op": "hasStatus", "status": "isAttacking" },
+        "cost": [{ "name": "payFateToRing", "params": { "amount": 1 } }],
+        "gameAction": { "name": "honor" }
+      }
+    ]
+  }
+}

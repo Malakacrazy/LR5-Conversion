@@ -1,0 +1,16 @@
+{
+  "id": "moto-youth",
+  "name": "Moto Youth",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "cavalry"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 2,
+  "political": 0,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Condition iterates this.game.conflictRecord (every conflict declared so far this round) checking each one's declared/switched type and completion status against the current conflict - a historical-record scan with no equivalent in the predicate vocabulary, which evaluates present state, not a log of prior conflicts.",
+    "handler": "L5R.Engine.Cards.Scripts.MotoYouthBonusIfFirstMilitaryConflictOfRound"
+  }
+}

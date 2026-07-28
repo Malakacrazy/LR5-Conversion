@@ -1,0 +1,18 @@
+{
+  "id": "guidance-of-the-ancestors",
+  "name": "Guidance of the Ancestors",
+  "type": "attachment",
+  "faction": "lion",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Play this from the discard pile",
+        "location": "conflict discard pile",
+        "gameAction": { "name": "playCard" }
+      }
+    ]
+  }
+}
