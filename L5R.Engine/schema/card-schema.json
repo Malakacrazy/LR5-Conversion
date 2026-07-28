@@ -1,0 +1,409 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://l5r-conversion.local/schema/card-schema.json",
+  "title": "L5R.Engine Card Document",
+  "description": "Cards are data, not code: each document references a fixed catalog of generic effects/game actions/costs registered in the C# engine, the same pattern ringteki itself uses (see card-schema.md for the field-by-field mapping to docs/implementing-cards.md). Effect/game-action/cost 'name' fields are plain strings here, deliberately NOT enumerated against the ~100/~80/~25-entry catalogs - the engine's registries are the single source of truth for what's valid, checked at card-load time, so this schema and the registries can't silently drift apart. Anything that doesn't fit this generic vocabulary uses scriptOverride.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Slug matching the emeralddb card id (emeralddb.org/api/cards). Links this file to the card's printed cost/traits/text, which live in emeralddb data rather than being duplicated here."
+    },
+    "name": { "type": "string" },
+    "type": {
+      "enum": ["character", "holding", "event", "attachment", "province", "stronghold", "role"],
+      "description": "ringteki Constants.ts CardTypes."
+    },
+    "faction": {
+      "type": ["string", "null"],
+      "description": "Clan slug; null/omitted for neutral cards."
+    },
+    "traits": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "unique": { "type": "boolean", "default": false },
+    "elements": {
+      "type": "array",
+      "items": { "enum": ["air", "earth", "fire", "water", "void"] },
+      "description": "Province/stronghold elements (ringteki Constants.ts Elements)."
+    },
+
+    "printedCost": { "type": ["integer", "null"], "description": "Printed fate cost (character/attachment/event). emeralddb field: cost." },
+    "military": { "type": ["integer", "null"] },
+    "political": { "type": ["integer", "null"] },
+    "glory": { "type": ["integer", "null"] },
+    "strength": { "type": ["integer", "null"], "description": "Province base strength." },
+    "strengthBonus": { "type": ["integer", "null"] },
+    "fate": { "type": ["integer", "null"], "description": "Stronghold starting fate." },
+    "honor": { "type": ["integer", "null"], "description": "Stronghold starting honor." },
+    "influenceCost": { "type": ["integer", "null"], "description": "Role influence cost." },
+    "influencePool": { "type": ["integer", "null"], "description": "Stronghold influence pool." },
+
+    "text": {
+      "type": "string",
+      "description": "Printed rules text. Reference/UI only - the engine never parses this; abilities below are what actually run."
+    },
+
+    "abilities": { "$ref": "#/$defs/abilities" },
+
+    "scriptOverride": { "$ref": "#/$defs/scriptOverride" }
+  },
+
+  "$defs": {
+
+    "abilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "implementing-cards.md 'Getting started' / 'Persistent effects' / 'Actions' / 'Triggered abilities' sections.",
+      "properties": {
+        "persistentEffects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/persistentEffect" }
+        },
+        "whileAttached": {
+          "type": "array",
+          "description": "Attachment cards only. implementing-cards.md 'Attachment-based effects'.",
+          "items": { "$ref": "#/$defs/whileAttached" }
+        },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/action" }
+        },
+        "triggeredAbilities": {
+          "type": "array",
+          "description": "Reactions and interrupts (forced or optional), and 'would' interrupts. implementing-cards.md 'Triggered abilities'.",
+          "items": { "$ref": "#/$defs/triggeredAbility" }
+        }
+      }
+    },
+
+    "persistentEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect"],
+      "description": "implementing-cards.md 'Persistent effects'. Corresponds to this.persistentEffect({...}) in ringteki. Always Durations.Persistent - effects that expire (untilEndOfConflict/Phase/Round) are declared instead as a cardLastingEffect/playerLastingEffect/ringLastingEffect gameAction on an action/reaction, not here.",
+      "properties": {
+        "match": {
+          "description": "implementing-cards.md 'Matching conditions vs matching specific cards'. 'self' is shorthand for matching only this card (equivalent to passing `this` in ringteki). Omit entirely for player-scoped effects (effects.js 'Player effects') - those must not have a match.",
+          "oneOf": [
+            { "const": "self" },
+            { "$ref": "#/$defs/predicate" }
+          ]
+        },
+        "condition": {
+          "$ref": "#/$defs/predicate",
+          "description": "implementing-cards.md 'Conditional effects'. Defaults to always-true when omitted."
+        },
+        "targetController": {
+          "enum": ["self", "opponent", "any", "current"],
+          "default": "self",
+          "description": "implementing-cards.md 'Targeting opponent or all matching cards' / 'Player modifying effects'. 'current' is the player-effect default per ringteki effects.js."
+        },
+        "targetLocation": {
+          "type": "string",
+          "default": "play area",
+          "description": "implementing-cards.md 'Applying effects to cards which aren't in play'. E.g. 'hand', 'province'."
+        },
+        "effect": {
+          "description": "implementing-cards.md 'Applying multiple effects at once' allows an array.",
+          "oneOf": [
+            { "$ref": "#/$defs/effectEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/effectEntry" }, "minItems": 1 }
+          ]
+        }
+      }
+    },
+
+    "whileAttached": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect"],
+      "properties": {
+        "match": { "$ref": "#/$defs/predicate", "description": "Extra condition on the attached card, beyond 'is the card this is attached to'." },
+        "condition": { "$ref": "#/$defs/predicate" },
+        "effect": {
+          "oneOf": [
+            { "$ref": "#/$defs/effectEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/effectEntry" }, "minItems": 1 }
+          ]
+        }
+      }
+    },
+
+    "effectEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "description": "One entry from ringteki's effects.js catalog (~100 names spanning card/ring/player/conflict effects), resolved against the engine's EffectRegistry at card-load time.",
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9]*$" },
+        "value": {
+          "description": "effects.js distinguishes static (plain literal), dynamic (recomputed each pass) and flexible (either) effects - see implementing-cards.md 'Dynamic skill'. Omit for effects that take no value (e.g. doesNotBow).",
+          "$ref": "#/$defs/valueRef"
+        }
+      }
+    },
+
+    "gameActionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "description": "One entry from ringteki's GameActions.ts catalog (~80 names), resolved against the engine's GameActionRegistry at card-load time. `params` is intentionally free-form: each game action's own parameter shape (e.g. cardLastingEffect's nested duration+effect) is validated by its C# implementation, not by this schema - typing all ~80 shapes here would duplicate that validation and drift from it over time.",
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9]*$" },
+        "target": {
+          "$ref": "#/$defs/valueRef",
+          "description": "Overrides the default target (source card for card actions, opponent for player actions, contested ring for ring actions). implementing-cards.md 'Game Actions'."
+        },
+        "params": {
+          "type": "object",
+          "description": "Action-specific parameters, e.g. { \"amount\": 1 } for gainFate, or { \"duration\": \"untilEndOfConflict\", \"effect\": [...] } for cardLastingEffect."
+        }
+      }
+    },
+
+    "costEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "description": "One entry from ringteki's costs.js catalog (~25 names: bowSelf, sacrificeSelf, dishonor, payFate, payHonor, discardCard, ...), resolved against the engine's CostRegistry at card-load time. `params` is free-form for the same reason as gameActionEntry.params.",
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9]*$" },
+        "params": { "type": "object" }
+      }
+    },
+
+    "limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["per", "max"],
+      "description": "implementing-cards.md 'Ability limits'. ringteki abilitylimit.js.",
+      "properties": {
+        "per": { "enum": ["fixed", "conflict", "phase", "round", "unlimitedPerConflict"] },
+        "max": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "implementing-cards.md 'Choosing / targeting cards', 'Multiple targets', 'Targeting rings', 'Select options'.",
+      "properties": {
+        "mode": {
+          "enum": ["single", "ring", "select", "upTo", "exactly", "unlimited", "autoSingle", "maxStat"],
+          "default": "single",
+          "description": "ringteki Constants.ts TargetModes (subset commonly hand-authored on cards; ability/token/exactlyVariable/upToVariable are engine-internal)."
+        },
+        "cardType": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+        },
+        "location": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+          "default": "play area"
+        },
+        "controller": { "enum": ["self", "opponent", "any"], "default": "self" },
+        "cardCondition": { "$ref": "#/$defs/predicate" },
+        "gameAction": {
+          "description": "Restricts legal targets to those this game action (or any, if an array) could legally affect.",
+          "oneOf": [
+            { "$ref": "#/$defs/gameActionEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/gameActionEntry" }, "minItems": 1 }
+          ]
+        },
+        "ringCondition": { "$ref": "#/$defs/predicate", "description": "mode: 'ring' only." },
+        "choices": {
+          "type": "object",
+          "description": "mode: 'select' only. Key is the label shown to the player; value is either a predicate or a game action used to determine legality.",
+          "additionalProperties": {
+            "oneOf": [
+              { "$ref": "#/$defs/predicate" },
+              { "$ref": "#/$defs/gameActionEntry" }
+            ]
+          }
+        },
+        "player": {
+          "enum": ["self", "opponent"],
+          "default": "self",
+          "description": "Which player makes this choice - almost always self, but e.g. an opponent chooses which card to discard on some cards."
+        }
+      }
+    },
+
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "description": "implementing-cards.md 'Actions'. ringteki cardaction.js.",
+      "properties": {
+        "title": { "type": "string" },
+        "condition": { "$ref": "#/$defs/predicate" },
+        "cost": {
+          "oneOf": [
+            { "$ref": "#/$defs/costEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/costEntry" }, "minItems": 1 }
+          ]
+        },
+        "target": { "$ref": "#/$defs/target" },
+        "targets": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/target" }
+        },
+        "gameAction": {
+          "oneOf": [
+            { "$ref": "#/$defs/gameActionEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/gameActionEntry" }, "minItems": 1 }
+          ]
+        },
+        "effect": {
+          "type": "string",
+          "description": "implementing-cards.md 'Effect messages'. Required when gameAction has more than one entry."
+        },
+        "effectArgs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/valueRef" }
+        },
+        "phase": {
+          "enum": ["any", "dynasty", "draw", "conflict", "fate", "regroup"],
+          "default": "any"
+        },
+        "location": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+          "default": "play area"
+        },
+        "limit": { "$ref": "#/$defs/limit" },
+        "max": { "$ref": "#/$defs/limit", "description": "Limit shared across all copies of this card by title, vs. limit which is per physical card." },
+        "anyPlayer": { "type": "boolean", "default": false },
+        "doesNotTarget": { "type": "boolean", "default": false }
+      }
+    },
+
+    "triggeredAbility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger", "when"],
+      "description": "implementing-cards.md 'Triggered abilities'. ringteki triggeredability.js; 'trigger' selects which of this.reaction/forcedReaction/interrupt/forcedInterrupt/wouldInterrupt ringteki would use.",
+      "properties": {
+        "trigger": { "enum": ["reaction", "forcedReaction", "interrupt", "forcedInterrupt", "wouldInterrupt"] },
+        "title": { "type": "string" },
+        "when": {
+          "type": "object",
+          "description": "Key is an EventNames.* value (ringteki Constants.ts), value is a predicate evaluated against the event and context.",
+          "additionalProperties": { "$ref": "#/$defs/predicate" },
+          "minProperties": 1
+        },
+        "aggregateWhen": {
+          "$ref": "#/$defs/predicate",
+          "description": "Rare: triggers once for a batch of simultaneous events rather than per-event. Most cards needing this use scriptOverride instead."
+        },
+        "cost": {
+          "oneOf": [
+            { "$ref": "#/$defs/costEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/costEntry" }, "minItems": 1 }
+          ]
+        },
+        "target": { "$ref": "#/$defs/target" },
+        "targets": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/target" }
+        },
+        "gameAction": {
+          "oneOf": [
+            { "$ref": "#/$defs/gameActionEntry" },
+            { "type": "array", "items": { "$ref": "#/$defs/gameActionEntry" }, "minItems": 1 }
+          ]
+        },
+        "handler": {
+          "const": "cancel",
+          "description": "implementing-cards.md ''Would' interrupts': the only built-in non-gameAction handler is context.cancel(), used by wouldInterrupt abilities that cancel the triggering event. Anything else needing a bespoke handler function uses scriptOverride."
+        },
+        "effect": { "type": "string" },
+        "effectArgs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/valueRef" }
+        },
+        "limit": { "$ref": "#/$defs/limit" },
+        "max": { "$ref": "#/$defs/limit" },
+        "anyPlayer": { "type": "boolean", "default": false },
+        "collectiveTrigger": { "type": "boolean", "default": false },
+        "location": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }],
+          "default": "play area"
+        }
+      }
+    },
+
+    "predicate": {
+      "description": "Closed, declarative predicate vocabulary used for match/condition/cardCondition/ringCondition/when. Deliberately not Turing-complete - it's an interpreter over a fixed instruction set the C# engine evaluates directly, not an embedded scripting language. Anything a card needs that this vocabulary can't express is exactly what scriptOverride is for.",
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["op"], "properties": { "op": { "const": "true" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "of"], "properties": {
+          "op": { "const": "and" }, "of": { "type": "array", "items": { "$ref": "#/$defs/predicate" }, "minItems": 2 } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "of"], "properties": {
+          "op": { "const": "or" }, "of": { "type": "array", "items": { "$ref": "#/$defs/predicate" }, "minItems": 2 } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "of"], "properties": {
+          "op": { "const": "not" }, "of": { "$ref": "#/$defs/predicate" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "type"], "properties": {
+          "op": { "const": "isType" }, "type": { "type": "string" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "trait"], "properties": {
+          "op": { "const": "hasTrait" }, "trait": { "type": "string" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "faction"], "properties": {
+          "op": { "const": "hasFaction" }, "faction": { "type": "string" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "status"], "properties": {
+          "op": { "const": "hasStatus" },
+          "status": { "enum": ["isHonored", "isDishonored", "isParticipating", "isDefending", "isAttacking", "isBowed", "isUnique", "isFacedown"] } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "controller"], "properties": {
+          "op": { "const": "isController" }, "controller": { "enum": ["self", "opponent", "any"] } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "location"], "properties": {
+          "op": { "const": "isLocation" }, "location": { "type": "string" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
+          "op": { "const": "isSelf" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "value"], "properties": {
+          "op": { "const": "isSameAs" }, "value": { "$ref": "#/$defs/valueRef" } } },
+        { "type": "object", "additionalProperties": false, "required": ["op", "stat", "comparator", "value"], "properties": {
+          "op": { "const": "compareStat" },
+          "stat": { "type": "string" },
+          "comparator": { "enum": ["lt", "lte", "eq", "gte", "gt"] },
+          "value": { "$ref": "#/$defs/valueRef" } } }
+      ]
+    },
+
+    "valueRef": {
+      "description": "A literal, a dotted path into the current ability context (mirrors ringteki's `context => ({...})` property factories for the handful of paths cards actually use), or a named engine-provided dynamic value. Same closed-vocabulary philosophy as predicate.",
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string" },
+        { "type": "boolean" },
+        { "type": "object", "additionalProperties": false, "required": ["contextPath"], "properties": {
+          "contextPath": {
+            "type": "string",
+            "description": "e.g. 'source', 'source.parent', 'player', 'player.opponent', 'target', 'targets.myChar'.",
+            "pattern": "^(source|player|target|targets)(\\.[a-zA-Z][a-zA-Z0-9]*)*$"
+          } } },
+        { "type": "object", "additionalProperties": false, "required": ["dynamic"], "properties": {
+          "dynamic": { "type": "string", "description": "Name of an engine-registered dynamic value function, e.g. countOpponentClaimedRings." },
+          "multiplier": { "type": "number", "default": 1 },
+          "offset": { "type": "number", "default": 0 } } }
+      ]
+    },
+
+    "scriptOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "handler"],
+      "description": "Escape valve for cards whose logic doesn't fit the generic vocabulary above. Can supplement a card's declarative abilities (override just the one clause that doesn't fit) or replace them entirely - implementer's call, but 'reason' must say which and why.",
+      "properties": {
+        "reason": { "type": "string", "minLength": 1 },
+        "handler": {
+          "type": "string",
+          "description": "Fully-qualified C# type name implementing ICardScript, resolved via reflection at card-load time.",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"
+        }
+      }
+    }
+  }
+}

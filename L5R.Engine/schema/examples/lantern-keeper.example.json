@@ -1,0 +1,53 @@
+{
+  "id": "example-lantern-keeper",
+  "name": "Lantern Keeper",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "monk"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 1,
+  "text": "While this character is participating in a conflict, each other participating character you control gets +1 political skill. Action: Bow this character to give a character +1 military skill until the end of the conflict. Interrupt: When this character would be discarded from a conflict, honor this character instead.",
+  "abilities": {
+    "persistentEffects": [
+      {
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "match": {
+          "op": "and",
+          "of": [
+            { "op": "isType", "type": "character" },
+            { "op": "hasStatus", "status": "isParticipating" },
+            { "op": "not", "of": { "op": "isSelf" } }
+          ]
+        },
+        "effect": { "name": "modifyPoliticalSkill", "value": 1 }
+      }
+    ],
+    "actions": [
+      {
+        "title": "Give a character +1 military skill",
+        "cost": [{ "name": "bowSelf" }],
+        "target": { "cardType": "character" },
+        "gameAction": {
+          "name": "cardLastingEffect",
+          "params": {
+            "duration": "untilEndOfConflict",
+            "effect": { "name": "modifyMilitarySkill", "value": 1 }
+          }
+        }
+      }
+    ],
+    "triggeredAbilities": [
+      {
+        "trigger": "forcedInterrupt",
+        "title": "Honor instead of discard",
+        "when": {
+          "onCardLeavesPlay": { "op": "isSelf" }
+        },
+        "gameAction": { "name": "honor" }
+      }
+    ]
+  }
+}

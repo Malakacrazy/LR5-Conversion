@@ -1,0 +1,11 @@
+# Reference-only checkout of the source project — not part of this project
+/reference/
+
+# .NET
+bin/
+obj/
+*.user
+
+# IDE
+.vs/
+.idea/
