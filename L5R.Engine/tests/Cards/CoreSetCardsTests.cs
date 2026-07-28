@@ -158,6 +158,9 @@ public class CoreSetCardsTests
     [TestCase("seeker-of-air")]
     [TestCase("seeker-of-earth")]
     [TestCase("seeker-of-enlightenment")]
+    [TestCase("seeker-of-fire")]
+    [TestCase("shameful-display")]
+    [TestCase("shiba-peacemaker")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -247,6 +250,8 @@ public class CoreSetCardsTests
     [TestCase("seeker-of-air", typeof(SeekerOfAirGainFateOnMatchingProvinceReveal))]
     [TestCase("seeker-of-earth", typeof(SeekerOfEarthGainFateOnMatchingProvinceReveal))]
     [TestCase("seeker-of-enlightenment", typeof(SeekerOfEnlightenmentBonusForFateOnUnclaimedRings))]
+    [TestCase("seeker-of-fire", typeof(SeekerOfFireGainFateOnMatchingProvinceReveal))]
+    [TestCase("shameful-display", typeof(ShamefulDisplayHonorOneDishonorOther))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

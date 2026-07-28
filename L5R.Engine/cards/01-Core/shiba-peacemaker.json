@@ -1,0 +1,21 @@
+{
+  "id": "shiba-peacemaker",
+  "name": "Shiba Peacemaker",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 4,
+  "political": 1,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "sourceLocation": "any",
+        "effect": { "name": "cannotParticipateAsAttacker" }
+      }
+    ]
+  }
+}

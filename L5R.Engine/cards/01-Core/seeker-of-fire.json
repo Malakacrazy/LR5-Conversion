@@ -1,0 +1,12 @@
+{
+  "id": "seeker-of-fire",
+  "name": "Seeker of Fire",
+  "type": "role",
+  "faction": "neutral",
+  "traits": ["seeker", "fire"],
+  "unique": false,
+  "scriptOverride": {
+    "reason": "Same shape as seeker-of-air/seeker-of-earth, just a different element - event.card cross-referenced against source's own trait, beyond the isSelf/isType/hasTrait-against-event.card convention.",
+    "handler": "L5R.Engine.Cards.Scripts.SeekerOfFireGainFateOnMatchingProvinceReveal"
+  }
+}

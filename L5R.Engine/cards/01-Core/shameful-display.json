@@ -1,0 +1,14 @@
+{
+  "id": "shameful-display",
+  "name": "Shameful Display",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["void"],
+  "strength": 3,
+  "scriptOverride": {
+    "reason": "Choose 2 participating characters, then honor one and dishonor the other - a bespoke multi-step selection with several fallback prompts (both must be eligible for either action, one might only be eligible for one, etc.), far beyond target.mode 'exactly' plus a plain gameAction. No generic 'assign these two different outcomes' concept exists.",
+    "handler": "L5R.Engine.Cards.Scripts.ShamefulDisplayHonorOneDishonorOther"
+  }
+}
