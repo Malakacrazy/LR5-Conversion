@@ -1,0 +1,28 @@
+{
+  "id": "master-of-the-spear",
+  "name": "Master of the Spear",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Send home character",
+        "condition": { "op": "hasStatus", "status": "isAttacking" },
+        "target": {
+          "player": "opponent",
+          "cardType": "character",
+          "controller": "opponent",
+          "cardCondition": { "op": "hasStatus", "status": "isParticipating" },
+          "gameAction": { "name": "sendHome" }
+        }
+      }
+    ]
+  }
+}

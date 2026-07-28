@@ -81,6 +81,10 @@ mechanic exists.
   then do Y with it" shape needs scriptOverride, only ones needing a *nested target*
   (controller/cardCondition on a second card selection), which choices/gameActionEntry
   params can't hold. See card-games/giver-of-gifts for the genuine two-level-select case.
+  `dynamic` gained sibling `controller`/`of` properties (alongside `for`/`role`) for
+  aggregate counters - the counting equivalent of `allCardsMatching`'s `controller`/`of` -
+  so matsu-beiona's "3 or more other Bushi characters I control" could be expressed as
+  `{dynamic: countCardsMatching, controller: self, of: {...}}` instead of scriptOverride.
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(

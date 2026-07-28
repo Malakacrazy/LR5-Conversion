@@ -1,0 +1,16 @@
+{
+  "id": "meddling-mediator",
+  "name": "Meddling Mediator",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 0,
+  "political": 3,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Condition needs this.game.getConflicts(opponent).filter(!passed).length > 1 - a count of the opponent's remaining conflict declarations this phase, a conflict-collection query beyond compareValues/anyCardMatches (which operate over cards, not the round's conflict record). The phase restriction itself (phase: 'conflict') is already expressible via the action schema's phase field, so isn't part of the gap.",
+    "handler": "L5R.Engine.Cards.Scripts.MeddlingMediatorTakeFateOrHonorWhenDoublyAttacked"
+  }
+}

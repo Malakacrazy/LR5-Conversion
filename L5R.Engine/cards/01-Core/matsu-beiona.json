@@ -1,0 +1,39 @@
+{
+  "id": "matsu-beiona",
+  "name": "Matsu Beiona",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Put 2 fate on this character",
+        "when": {
+          "onCharacterEntersPlay": {
+            "op": "and",
+            "of": [
+              { "op": "isSelf" },
+              {
+                "op": "compareValues",
+                "left": {
+                  "dynamic": "countCardsMatching",
+                  "controller": "self",
+                  "of": { "op": "and", "of": [{ "op": "hasTrait", "trait": "bushi" }, { "op": "not", "of": { "op": "isSelf" } }] }
+                },
+                "comparator": "gte",
+                "right": 3
+              }
+            ]
+          }
+        },
+        "gameAction": { "name": "placeFate", "params": { "amount": 2 } }
+      }
+    ]
+  }
+}

@@ -434,6 +434,15 @@
             "enum": ["attacker", "defender", "own"],
             "description": "Which conflict role the named counter is computed for, e.g. {dynamic: conflictParticipantCount, role: attacker} for ringteki's currentConflict.getNumberOfParticipantsFor('attacker'). Added porting mirumoto-prodigy/admit-defeat, whose conditions key off participant count by conflict role rather than by player - a different axis from 'for'. 'own' resolves to whichever role the source card's controller currently holds (attacker or defender) rather than a fixed literal - added porting brash-samurai, whose condition needs 'my side' regardless of which side that happens to be."
           },
+          "controller": {
+            "enum": ["self", "opponent", "any"],
+            "default": "self",
+            "description": "Whose cards are counted, for aggregate dynamic names like countCardsMatching - the counting equivalent of allCardsMatching's controller. Added porting matsu-beiona, whose condition needs 'how many bushi characters do I control' rather than a plain named counter."
+          },
+          "of": {
+            "$ref": "#/$defs/predicate",
+            "description": "Filter predicate for aggregate dynamic names like countCardsMatching - the counting equivalent of allCardsMatching's 'of'. Not valid for simple named counters (countHoldingsInPlay, countUnclaimedRings, ...) that need no filter."
+          },
           "multiplier": { "type": "number", "default": 1 },
           "offset": { "type": "number", "default": 0 } } },
         { "type": "object", "additionalProperties": false, "required": ["allCardsMatching"],

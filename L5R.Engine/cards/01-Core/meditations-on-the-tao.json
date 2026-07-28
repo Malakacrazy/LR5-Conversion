@@ -1,0 +1,22 @@
+{
+  "id": "meditations-on-the-tao",
+  "name": "Meditations on the Tao",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["fire"],
+  "strength": 4,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Remove a fate from a character",
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "hasStatus", "status": "isAttacking" },
+          "gameAction": { "name": "removeFate" }
+        }
+      }
+    ]
+  }
+}
