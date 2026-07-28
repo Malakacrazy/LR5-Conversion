@@ -71,6 +71,10 @@ public class CoreSetCardsTests
     [TestCase("daidoji-nerishma")]
     [TestCase("daimyo-s-favor")]
     [TestCase("deathseeker")]
+    [TestCase("defend-the-wall")]
+    [TestCase("display-of-power")]
+    [TestCase("doji-challenger")]
+    [TestCase("doji-gift-giver")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -110,6 +114,8 @@ public class CoreSetCardsTests
     [TestCase("calling-in-favors", typeof(CallingInFavorsAttachOrDiscard))]
     [TestCase("court-games", typeof(CourtGamesHonorOrDishonorParticipant))]
     [TestCase("deathseeker", typeof(DeathseekerRemoveFateOrDiscardOnLoss))]
+    [TestCase("defend-the-wall", typeof(DefendTheWallResolveRingAsAttacker))]
+    [TestCase("display-of-power", typeof(DisplayOfPowerCancelAndClaimRing))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,14 @@
+{
+  "id": "defend-the-wall",
+  "name": "Defend the Wall",
+  "type": "province",
+  "faction": "crab",
+  "traits": [],
+  "unique": false,
+  "elements": ["earth"],
+  "strength": 4,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.conflictProvince (compared against context.source, the province itself) and event.conflict.winner - event fields beyond the closed predicate vocabulary, consistent with the established 'when clauses inspecting event fields stay scriptOverride' policy.",
+    "handler": "L5R.Engine.Cards.Scripts.DefendTheWallResolveRingAsAttacker"
+  }
+}

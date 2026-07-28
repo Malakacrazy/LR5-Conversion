@@ -1,0 +1,25 @@
+{
+  "id": "doji-challenger",
+  "name": "Doji Challenger",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["bushi", "duelist"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 3,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Move a character into the conflict",
+        "condition": { "op": "hasStatus", "status": "isAttacking" },
+        "target": {
+          "cardType": "character",
+          "controller": "opponent",
+          "gameAction": { "name": "moveToConflict" }
+        }
+      }
+    ]
+  }
+}

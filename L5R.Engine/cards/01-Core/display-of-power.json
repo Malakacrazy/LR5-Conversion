@@ -1,0 +1,14 @@
+{
+  "id": "display-of-power",
+  "name": "Display of Power",
+  "type": "event",
+  "faction": "phoenix",
+  "traits": ["spell", "fire"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 3,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.loser/conflictUnopposed (event fields beyond the closed predicate vocabulary), and its handler is a bespoke one-shot listener (this.game.once) that cancels the ring effect via a wouldInterrupt hook and then manually resolves/claims the ring - far beyond a gameAction or the 'would interrupt' cancel() handler the schema supports.",
+    "handler": "L5R.Engine.Cards.Scripts.DisplayOfPowerCancelAndClaimRing"
+  }
+}

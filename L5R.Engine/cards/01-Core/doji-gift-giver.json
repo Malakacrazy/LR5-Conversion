@@ -1,0 +1,28 @@
+{
+  "id": "doji-gift-giver",
+  "name": "Doji Gift Giver",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 0,
+  "political": 2,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow a character",
+        "cost": [{ "name": "giveFateToOpponent", "params": { "amount": 1 } }],
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "target": {
+          "player": "opponent",
+          "cardType": "character",
+          "controller": "opponent",
+          "cardCondition": { "op": "hasStatus", "status": "isParticipating" },
+          "gameAction": { "name": "bow" }
+        }
+      }
+    ]
+  }
+}
