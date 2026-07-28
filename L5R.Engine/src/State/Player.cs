@@ -2,7 +2,10 @@ namespace L5R.Engine.State;
 
 /// <summary>
 /// Minimal player state - just enough for GetLegalActions to have real zones and
-/// resources to check. Grows when task 9 needs more (decks, provinces, etc).
+/// resources to check, plus a single Discard zone for the first executable costs
+/// (sacrificeSelf). Not yet split into dynasty/conflict discard piles - grows when a
+/// card actually needs that distinction. Grows further as later card groups need more
+/// (decks, provinces, etc).
 /// </summary>
 public sealed class Player
 {
@@ -11,4 +14,5 @@ public sealed class Player
     public int Honor { get; set; }
     public List<Card> Hand { get; } = new();
     public List<Card> PlayArea { get; } = new();
+    public List<Card> Discard { get; } = new();
 }

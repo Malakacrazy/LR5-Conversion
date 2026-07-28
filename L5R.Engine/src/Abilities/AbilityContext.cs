@@ -8,4 +8,7 @@ public sealed class AbilityContext
     public required GameState Game { get; init; }
     public required Player Player { get; init; }
     public required Card Source { get; init; }
+
+    /// <summary>ringteki context.target - set once a target has been chosen, null before then.</summary>
+    public Card? Target { get; set; }
 }
