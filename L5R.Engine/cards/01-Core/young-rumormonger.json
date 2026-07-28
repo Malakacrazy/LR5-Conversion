@@ -1,0 +1,16 @@
+{
+  "id": "young-rumormonger",
+  "name": "Young Rumormonger",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "target's cardCondition needs to compare each candidate against event.card (exclude it) and match event.card's controller - contextPath has no way to reference the triggering event's card at all outside the when clause's own isSelf convention. The cancel gameAction's replacementGameAction also depends on which of the two alternate events fired (honor vs dishonor), a dynamic-by-event-name selection beyond the closed vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.YoungRumormongerRedirectHonorOrDishonor"
+  }
+}

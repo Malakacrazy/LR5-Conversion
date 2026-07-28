@@ -1,0 +1,28 @@
+{
+  "id": "yojin-no-shiro",
+  "name": "Yōjin no Shiro",
+  "type": "stronghold",
+  "faction": "lion",
+  "traits": ["castle"],
+  "unique": true,
+  "fate": 7,
+  "honor": 12,
+  "influencePool": 10,
+  "strengthBonus": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Give attacking characters +1/+0",
+        "cost": [{ "name": "bowSelf" }],
+        "condition": { "op": "isDuringConflict" },
+        "gameAction": {
+          "name": "cardLastingEffect",
+          "params": {
+            "target": { "allCardsMatching": { "controller": "self", "of": { "op": "hasStatus", "status": "isAttacking" } } },
+            "effect": { "name": "modifyMilitarySkill", "value": 1 }
+          }
+        }
+      }
+    ]
+  }
+}
