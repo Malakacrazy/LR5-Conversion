@@ -1,0 +1,25 @@
+{
+  "id": "elemental-fury",
+  "name": "Elemental Fury",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["water"],
+  "strength": 4,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Switch the contested ring",
+        "when": {
+          "onCardRevealed": { "op": "and", "of": [{ "op": "isSelf" }, { "op": "isDuringConflict" }] }
+        },
+        "gameAction": {
+          "name": "selectRing",
+          "params": { "gameAction": { "name": "switchConflictElement" } }
+        }
+      }
+    ]
+  }
+}

@@ -59,7 +59,14 @@ mechanic exists.
   `statBudget`) had been in the mode enum unused since the original schema pass; ambush
   and cavalry-reserves are the first two real cards needing it, so it gained its
   supporting `numCards`/`cardStat`/`statBudget` properties now rather than earlier when
-  it would have been speculative.
+  it would have been speculative. Triggered-ability `when` clauses gained one precise
+  exception to the "event fields stay scriptOverride" policy: card-shaped predicate ops
+  (`isSelf`, `isType`, `hasTrait`, ...) evaluate against the triggering event's `card`
+  field for event types that carry one (onCardRevealed, onCharacterEntersPlay, ...) -
+  `{onCardRevealed: {op: isSelf}}` means ringteki's `event.card === context.source`
+  (elemental-fury). This is deliberately narrow: it's the one event field common and
+  uniform enough across event types to generalize; anything else (`event.conflict.*`,
+  `event.ringFate`, ...) still needs scriptOverride (endless-plains, enlightened-warrior).
 - **This schema validates shape, not every ringteki invariant.** For example, the doc says
   "player effects should not have a match property" — that's a runtime invariant the C#
   loader checks (since whether an effect name is card/ring/player-scoped lives in the

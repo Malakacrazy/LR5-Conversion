@@ -1,0 +1,14 @@
+{
+  "id": "endless-plains",
+  "name": "Endless Plains",
+  "type": "province",
+  "faction": "unicorn",
+  "traits": [],
+  "unique": false,
+  "elements": ["water"],
+  "strength": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.conflictProvince (compared against context.source) - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention (see elemental-fury), since onConflictDeclared events carry a conflict object rather than a top-level card field.",
+    "handler": "L5R.Engine.Cards.Scripts.EndlessPlainsBreakAndDiscardAttacker"
+  }
+}

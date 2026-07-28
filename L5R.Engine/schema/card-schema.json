@@ -314,7 +314,7 @@
         "title": { "type": "string" },
         "when": {
           "type": "object",
-          "description": "Key is an EventNames.* value (ringteki Constants.ts), value is a predicate evaluated against the event and context.",
+          "description": "Key is an EventNames.* value (ringteki Constants.ts), value is a predicate evaluated against the event and context. Card-shaped ops (isSelf/isType/hasTrait/etc.) evaluate against the event's primary `card` field, for the (common) event types that carry one, e.g. onCardRevealed/onCharacterEntersPlay - {onCardRevealed: {op: isSelf}} means 'the card this event is about is this card' (ringteki's event.card === context.source). Ops that don't need a candidate (isDuringConflict, true) ignore it as usual. Predicates needing any *other* event field (event.conflict.*, event.ringFate, etc.) are exactly what scriptOverride is for - event shapes vary too much per event type to generalize beyond this one well-defined `card` convention.",
           "additionalProperties": { "$ref": "#/$defs/predicate" },
           "minProperties": 1
         },

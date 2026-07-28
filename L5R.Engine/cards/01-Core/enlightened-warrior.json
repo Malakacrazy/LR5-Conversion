@@ -1,0 +1,16 @@
+{
+  "id": "enlightened-warrior",
+  "name": "Enlightened Warrior",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.ringFate and event.conflict.attackingPlayer - event fields beyond the closed predicate vocabulary, consistent with the established policy (see elemental-fury's isSelf/event.card convention for the one case that is generalized).",
+    "handler": "L5R.Engine.Cards.Scripts.EnlightenedWarriorGainFateOnOpponentRingSelect"
+  }
+}

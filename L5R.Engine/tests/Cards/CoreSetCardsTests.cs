@@ -75,6 +75,10 @@ public class CoreSetCardsTests
     [TestCase("display-of-power")]
     [TestCase("doji-challenger")]
     [TestCase("doji-gift-giver")]
+    [TestCase("doomed-shugenja")]
+    [TestCase("elemental-fury")]
+    [TestCase("endless-plains")]
+    [TestCase("enlightened-warrior")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -116,6 +120,8 @@ public class CoreSetCardsTests
     [TestCase("deathseeker", typeof(DeathseekerRemoveFateOrDiscardOnLoss))]
     [TestCase("defend-the-wall", typeof(DefendTheWallResolveRingAsAttacker))]
     [TestCase("display-of-power", typeof(DisplayOfPowerCancelAndClaimRing))]
+    [TestCase("endless-plains", typeof(EndlessPlainsBreakAndDiscardAttacker))]
+    [TestCase("enlightened-warrior", typeof(EnlightenedWarriorGainFateOnOpponentRingSelect))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

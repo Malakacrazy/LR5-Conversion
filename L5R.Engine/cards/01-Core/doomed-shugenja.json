@@ -1,0 +1,20 @@
+{
+  "id": "doomed-shugenja",
+  "name": "Doomed Shugenja",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["shugenja", "fire"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 3,
+  "political": 3,
+  "glory": 0,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "sourceLocation": "any",
+        "effect": { "name": "playerCannot", "value": { "cannot": "placeFateWhenPlayingCharacter", "restricts": "source" } }
+      }
+    ]
+  }
+}
