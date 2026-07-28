@@ -1,0 +1,14 @@
+{
+  "id": "strength-in-numbers",
+  "name": "Strength in Numbers",
+  "type": "event",
+  "faction": "lion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "Condition needs 'is the player currently the attacking player', a role-perspective check with no equivalent predicate (isDuringConflict's type param scopes the conflict's type/element, not which side the acting player is on). The cardCondition's glory-vs-participant-count comparison would otherwise be expressible via compareStat.",
+    "handler": "L5R.Engine.Cards.Scripts.StrengthInNumbersSendHomeLowGloryDefender"
+  }
+}

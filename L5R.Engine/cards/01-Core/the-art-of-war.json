@@ -1,0 +1,20 @@
+{
+  "id": "the-art-of-war",
+  "name": "The Art of War",
+  "type": "province",
+  "faction": "lion",
+  "traits": [],
+  "unique": false,
+  "elements": ["water"],
+  "strength": 3,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "interrupt",
+        "title": "Draw 3 cards",
+        "when": { "onBreakProvince": { "op": "isSelf" } },
+        "gameAction": { "name": "draw", "params": { "amount": 3 } }
+      }
+    ]
+  }
+}

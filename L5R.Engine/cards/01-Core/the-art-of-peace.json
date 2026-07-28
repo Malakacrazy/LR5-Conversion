@@ -1,0 +1,29 @@
+{
+  "id": "the-art-of-peace",
+  "name": "The Art of Peace",
+  "type": "province",
+  "faction": "crane",
+  "traits": [],
+  "unique": false,
+  "elements": ["air"],
+  "strength": 4,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "interrupt",
+        "title": "Honor all defenders and dishonor all attackers",
+        "when": { "onBreakProvince": { "op": "isSelf" } },
+        "gameAction": [
+          {
+            "name": "dishonor",
+            "params": { "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isAttacking" } } } }
+          },
+          {
+            "name": "honor",
+            "params": { "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isDefending" } } } }
+          }
+        ]
+      }
+    ]
+  }
+}

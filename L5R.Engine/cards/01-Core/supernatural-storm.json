@@ -1,0 +1,31 @@
+{
+  "id": "supernatural-storm",
+  "name": "Supernatural Storm",
+  "type": "event",
+  "faction": "phoenix",
+  "traits": ["spell", "water"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Increase the skill of one character",
+        "condition": { "op": "anyCardMatches", "controller": "self", "of": { "op": "hasTrait", "trait": "shugenja" } },
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "hasStatus", "status": "isParticipating" },
+          "gameAction": {
+            "name": "cardLastingEffect",
+            "params": {
+              "effect": {
+                "name": "modifyBothSkills",
+                "value": { "dynamic": "countCardsMatching", "controller": "self", "of": { "op": "hasTrait", "trait": "shugenja" } }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
