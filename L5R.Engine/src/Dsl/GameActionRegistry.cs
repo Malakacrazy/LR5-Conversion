@@ -10,7 +10,10 @@ public sealed class GameActionRegistry
 {
     private readonly Dictionary<string, IGameActionHandler> _handlers = new()
     {
-        ["placeFate"] = new PlaceFateGameActionHandler()
+        ["placeFate"] = new PlaceFateGameActionHandler(),
+        ["returnToHand"] = new ReturnToHandGameActionHandler(),
+        ["draw"] = new DrawGameActionHandler(),
+        ["discardFromPlay"] = new DiscardFromPlayGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

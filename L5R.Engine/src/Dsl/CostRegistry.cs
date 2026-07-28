@@ -11,7 +11,8 @@ public sealed class CostRegistry
 {
     private readonly Dictionary<string, ICostHandler> _handlers = new()
     {
-        ["sacrificeSelf"] = new SacrificeSelfCostHandler()
+        ["sacrificeSelf"] = new SacrificeSelfCostHandler(),
+        ["payHonor"] = new PayHonorCostHandler()
     };
 
     public ICostHandler Resolve(string name) =>

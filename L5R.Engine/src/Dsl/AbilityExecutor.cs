@@ -37,6 +37,9 @@ public sealed class AbilityExecutor
         foreach (var cost in action.Costs)
             _costs.Resolve(cost.Name).Pay(context, cost.Params);
 
+        // ringteki CardGameAction.defaultTargets: a gameAction with no explicit target
+        // defaults to context.source, e.g. adept-of-shadows' returnToHand.
+        context.Target = context.Source;
         foreach (var gameAction in action.GameActions)
             _gameActions.Resolve(gameAction.Name).Execute(context, gameAction.Params);
 

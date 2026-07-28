@@ -9,11 +9,6 @@ public sealed class SacrificeSelfCostHandler : ICostHandler
     public bool CanPay(AbilityContext context, JsonElement? parameters) =>
         context.Source.Location == "play area";
 
-    public void Pay(AbilityContext context, JsonElement? parameters)
-    {
-        var controller = context.Source.Controller;
-        controller.PlayArea.Remove(context.Source);
-        controller.Discard.Add(context.Source);
-        context.Source.Location = "discard";
-    }
+    public void Pay(AbilityContext context, JsonElement? parameters) =>
+        ZoneMover.MoveTo(context.Source, context.Source.Controller.Discard, "discard");
 }

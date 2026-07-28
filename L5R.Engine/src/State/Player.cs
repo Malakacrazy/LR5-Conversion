@@ -15,4 +15,10 @@ public sealed class Player
     public List<Card> Hand { get; } = new();
     public List<Card> PlayArea { get; } = new();
     public List<Card> Discard { get; } = new();
+
+    /// <summary>
+    /// Single deck for now (not yet split into dynasty/conflict decks) - grows when a
+    /// card needs that distinction. Index 0 is the top of the deck.
+    /// </summary>
+    public List<Card> Deck { get; } = new();
 }
