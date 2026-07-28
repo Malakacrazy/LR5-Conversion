@@ -13,7 +13,9 @@ public sealed class GameActionRegistry
         ["placeFate"] = new PlaceFateGameActionHandler(),
         ["returnToHand"] = new ReturnToHandGameActionHandler(),
         ["draw"] = new DrawGameActionHandler(),
-        ["discardFromPlay"] = new DiscardFromPlayGameActionHandler()
+        ["discardFromPlay"] = new DiscardFromPlayGameActionHandler(),
+        ["honor"] = new HonorGameActionHandler(),
+        ["dishonor"] = new DishonorGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

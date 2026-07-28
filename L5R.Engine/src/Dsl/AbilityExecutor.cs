@@ -8,8 +8,8 @@ namespace L5R.Engine.Dsl;
 /// target's) gameActions. Target selection itself is not modeled yet - the caller passes
 /// the chosen target directly, matching how far the interpreter has grown so far (task
 /// 9's first slice: prove one simple real card runs end to end, not build a full prompt
-/// pipeline). condition is not evaluated yet - throws if present, per the same
-/// fail-loud-not-silent policy as TargetResolver.
+/// pipeline). An action-level condition's implicit candidate is context.Source, matching
+/// the convention established throughout card-porting (e.g. kaiu-shuichi/mirumoto-prodigy).
 /// </summary>
 public sealed class AbilityExecutor
 {
@@ -22,10 +22,13 @@ public sealed class AbilityExecutor
         _gameActions = gameActions;
     }
 
+    public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
+        action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
+
     public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null)
     {
-        if (action.Condition is not null)
-            throw new NotSupportedException("AbilityExecutor does not yet evaluate action conditions.");
+        if (!IsConditionMet(action, context))
+            throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
 
         foreach (var cost in action.Costs)
         {
