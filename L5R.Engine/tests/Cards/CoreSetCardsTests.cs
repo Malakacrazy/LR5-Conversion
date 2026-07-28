@@ -185,6 +185,10 @@ public class CoreSetCardsTests
     [TestCase("the-perfect-gift")]
     [TestCase("togashi-kazue")]
     [TestCase("togashi-yokuni")]
+    [TestCase("tranquility")]
+    [TestCase("utaku-infantry")]
+    [TestCase("utaku-yumino")]
+    [TestCase("vanguard-warrior")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

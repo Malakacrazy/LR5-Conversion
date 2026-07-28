@@ -1,0 +1,30 @@
+{
+  "id": "tranquility",
+  "name": "Tranquility",
+  "type": "event",
+  "faction": "dragon",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Opponent's characters at home can't use abilities",
+        "condition": { "op": "isDuringConflict" },
+        "gameAction": {
+          "name": "cardLastingEffect",
+          "params": {
+            "target": {
+              "allCardsMatching": {
+                "controller": "opponent",
+                "of": { "op": "not", "of": { "op": "hasStatus", "status": "isParticipating" } }
+              }
+            },
+            "effect": { "name": "cardCannot", "value": { "cannot": "triggerAbilities" } }
+          }
+        }
+      }
+    ]
+  }
+}

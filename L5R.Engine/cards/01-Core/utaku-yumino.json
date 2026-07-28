@@ -1,0 +1,23 @@
+{
+  "id": "utaku-yumino",
+  "name": "Utaku Yumino",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi", "battle-maiden", "cavalry"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 2,
+  "political": 2,
+  "glory": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard a card for +2/+2",
+        "condition": { "op": "isDuringConflict" },
+        "cost": [{ "name": "discardCard", "params": { "location": "hand" } }],
+        "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "modifyBothSkills", "value": 2 } } },
+        "limit": { "per": "conflict", "max": 1 }
+      }
+    ]
+  }
+}

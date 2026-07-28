@@ -184,6 +184,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("the-perfect-gift")]
     [TestCase("togashi-kazue")]
     [TestCase("togashi-yokuni")]
+    [TestCase("tranquility")]
+    [TestCase("utaku-infantry")]
+    [TestCase("utaku-yumino")]
+    [TestCase("vanguard-warrior")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

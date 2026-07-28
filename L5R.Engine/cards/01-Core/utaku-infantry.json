@@ -1,0 +1,28 @@
+{
+  "id": "utaku-infantry",
+  "name": "Utaku Infantry",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 0,
+  "political": 0,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "effect": {
+          "name": "modifyBothSkills",
+          "value": {
+            "dynamic": "countCardsMatching",
+            "controller": "self",
+            "of": { "op": "and", "of": [{ "op": "hasFaction", "faction": "unicorn" }, { "op": "hasStatus", "status": "isParticipating" }] }
+          }
+        }
+      }
+    ]
+  }
+}
