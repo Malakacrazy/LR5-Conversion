@@ -36,7 +36,13 @@ mechanic exists.
   assumed one implicit subject) and a sibling `allCardsMatching` alternative for
   gameAction targets that bulk-apply to an entire scope rather than a single value or a
   player-chosen target (grasp-of-earth's "every card the opponent controls"). Both
-  retired the scriptOverride those two cards originally needed. Triggered-ability `when`
+  retired the scriptOverride those two cards originally needed. `dynamic` later gained a
+  `role: attacker|defender` sibling to `for` (a different axis - conflict role, not
+  player) so `{dynamic: conflictParticipantCount, role: attacker}` could express
+  ringteki's `currentConflict.getNumberOfParticipantsFor('attacker')`, retiring the
+  scriptOverride mirumoto-prodigy and admit-defeat originally needed (cautious-scout
+  still needs scriptOverride - it also requires a direct reference to the conflict's
+  province, which has no generic equivalent). Triggered-ability `when`
   clauses that need to inspect *event* fields (not card/player state) keep landing on
   `scriptOverride` instead of growing the vocabulary — event shapes vary too much per
   event type to generalize cleanly, unlike the player/card comparisons above.

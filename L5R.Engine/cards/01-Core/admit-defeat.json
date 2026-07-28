@@ -1,0 +1,29 @@
+{
+  "id": "admit-defeat",
+  "name": "Admit Defeat",
+  "type": "event",
+  "faction": "crane",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow a character",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "isDuringConflict" },
+            { "op": "compareValues", "left": { "dynamic": "conflictParticipantCount", "role": "defender" }, "comparator": "eq", "right": 1 }
+          ]
+        },
+        "target": {
+          "cardType": "character",
+          "cardCondition": { "op": "hasStatus", "status": "isDefending" },
+          "gameAction": { "name": "bow" }
+        }
+      }
+    ]
+  }
+}

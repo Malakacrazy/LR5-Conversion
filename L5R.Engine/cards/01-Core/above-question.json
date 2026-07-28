@@ -1,0 +1,17 @@
+{
+  "id": "above-question",
+  "name": "Above Question",
+  "type": "attachment",
+  "faction": "crane",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "abilities": {
+    "whileAttached": [
+      {
+        "effect": { "name": "cardCannot", "value": { "cannot": "target", "restricts": "opponentsEvents" } }
+      }
+    ]
+  }
+}

@@ -9,8 +9,19 @@
   "military": 2,
   "political": 2,
   "glory": 1,
-  "scriptOverride": {
-    "reason": "Condition needs this.game.currentConflict.getNumberOfParticipantsFor('attacker') === 1, the same conflict-participant-count check already flagged on cautious-scout - beyond compareStat/compareValues/anyCardMatches.",
-    "handler": "L5R.Engine.Cards.Scripts.MirumotoProdigyRestrictDefendersWhenAttackingAlone"
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isAttacking" },
+            { "op": "compareValues", "left": { "dynamic": "conflictParticipantCount", "role": "attacker" }, "comparator": "eq", "right": 1 }
+          ]
+        },
+        "effect": { "name": "restrictNumberOfDefenders", "value": 1 }
+      }
+    ]
   }
 }

@@ -414,6 +414,10 @@
             "default": "self",
             "description": "Which player the named counter is computed for. Added porting kaiu-shuichi, whose condition needs the same counter evaluated once per player (e.g. compareValues on {dynamic, for: self} and {dynamic, for: opponent} combined with predicate 'or') - dynamic previously assumed a single implicit subject."
           },
+          "role": {
+            "enum": ["attacker", "defender"],
+            "description": "Which conflict role the named counter is computed for, e.g. {dynamic: conflictParticipantCount, role: attacker} for ringteki's currentConflict.getNumberOfParticipantsFor('attacker'). Added porting mirumoto-prodigy/admit-defeat, whose conditions key off participant count by conflict role rather than by player - a different axis from 'for'."
+          },
           "multiplier": { "type": "number", "default": 1 },
           "offset": { "type": "number", "default": 0 } } },
         { "type": "object", "additionalProperties": false, "required": ["allCardsMatching"],

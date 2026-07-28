@@ -50,6 +50,10 @@ public class CoreSetCardsTests
     [TestCase("fertile-fields")]
     [TestCase("shinjo-outrider")]
     [TestCase("height-of-fashion")]
+    [TestCase("above-question")]
+    [TestCase("adept-of-shadows")]
+    [TestCase("admit-defeat")]
+    [TestCase("against-the-waves")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -84,7 +88,6 @@ public class CoreSetCardsTests
     [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
     [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
     [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
-    [TestCase("mirumoto-prodigy", typeof(MirumotoProdigyRestrictDefendersWhenAttackingAlone))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -99,11 +102,14 @@ public class CoreSetCardsTests
 
     [TestCase("kaiu-shuichi")]
     [TestCase("grasp-of-earth")]
+    [TestCase("mirumoto-prodigy")]
+    [TestCase("admit-defeat")]
     public void Card_NoLongerNeedsScriptOverride_AfterTheVocabularyGrewToCoverIt(string cardId)
     {
         // kaiu-shuichi needed a per-player dynamic count (valueRef "for"); grasp-of-earth
-        // needed a bulk-collection gameAction target ("allCardsMatching"). Both were
-        // originally scriptOverride; this pins down that they now load generically.
+        // needed a bulk-collection gameAction target ("allCardsMatching"); mirumoto-prodigy
+        // and admit-defeat needed a per-role conflict participant count (valueRef "role").
+        // All were originally scriptOverride; this pins down that they now load generically.
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
         var path = Path.Combine(CardsDir, $"{cardId}.json");
 

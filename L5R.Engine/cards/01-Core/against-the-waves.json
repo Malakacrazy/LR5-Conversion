@@ -1,0 +1,22 @@
+{
+  "id": "against-the-waves",
+  "name": "Against the Waves",
+  "type": "event",
+  "faction": "phoenix",
+  "traits": ["spell", "water"],
+  "unique": false,
+  "printedCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow or ready a shugenja",
+        "target": {
+          "cardType": "character",
+          "controller": "self",
+          "cardCondition": { "op": "hasTrait", "trait": "shugenja" },
+          "gameAction": [{ "name": "bow" }, { "name": "ready" }]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "adept-of-shadows",
+  "name": "Adept of Shadows",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["bushi", "shinobi"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 0,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Return to hand",
+        "cost": [{ "name": "payHonor", "params": { "amount": 1 } }],
+        "gameAction": { "name": "returnToHand" }
+      }
+    ]
+  }
+}
