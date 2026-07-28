@@ -1,0 +1,14 @@
+{
+  "id": "pilgrimage",
+  "name": "Pilgrimage",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["void"],
+  "strength": 5,
+  "scriptOverride": {
+    "reason": "Registers raw ringteki event listeners across two event/stage pairs (onResolveConflictRing:OtherEffects, onResolveRingElement:cancelinterrupt) with a shared handler checking isBroken/isBlank/event.conflict.conflictProvince/event.cancelled - far beyond a single triggeredAbility's when/gameAction shape.",
+    "handler": "L5R.Engine.Cards.Scripts.PilgrimageCancelRingEffectsAtThisProvince"
+  }
+}

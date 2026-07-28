@@ -1,0 +1,16 @@
+{
+  "id": "obstinate-recruit",
+  "name": "Obstinate Recruit",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 0,
+  "military": 2,
+  "political": 0,
+  "glory": 0,
+  "scriptOverride": {
+    "reason": "Uses a delayedEffect (a self-monitoring effect that discards this card the moment the opponent becomes more honorable) nested inside a persistentEffect's own effect - the schema's persistentEffect has match/condition/effect as flat top-level fields, not a nested condition+gameAction bundle, so delayedEffect-as-an-effect-value has no representation.",
+    "handler": "L5R.Engine.Cards.Scripts.ObstinateRecruitDiscardWhenOpponentMoreHonorable"
+  }
+}

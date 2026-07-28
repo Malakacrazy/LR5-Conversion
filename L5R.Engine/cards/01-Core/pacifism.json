@@ -1,0 +1,24 @@
+{
+  "id": "pacifism",
+  "name": "Pacifism",
+  "type": "attachment",
+  "faction": "phoenix",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 2,
+  "abilities": {
+    "whileAttached": [
+      {
+        "effect": [
+          { "name": "cannotParticipateAsAttacker", "value": "military" },
+          { "name": "cannotParticipateAsDefender", "value": "military" }
+        ]
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Overrides DrawCard.canPlay to forbid playing this card while any conflict is currently in progress - the same play-eligibility gap already flagged on cloud-the-mind/height-of-fashion, so only the canPlay restriction is scripted; the whileAttached effects above are expressed generically.",
+    "handler": "L5R.Engine.Cards.Scripts.PacifismCannotPlayDuringConflict"
+  }
+}

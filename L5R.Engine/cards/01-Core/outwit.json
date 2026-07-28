@@ -1,0 +1,14 @@
+{
+  "id": "outwit",
+  "name": "Outwit",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 0,
+  "scriptOverride": {
+    "reason": "cardCondition needs a double-candidate comparison: does the player control a participating Courtier whose politicalSkill exceeds THIS candidate's politicalSkill. anyCardMatches's 'of' predicate has its own local candidate (the courtier being existentially checked) with no way to also reference the outer cardCondition's candidate (the character being targeted) at the same time.",
+    "handler": "L5R.Engine.Cards.Scripts.OutwitSendHomeOutclassedByCourtier"
+  }
+}

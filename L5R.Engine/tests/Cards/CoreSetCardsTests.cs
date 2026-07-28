@@ -138,6 +138,10 @@ public class CoreSetCardsTests
     [TestCase("night-raid")]
     [TestCase("niten-adept")]
     [TestCase("noble-sacrifice")]
+    [TestCase("obstinate-recruit")]
+    [TestCase("outwit")]
+    [TestCase("pacifism")]
+    [TestCase("pilgrimage")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -212,6 +216,10 @@ public class CoreSetCardsTests
     [TestCase("mirumoto-raitsugu", typeof(MirumotoRaitsuguDuelAndPunishLoser))]
     [TestCase("mountain-s-anvil-castle", typeof(MountainsAnvilCastleBonusForAttachments))]
     [TestCase("niten-adept", typeof(NitenAdeptBowAttachmentToBowUnattachedParticipant))]
+    [TestCase("obstinate-recruit", typeof(ObstinateRecruitDiscardWhenOpponentMoreHonorable))]
+    [TestCase("outwit", typeof(OutwitSendHomeOutclassedByCourtier))]
+    [TestCase("pacifism", typeof(PacifismCannotPlayDuringConflict))]
+    [TestCase("pilgrimage", typeof(PilgrimageCancelRingEffectsAtThisProvince))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
