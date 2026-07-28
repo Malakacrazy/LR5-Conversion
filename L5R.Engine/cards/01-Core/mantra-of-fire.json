@@ -1,0 +1,14 @@
+{
+  "id": "mantra-of-fire",
+  "name": "Mantra of Fire",
+  "type": "event",
+  "faction": "dragon",
+  "traits": ["kiho", "fire"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.ring.hasElement/event.conflict.attackingPlayer - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since onConflictDeclared events carry ring/conflict objects rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.MantraOfFireAddFateToMonkAndDraw"
+  }
+}

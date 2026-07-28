@@ -1,0 +1,18 @@
+{
+  "id": "manicured-garden",
+  "name": "Manicured Garden",
+  "type": "province",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "elements": ["air"],
+  "strength": 4,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Gain 1 fate",
+        "gameAction": { "name": "gainFate" }
+      }
+    ]
+  }
+}

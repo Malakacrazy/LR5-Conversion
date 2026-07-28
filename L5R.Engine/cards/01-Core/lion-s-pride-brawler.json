@@ -1,0 +1,16 @@
+{
+  "id": "lion-s-pride-brawler",
+  "name": "Lion's Pride Brawler",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["bushi", "courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "cardCondition compares each candidate's militarySkill against source's own militarySkill - the same candidate-vs-source dynamic stat comparison gap already flagged on fearsome-mystic, beyond compareStat's candidate-vs-literal shape.",
+    "handler": "L5R.Engine.Cards.Scripts.LionsPrideBrawlerBowLowerMilitarySkill"
+  }
+}
