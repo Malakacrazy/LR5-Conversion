@@ -43,16 +43,33 @@ public sealed class AbilityExecutor
         // ringteki CardGameAction.defaultTargets: a gameAction with no explicit target
         // defaults to context.source, e.g. adept-of-shadows' returnToHand.
         context.Target = context.Source;
-        foreach (var gameAction in action.GameActions)
-            _gameActions.Resolve(gameAction.Name).Execute(context, gameAction.Params);
+        RunGameActions(action.GameActions, context);
 
         if (action.Target is not null)
         {
             context.Target = chosenTarget
                 ?? throw new InvalidOperationException($"Action '{action.Title}' requires a target but none was supplied.");
 
-            foreach (var gameAction in action.Target.GameActions)
-                _gameActions.Resolve(gameAction.Name).Execute(context, gameAction.Params);
+            RunGameActions(action.Target.GameActions, context);
         }
+    }
+
+    /// <summary>
+    /// ringteki semantics for a gameAction array: run every entry that can currently
+    /// affect the target, not just the first one - e.g. against-the-waves' [bow, ready]
+    /// relies on exactly one of the two being legal at a time. CanAffect is checked for
+    /// every entry against the *pre-execution* state before any of them run - otherwise
+    /// bow flipping Bowed to true would make ready's CanAffect see a now-bowed card and
+    /// fire right after it, undoing the bow.
+    /// </summary>
+    private void RunGameActions(IReadOnlyList<GameActionDefinition> gameActions, AbilityContext context)
+    {
+        var toRun = gameActions
+            .Select(gameAction => (gameAction, handler: _gameActions.Resolve(gameAction.Name)))
+            .Where(entry => gameActions.Count == 1 || entry.handler.CanAffect(context, entry.gameAction.Params))
+            .ToList();
+
+        foreach (var (gameAction, handler) in toRun)
+            handler.Execute(context, gameAction.Params);
     }
 }

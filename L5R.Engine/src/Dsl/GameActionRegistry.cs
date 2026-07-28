@@ -15,7 +15,9 @@ public sealed class GameActionRegistry
         ["draw"] = new DrawGameActionHandler(),
         ["discardFromPlay"] = new DiscardFromPlayGameActionHandler(),
         ["honor"] = new HonorGameActionHandler(),
-        ["dishonor"] = new DishonorGameActionHandler()
+        ["dishonor"] = new DishonorGameActionHandler(),
+        ["bow"] = new BowGameActionHandler(),
+        ["ready"] = new ReadyGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

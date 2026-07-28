@@ -11,4 +11,13 @@ namespace L5R.Engine.Dsl;
 public interface IGameActionHandler
 {
     void Execute(AbilityContext context, JsonElement? parameters);
+
+    /// <summary>
+    /// ringteki GameAction.canAffect: whether this action would currently do anything to
+    /// context.Target. Matters when a card lists several gameActions as alternatives on
+    /// the same target (e.g. against-the-waves' [bow, ready]) - only the currently-legal
+    /// one(s) should actually run. Defaults to true for actions with no "already in this
+    /// state" concept.
+    /// </summary>
+    bool CanAffect(AbilityContext context, JsonElement? parameters) => true;
 }
