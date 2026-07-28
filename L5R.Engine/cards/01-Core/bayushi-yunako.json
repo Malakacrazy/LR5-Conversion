@@ -1,0 +1,24 @@
+{
+  "id": "bayushi-yunako",
+  "name": "Bayushi Yunako",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["bushi", "commander"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 4,
+  "political": 2,
+  "glory": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Switch a character's military and political skill",
+        "condition": { "op": "hasStatus", "status": "isParticipating" },
+        "target": {
+          "cardType": "character",
+          "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "switchBaseSkills" } } }
+        }
+      }
+    ]
+  }
+}

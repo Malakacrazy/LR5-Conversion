@@ -1,0 +1,20 @@
+{
+  "id": "born-in-war",
+  "name": "Born in War",
+  "type": "attachment",
+  "faction": "unicorn",
+  "traits": ["condition"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 1,
+  "abilities": {
+    "persistentEffects": [
+      { "match": "self", "effect": { "name": "attachmentTraitRestriction", "value": "cavalry" } }
+    ],
+    "whileAttached": [
+      {
+        "effect": { "name": "attachmentMilitarySkillModifier", "value": { "dynamic": "countUnclaimedRings" } }
+      }
+    ]
+  }
+}

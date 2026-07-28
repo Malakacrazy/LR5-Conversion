@@ -42,7 +42,10 @@ mechanic exists.
   ringteki's `currentConflict.getNumberOfParticipantsFor('attacker')`, retiring the
   scriptOverride mirumoto-prodigy and admit-defeat originally needed (cautious-scout
   still needs scriptOverride - it also requires a direct reference to the conflict's
-  province, which has no generic equivalent). Triggered-ability `when`
+  province, which has no generic equivalent). `dynamic` is a free-form name (no enum), so
+  born-in-war's `{dynamic: countUnclaimedRings}` needed no schema change, just a new
+  engine-recognized name alongside `countHoldingsInPlay`/`conflictParticipantCount`.
+  Triggered-ability `when`
   clauses that need to inspect *event* fields (not card/player state) keep landing on
   `scriptOverride` instead of growing the vocabulary — event shapes vary too much per
   event type to generalize cleanly, unlike the player/card comparisons above.

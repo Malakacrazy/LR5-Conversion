@@ -54,6 +54,10 @@ public class CoreSetCardsTests
     [TestCase("adept-of-shadows")]
     [TestCase("admit-defeat")]
     [TestCase("against-the-waves")]
+    [TestCase("bayushi-yunako")]
+    [TestCase("blackmail")]
+    [TestCase("borderlands-defender")]
+    [TestCase("born-in-war")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -88,6 +92,7 @@ public class CoreSetCardsTests
     [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
     [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
     [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
+    [TestCase("blackmail", typeof(BlackmailCannotPlayUnlessLessHonorable))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

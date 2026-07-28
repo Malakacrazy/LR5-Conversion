@@ -1,0 +1,24 @@
+{
+  "id": "borderlands-defender",
+  "name": "Borderlands Defender",
+  "type": "character",
+  "faction": "crab",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 3,
+  "glory": 1,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "condition": { "op": "hasStatus", "status": "isDefending" },
+        "effect": [
+          { "name": "cardCannot", "value": { "cannot": "sendHome", "restricts": "opponentsCardEffects" } },
+          { "name": "cardCannot", "value": { "cannot": "bow", "restricts": "opponentsCardEffects" } }
+        ]
+      }
+    ]
+  }
+}

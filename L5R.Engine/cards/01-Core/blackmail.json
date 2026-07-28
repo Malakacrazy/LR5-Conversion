@@ -1,0 +1,28 @@
+{
+  "id": "blackmail",
+  "name": "Blackmail",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 3,
+  "influenceCost": 3,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Take control of a character",
+        "condition": { "op": "isDuringConflict" },
+        "target": {
+          "cardType": "character",
+          "controller": "opponent",
+          "cardCondition": { "op": "compareStat", "stat": "printedCost", "comparator": "lt", "value": 3 },
+          "gameAction": { "name": "cardLastingEffect", "params": { "effect": { "name": "takeControl" } } }
+        }
+      }
+    ]
+  },
+  "scriptOverride": {
+    "reason": "Overrides DrawCard.canPlay to forbid playing this card unless the controller is less honorable than their opponent - the same play-eligibility gap already flagged on cloud-the-mind/height-of-fashion, so only the canPlay restriction is scripted; the target/gameAction above are expressed generically. Also omits ringteki's anotherUniqueInPlay(context.player) cardCondition check (a unique-card duplicate-control edge case the state model doesn't track yet) - harmless for the current card pool since no Core Set target is unique-duplicated this way.",
+    "handler": "L5R.Engine.Cards.Scripts.BlackmailCannotPlayUnlessLessHonorable"
+  }
+}
