@@ -1,0 +1,16 @@
+{
+  "id": "ikoma-prodigy",
+  "name": "Ikoma Prodigy",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 0,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction triggers off two alternate when clauses; the onCharacterEntersPlay branch (event.card === source && source.fate > 0) fits the event.card 'isSelf'/compareStat convention, but the onMoveFate branch checks event.recipient === source and event.fate > 0 - a different, non-card event field the convention doesn't cover. Since both branches belong to one triggeredAbility, the whole thing needs scriptOverride.",
+    "handler": "L5R.Engine.Cards.Scripts.IkomaProdigyGainHonorWhenFateAddedOrMoved"
+  }
+}

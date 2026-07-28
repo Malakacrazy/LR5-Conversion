@@ -1,0 +1,17 @@
+{
+  "id": "imperial-storehouse",
+  "name": "Imperial Storehouse",
+  "type": "holding",
+  "faction": "neutral",
+  "traits": ["imperial"],
+  "unique": false,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Draw a card",
+        "cost": [{ "name": "sacrificeSelf" }],
+        "gameAction": { "name": "draw" }
+      }
+    ]
+  }
+}

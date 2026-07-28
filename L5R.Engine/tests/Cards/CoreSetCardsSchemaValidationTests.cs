@@ -98,6 +98,10 @@ public class CoreSetCardsSchemaValidationTests
     [TestCase("i-can-swim")]
     [TestCase("ide-messenger")]
     [TestCase("ide-trader")]
+    [TestCase("ikoma-eiji")]
+    [TestCase("ikoma-prodigy")]
+    [TestCase("imperial-storehouse")]
+    [TestCase("indomitable-will")]
     public void RealCoreSetCard_ValidatesAgainstTheSchema(string cardId)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(CardsDir, $"{cardId}.json")));

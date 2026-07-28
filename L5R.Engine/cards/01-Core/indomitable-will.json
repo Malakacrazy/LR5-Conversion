@@ -1,0 +1,14 @@
+{
+  "id": "indomitable-will",
+  "name": "Indomitable Will",
+  "type": "event",
+  "faction": "dragon",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.winner and a conflict participant count, and its gameAction target is computed from event.conflict.getCharacters(...) - event fields and a conflict-collection query beyond the closed predicate vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.IndomitableWillPreventBowOnSoloWin"
+  }
+}

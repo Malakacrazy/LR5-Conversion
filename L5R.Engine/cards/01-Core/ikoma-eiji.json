@@ -1,0 +1,16 @@
+{
+  "id": "ikoma-eiji",
+  "name": "Ikoma Eiji",
+  "type": "character",
+  "faction": "lion",
+  "traits": ["courtier"],
+  "unique": true,
+  "printedCost": 4,
+  "military": 1,
+  "political": 3,
+  "glory": 3,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.loser/conflictType - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field. Its gameAction target is also a nested card selection (choose which character to put into play), the same two-level select gap flagged on court-games/giver-of-gifts.",
+    "handler": "L5R.Engine.Cards.Scripts.IkomaEijiPutBushiIntoPlayOnPoliticalLoss"
+  }
+}

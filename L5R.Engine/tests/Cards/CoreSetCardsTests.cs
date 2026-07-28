@@ -99,6 +99,10 @@ public class CoreSetCardsTests
     [TestCase("i-can-swim")]
     [TestCase("ide-messenger")]
     [TestCase("ide-trader")]
+    [TestCase("ikoma-eiji")]
+    [TestCase("ikoma-prodigy")]
+    [TestCase("imperial-storehouse")]
+    [TestCase("indomitable-will")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -153,6 +157,9 @@ public class CoreSetCardsTests
     [TestCase("honored-blade", typeof(HonoredBladeGainHonorWhenParentWins))]
     [TestCase("i-am-ready", typeof(IAmReadyReadyTheRemoveFateCostTarget))]
     [TestCase("ide-trader", typeof(IdeTraderGainFateOrDrawOnAllyMovingToConflict))]
+    [TestCase("ikoma-eiji", typeof(IkomaEijiPutBushiIntoPlayOnPoliticalLoss))]
+    [TestCase("ikoma-prodigy", typeof(IkomaProdigyGainHonorWhenFateAddedOrMoved))]
+    [TestCase("indomitable-will", typeof(IndomitableWillPreventBowOnSoloWin))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
