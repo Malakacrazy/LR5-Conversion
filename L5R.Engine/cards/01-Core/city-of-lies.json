@@ -1,0 +1,26 @@
+{
+  "id": "city-of-lies",
+  "name": "City of Lies",
+  "type": "holding",
+  "faction": "scorpion",
+  "traits": ["city"],
+  "unique": false,
+  "strengthBonus": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Reduce cost of next event by 1",
+        "gameAction": {
+          "name": "playerLastingEffect",
+          "params": {
+            "duration": "untilEndOfPhase",
+            "effect": {
+              "name": "reduceNextPlayedCardCost",
+              "value": { "amount": 1, "appliesTo": { "op": "isType", "type": "event" } }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

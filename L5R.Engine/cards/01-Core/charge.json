@@ -1,0 +1,24 @@
+{
+  "id": "charge",
+  "name": "Charge!",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 0,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Put a character into play from a province",
+        "condition": { "op": "isDuringConflict", "type": "military" },
+        "target": {
+          "cardType": "character",
+          "location": "province",
+          "controller": "self",
+          "gameAction": { "name": "putIntoConflict" }
+        }
+      }
+    ]
+  }
+}

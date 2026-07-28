@@ -221,6 +221,19 @@
           ]
         },
         "ringCondition": { "$ref": "#/$defs/predicate", "description": "mode: 'ring' only." },
+        "numCards": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "mode: 'maxStat' only. Maximum number of cards to select; 0 means unlimited (bounded only by statBudget). ringteki TargetModes.MaxStat's numCards."
+        },
+        "cardStat": {
+          "type": "string",
+          "description": "mode: 'maxStat' only. Name of the numeric stat summed across all selected cards and compared against statBudget, e.g. 'printedCost' (ringteki's cardStat is an arbitrary card => number function, but every Core Set use of this mode sums printed cost)."
+        },
+        "statBudget": {
+          "$ref": "#/$defs/valueRef",
+          "description": "mode: 'maxStat' only. Maximum total of cardStat across all selected cards. ringteki's maxStat property."
+        },
         "choices": {
           "type": "object",
           "description": "mode: 'select' only. Key is the label shown to the player; value is either a predicate or a game action used to determine legality.",

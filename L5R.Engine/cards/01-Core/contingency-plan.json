@@ -1,0 +1,20 @@
+{
+  "id": "contingency-plan",
+  "name": "Contingency Plan",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Change your bid by 1",
+        "when": { "onHonorDialsRevealed": { "op": "true" } },
+        "gameAction": { "name": "modifyBid", "params": { "direction": "prompt" } }
+      }
+    ]
+  }
+}

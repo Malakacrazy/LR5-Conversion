@@ -50,7 +50,16 @@ mechanic exists.
   mirumoto-prodigy/admit-defeat's `attacker`/`defender`). Triggered-ability `when`
   clauses that need to inspect *event* fields (not card/player state) keep landing on
   `scriptOverride` instead of growing the vocabulary — event shapes vary too much per
-  event type to generalize cleanly, unlike the player/card comparisons above.
+  event type to generalize cleanly, unlike the player/card comparisons above. `when`
+  clauses with no extra condition beyond "this event happened" (e.g. contingency-plan's
+  `onHonorDialsRevealed`) are fully generic already: `{ "onHonorDialsRevealed": { "op":
+  "true" } }`, no event-field inspection needed - the `scriptOverride` policy above is
+  specifically about clauses that read fields *off* the event. `target.mode: "maxStat"`
+  (choose up to `numCards` cards, 0 = unlimited, whose total `cardStat` doesn't exceed
+  `statBudget`) had been in the mode enum unused since the original schema pass; ambush
+  and cavalry-reserves are the first two real cards needing it, so it gained its
+  supporting `numCards`/`cardStat`/`statBudget` properties now rather than earlier when
+  it would have been speculative.
 - **This schema validates shape, not every ringteki invariant.** For example, the doc says
   "player effects should not have a match property" — that's a runtime invariant the C#
   loader checks (since whether an effect name is card/ring/player-scoped lives in the

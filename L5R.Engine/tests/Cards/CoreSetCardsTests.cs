@@ -62,6 +62,11 @@ public class CoreSetCardsTests
     [TestCase("breakthrough")]
     [TestCase("calling-in-favors")]
     [TestCase("captive-audience")]
+    [TestCase("ambush")]
+    [TestCase("cavalry-reserves")]
+    [TestCase("charge")]
+    [TestCase("city-of-lies")]
+    [TestCase("contingency-plan")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

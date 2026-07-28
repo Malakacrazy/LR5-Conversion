@@ -1,0 +1,29 @@
+{
+  "id": "cavalry-reserves",
+  "name": "Cavalry Reserves",
+  "type": "event",
+  "faction": "unicorn",
+  "traits": [],
+  "unique": false,
+  "printedCost": 3,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Put Cavalry into play from your discard",
+        "condition": { "op": "isDuringConflict", "type": "military" },
+        "target": {
+          "mode": "maxStat",
+          "cardType": "character",
+          "location": "dynasty discard pile",
+          "controller": "self",
+          "cardCondition": { "op": "hasTrait", "trait": "cavalry" },
+          "numCards": 0,
+          "cardStat": "printedCost",
+          "statBudget": 6,
+          "gameAction": { "name": "putIntoConflict" }
+        }
+      }
+    ]
+  }
+}

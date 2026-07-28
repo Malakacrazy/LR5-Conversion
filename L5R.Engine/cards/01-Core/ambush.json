@@ -1,0 +1,29 @@
+{
+  "id": "ambush",
+  "name": "Ambush",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": [],
+  "unique": false,
+  "printedCost": 3,
+  "influenceCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Put characters from your hand or provinces into play",
+        "condition": { "op": "isDuringConflict" },
+        "target": {
+          "mode": "maxStat",
+          "cardType": "character",
+          "location": ["hand", "province"],
+          "controller": "self",
+          "cardCondition": { "op": "hasFaction", "faction": "scorpion" },
+          "numCards": 2,
+          "cardStat": "printedCost",
+          "statBudget": 6,
+          "gameAction": { "name": "putIntoConflict" }
+        }
+      }
+    ]
+  }
+}
