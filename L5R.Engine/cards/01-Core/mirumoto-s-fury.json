@@ -1,0 +1,28 @@
+{
+  "id": "mirumoto-s-fury",
+  "name": "Mirumoto's Fury",
+  "type": "event",
+  "faction": "dragon",
+  "traits": [],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Bow attacking character",
+        "target": {
+          "cardType": "character",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasStatus", "status": "isAttacking" },
+              { "op": "compareStat", "stat": "glory", "comparator": "lte", "value": { "dynamic": "countFacedownProvinces", "for": "self" } }
+            ]
+          },
+          "gameAction": { "name": "bow" }
+        }
+      }
+    ]
+  }
+}

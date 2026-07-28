@@ -130,6 +130,10 @@ public class CoreSetCardsTests
     [TestCase("matsu-beiona")]
     [TestCase("meddling-mediator")]
     [TestCase("meditations-on-the-tao")]
+    [TestCase("meishodo-wielder")]
+    [TestCase("mirumoto-raitsugu")]
+    [TestCase("mirumoto-s-fury")]
+    [TestCase("miya-mystic")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -200,6 +204,8 @@ public class CoreSetCardsTests
     [TestCase("lion-s-pride-brawler", typeof(LionsPrideBrawlerBowLowerMilitarySkill))]
     [TestCase("mantra-of-fire", typeof(MantraOfFireAddFateToMonkAndDraw))]
     [TestCase("meddling-mediator", typeof(MeddlingMediatorTakeFateOrHonorWhenDoublyAttacked))]
+    [TestCase("meishodo-wielder", typeof(MeishodoWielderReduceCostWhileFirstPlayer))]
+    [TestCase("mirumoto-raitsugu", typeof(MirumotoRaitsuguDuelAndPunishLoser))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

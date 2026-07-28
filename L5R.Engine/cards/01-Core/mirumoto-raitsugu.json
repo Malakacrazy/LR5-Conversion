@@ -1,0 +1,16 @@
+{
+  "id": "mirumoto-raitsugu",
+  "name": "Mirumoto Raitsugu",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["bushi", "duelist"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "The duel gameAction's follow-up branches on the duel's own outcome (loser's fate determines removeFate vs discardFromPlay) - the same duel-outcome-dependent nested gameAction gap flagged on kakita-kaezin.",
+    "handler": "L5R.Engine.Cards.Scripts.MirumotoRaitsuguDuelAndPunishLoser"
+  }
+}

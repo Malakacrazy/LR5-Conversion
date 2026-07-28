@@ -1,0 +1,16 @@
+{
+  "id": "meishodo-wielder",
+  "name": "Meishōdō Wielder",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["shugenja", "water"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 2,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Persistent effect's condition needs this.game.getFirstPlayer() === context.player - a 'first player' game-state check with no equivalent in the closed predicate vocabulary.",
+    "handler": "L5R.Engine.Cards.Scripts.MeishodoWielderReduceCostWhileFirstPlayer"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "miya-mystic",
+  "name": "Miya Mystic",
+  "type": "character",
+  "faction": "neutral",
+  "traits": ["shugenja", "earth", "imperial"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 1,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Sacrifice to discard an attachment",
+        "cost": [{ "name": "sacrificeSelf" }],
+        "phase": "conflict",
+        "target": {
+          "cardType": "attachment",
+          "gameAction": { "name": "discardFromPlay" }
+        }
+      }
+    ]
+  }
+}

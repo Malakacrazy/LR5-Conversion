@@ -85,6 +85,10 @@ mechanic exists.
   aggregate counters - the counting equivalent of `allCardsMatching`'s `controller`/`of` -
   so matsu-beiona's "3 or more other Bushi characters I control" could be expressed as
   `{dynamic: countCardsMatching, controller: self, of: {...}}` instead of scriptOverride.
+  mirumoto-s-fury also confirms `compareStat`'s `value` was already a full `valueRef`
+  (not just a literal), so "glory X or lower, X = your unrevealed provinces" needed no
+  schema change at all - just a new `countFacedownProvinces` dynamic name as
+  `compareStat`'s `value`.
   `isDuringConflict`'s `type` enum grew to also accept ring elements
   (`air`/`earth`/`fire`/`water`/`void`) alongside `military`/`political` - ringteki's
   `isDuringConflict(types)` checks the same list (`currentConflict.elements.concat(
