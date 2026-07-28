@@ -1,0 +1,16 @@
+{
+  "id": "ascetic-visionary",
+  "name": "Ascetic Visionary",
+  "type": "character",
+  "faction": "dragon",
+  "traits": ["monk", "tattooed"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 3,
+  "political": 4,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "cardCondition needs 'candidate has a monk trait OR candidate has an attachment with a monk trait' - an existential check over the candidate's own attachments, with no vocabulary for referencing a candidate's attachments (only source/player/target/targets contextPaths exist, none scoped to 'the current predicate candidate').",
+    "handler": "L5R.Engine.Cards.Scripts.AsceticVisionaryReadyMonkOrMonkAttachmentHolder"
+  }
+}

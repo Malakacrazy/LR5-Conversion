@@ -210,6 +210,10 @@ public class CoreSetCardsTests
     [TestCase("aggressive-moto")]
     [TestCase("akodo-gunso")]
     [TestCase("akodo-toturi")]
+    [TestCase("ancestral-daisho")]
+    [TestCase("asahina-storyteller")]
+    [TestCase("asako-diplomat")]
+    [TestCase("ascetic-visionary")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -321,6 +325,8 @@ public class CoreSetCardsTests
     [TestCase("young-rumormonger", typeof(YoungRumormongerRedirectHonorOrDishonor))]
     [TestCase("akodo-gunso", typeof(AkodoGunsoRefillProvinceOnEnteringFromProvince))]
     [TestCase("akodo-toturi", typeof(AkodoToturiResolveRingOnClaimDuringMilitary))]
+    [TestCase("asako-diplomat", typeof(AsakoDiplomatHonorOrDishonorOnWin))]
+    [TestCase("ascetic-visionary", typeof(AsceticVisionaryReadyMonkOrMonkAttachmentHolder))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,27 @@
+{
+  "id": "asahina-storyteller",
+  "name": "Asahina Storyteller",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier", "shugenja", "air"],
+  "unique": false,
+  "printedCost": 4,
+  "military": 2,
+  "political": 4,
+  "glory": 2,
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": {
+          "op": "and",
+          "of": [
+            { "op": "isType", "type": "character" },
+            { "op": "hasStatus", "status": "isHonored" },
+            { "op": "hasFaction", "faction": "crane" }
+          ]
+        },
+        "effect": { "name": "addKeyword", "value": "sincerity" }
+      }
+    ]
+  }
+}

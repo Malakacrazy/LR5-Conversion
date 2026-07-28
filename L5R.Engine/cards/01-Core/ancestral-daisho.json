@@ -1,0 +1,10 @@
+{
+  "id": "ancestral-daisho",
+  "name": "Ancestral Daishō",
+  "type": "attachment",
+  "faction": "dragon",
+  "traits": ["weapon"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2
+}

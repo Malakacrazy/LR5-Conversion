@@ -1,0 +1,16 @@
+{
+  "id": "asako-diplomat",
+  "name": "Asako Diplomat",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.winner - an event field beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field. The target's chooseAction gameAction (honor vs dishonor) would otherwise be expressible generically.",
+    "handler": "L5R.Engine.Cards.Scripts.AsakoDiplomatHonorOrDishonorOnWin"
+  }
+}
