@@ -1,0 +1,16 @@
+{
+  "id": "ide-trader",
+  "name": "Ide Trader",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "collectiveTrigger (fires once for a batch of simultaneous onMoveToConflict events rather than per-event) and the per-conflict limit on a reaction aren't modeled by the triggeredAbility schema (only aggregateWhen exists for batching, and that's documented as rare/scriptOverride-worthy itself). The when clause's own check (context.source.isParticipating()) is also against source regardless of which card moved, not against the event's card, so it doesn't fit the event.card 'isSelf' convention either.",
+    "handler": "L5R.Engine.Cards.Scripts.IdeTraderGainFateOrDrawOnAllyMovingToConflict"
+  }
+}

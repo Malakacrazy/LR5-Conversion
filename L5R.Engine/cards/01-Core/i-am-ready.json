@@ -1,0 +1,14 @@
+{
+  "id": "i-am-ready",
+  "name": "I Am Ready",
+  "type": "event",
+  "faction": "unicorn",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 1,
+  "scriptOverride": {
+    "reason": "The ready action's target is the specific character chosen to pay the removeFate() cost (context.costs.removeFate) - valueRef.contextPath has no way to reference a cost's chosen target, the same gap flagged on calling-in-favors. Uses a bespoke handler (not a gameAction) to resolve ready() against that cost target directly.",
+    "handler": "L5R.Engine.Cards.Scripts.IAmReadyReadyTheRemoveFateCostTarget"
+  }
+}

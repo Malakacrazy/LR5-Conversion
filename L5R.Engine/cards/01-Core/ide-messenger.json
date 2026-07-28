@@ -1,0 +1,26 @@
+{
+  "id": "ide-messenger",
+  "name": "Ide Messenger",
+  "type": "character",
+  "faction": "unicorn",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 2,
+  "glory": 0,
+  "influenceCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Move an ally to a conflict",
+        "cost": [{ "name": "payFate", "params": { "amount": 1 } }],
+        "target": {
+          "cardType": "character",
+          "controller": "self",
+          "gameAction": { "name": "moveToConflict" }
+        }
+      }
+    ]
+  }
+}

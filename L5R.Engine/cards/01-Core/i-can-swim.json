@@ -1,0 +1,35 @@
+{
+  "id": "i-can-swim",
+  "name": "I Can Swim",
+  "type": "event",
+  "faction": "scorpion",
+  "traits": ["philosophy"],
+  "unique": false,
+  "printedCost": 2,
+  "influenceCost": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard a dishonored character",
+        "condition": {
+          "op": "compareValues",
+          "left": { "contextPath": "player.showBid" },
+          "comparator": "gt",
+          "right": { "contextPath": "player.opponent.showBid" }
+        },
+        "target": {
+          "cardType": "character",
+          "controller": "opponent",
+          "cardCondition": {
+            "op": "and",
+            "of": [
+              { "op": "hasStatus", "status": "isParticipating" },
+              { "op": "hasStatus", "status": "isDishonored" }
+            ]
+          },
+          "gameAction": { "name": "discardFromPlay" }
+        }
+      }
+    ]
+  }
+}

@@ -95,6 +95,10 @@ public class CoreSetCardsTests
     [TestCase("hiruma-ambusher")]
     [TestCase("honored-blade")]
     [TestCase("honored-general")]
+    [TestCase("i-am-ready")]
+    [TestCase("i-can-swim")]
+    [TestCase("ide-messenger")]
+    [TestCase("ide-trader")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -147,6 +151,8 @@ public class CoreSetCardsTests
     [TestCase("hida-kisada", typeof(HidaKisadaCancelOpponentsFirstActionEachConflict))]
     [TestCase("hida-tomonatsu", typeof(HidaTomonatsuReturnAttackerToDeckOnDefendedWin))]
     [TestCase("honored-blade", typeof(HonoredBladeGainHonorWhenParentWins))]
+    [TestCase("i-am-ready", typeof(IAmReadyReadyTheRemoveFateCostTarget))]
+    [TestCase("ide-trader", typeof(IdeTraderGainFateOrDrawOnAllyMovingToConflict))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
