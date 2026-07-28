@@ -1,0 +1,22 @@
+{
+  "id": "bayushi-manipulator",
+  "name": "Bayushi Manipulator",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 1,
+  "abilities": {
+    "triggeredAbilities": [
+      {
+        "trigger": "reaction",
+        "title": "Increase bid by 1",
+        "when": { "onHonorDialsRevealed": { "op": "true" } },
+        "gameAction": { "name": "modifyBid" }
+      }
+    ]
+  }
+}

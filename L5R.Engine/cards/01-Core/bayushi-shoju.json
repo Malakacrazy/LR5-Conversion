@@ -1,0 +1,16 @@
+{
+  "id": "bayushi-shoju",
+  "name": "Bayushi Shoju",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["bushi", "courtier", "champion"],
+  "unique": true,
+  "printedCost": 5,
+  "military": 3,
+  "political": 7,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "The lasting effect includes a nested delayedEffect (discard the target if its political skill reaches 0) as one of the array entries - the same 'delayedEffect as an effect value' gap flagged on obstinate-recruit, since effectEntry only holds a name+value, not a nested condition+gameAction.",
+    "handler": "L5R.Engine.Cards.Scripts.BayushiShojuReducePoliticalSkillWithDeathCheck"
+  }
+}

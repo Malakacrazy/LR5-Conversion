@@ -1,0 +1,11 @@
+{
+  "id": "bayushi-liar",
+  "name": "Bayushi Liar",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["courtier"],
+  "unique": false,
+  "printedCost": 1,
+  "political": 3,
+  "glory": 0
+}

@@ -1,0 +1,14 @@
+{
+  "id": "banzai",
+  "name": "Banzai!",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "scriptOverride": {
+    "reason": "Uses a recursive 'then' chain (resolveAbility with subResolution) letting the player pay honor to repeat the ability, with different prompt text each time - a bespoke stateful multi-step interaction, the same category as duelist-training/shiba-tsukune's custom prompt handlers.",
+    "handler": "L5R.Engine.Cards.Scripts.BanzaiGrantMilitarySkillRepeatable"
+  }
+}
