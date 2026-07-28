@@ -110,6 +110,10 @@ public class CoreSetCardsTests
     [TestCase("ishiken-initiate")]
     [TestCase("iuchi-wayfinder")]
     [TestCase("jade-tetsubo")]
+    [TestCase("kakita-asami")]
+    [TestCase("kakita-kaezin")]
+    [TestCase("keeper-initiate")]
+    [TestCase("keeper-of-earth")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -169,6 +173,10 @@ public class CoreSetCardsTests
     [TestCase("indomitable-will", typeof(IndomitableWillPreventBowOnSoloWin))]
     [TestCase("intimidating-hida", typeof(IntimidatingHidaLoseHonorOnOpponentPass))]
     [TestCase("jade-tetsubo", typeof(JadeTetsuboReturnFateFromLowerMilitaryParticipant))]
+    [TestCase("kakita-asami", typeof(KakitaAsamiTakeHonorWhenWinningPoliticalSkill))]
+    [TestCase("kakita-kaezin", typeof(KakitaKaezinDuelAndSendHomeByOutcome))]
+    [TestCase("keeper-initiate", typeof(KeeperInitiatePutIntoPlayOnMatchingRingClaim))]
+    [TestCase("keeper-of-earth", typeof(KeeperOfEarthGainFateOnEarthDefenseWin))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

@@ -1,0 +1,16 @@
+{
+  "id": "kakita-kaezin",
+  "name": "Kakita Kaezin",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["bushi", "duelist", "kenshinzen"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "The duel gameAction's follow-up branches on the duel's own outcome (winner === context.source sends every uninvolved character home; otherwise sends this character home) - a result-dependent nested gameAction the closed vocabulary can't express, since it has no concept of a game action's own outcome feeding into a subsequent one.",
+    "handler": "L5R.Engine.Cards.Scripts.KakitaKaezinDuelAndSendHomeByOutcome"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "keeper-of-earth",
+  "name": "Keeper of Earth",
+  "type": "role",
+  "faction": "neutral",
+  "traits": ["keeper", "earth"],
+  "unique": false,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.elements/winner/defendingPlayer - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.KeeperOfEarthGainFateOnEarthDefenseWin"
+  }
+}

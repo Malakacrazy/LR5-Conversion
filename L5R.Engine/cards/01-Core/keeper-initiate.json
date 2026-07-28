@@ -1,0 +1,16 @@
+{
+  "id": "keeper-initiate",
+  "name": "Keeper Initiate",
+  "type": "character",
+  "faction": "neutral",
+  "traits": ["monk"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 1,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.player/event.conflict/event.ring (an onClaimRing-specific shape, not the event.card the isSelf convention covers) and cross-references context.player.role's traits against the claimed ring's element - role-card-relative logic beyond the closed predicate vocabulary. Also uses a 'then' chained follow-up ability, which the triggeredAbility schema doesn't model.",
+    "handler": "L5R.Engine.Cards.Scripts.KeeperInitiatePutIntoPlayOnMatchingRingClaim"
+  }
+}

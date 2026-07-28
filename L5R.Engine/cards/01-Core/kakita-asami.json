@@ -1,0 +1,16 @@
+{
+  "id": "kakita-asami",
+  "name": "Kakita Asami",
+  "type": "character",
+  "faction": "crane",
+  "traits": ["courtier"],
+  "unique": true,
+  "printedCost": 3,
+  "military": 1,
+  "political": 3,
+  "glory": 2,
+  "scriptOverride": {
+    "reason": "Condition compares this.game.currentConflict.attackerSkill/defenderSkill and branches the comparison direction on whether context.player is the attacking or defending player - a conditional-comparison-direction shape beyond compareValues (which compares two fixed valueRefs the same way regardless of perspective).",
+    "handler": "L5R.Engine.Cards.Scripts.KakitaAsamiTakeHonorWhenWinningPoliticalSkill"
+  }
+}
