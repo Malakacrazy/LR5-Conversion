@@ -1,0 +1,14 @@
+{
+  "id": "spies-at-court",
+  "name": "Spies at Court",
+  "type": "event",
+  "faction": "neutral",
+  "traits": [],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "scriptOverride": {
+    "reason": "Reaction's when clause inspects event.conflict.winner/conflictType - event fields beyond the closed predicate vocabulary's event.card-only 'isSelf' convention, since afterConflict events carry a conflict object rather than a card field.",
+    "handler": "L5R.Engine.Cards.Scripts.SpiesAtCourtDiscardTwoOnPoliticalWin"
+  }
+}

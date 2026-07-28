@@ -1,0 +1,23 @@
+{
+  "id": "staging-ground",
+  "name": "Staging Ground",
+  "type": "holding",
+  "faction": "lion",
+  "traits": ["battlefield"],
+  "unique": false,
+  "strengthBonus": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Flip up to 2 dynasty cards",
+        "target": {
+          "mode": "upTo",
+          "numCards": 2,
+          "location": "province",
+          "controller": "self",
+          "gameAction": { "name": "flipDynasty" }
+        }
+      }
+    ]
+  }
+}

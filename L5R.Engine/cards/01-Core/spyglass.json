@@ -1,0 +1,14 @@
+{
+  "id": "spyglass",
+  "name": "Spyglass",
+  "type": "attachment",
+  "faction": "unicorn",
+  "traits": ["item", "gaijin"],
+  "unique": false,
+  "printedCost": 1,
+  "influenceCost": 2,
+  "scriptOverride": {
+    "reason": "Reaction triggers off three alternate when clauses, each checking array membership of source.parent in event.attackers/event.defenders, or equality with event.card - array-membership checks have no equivalent in the closed predicate vocabulary, and all three compare against source.parent rather than source itself so the event.card 'isSelf' convention doesn't apply either. Also uses a per-round reaction limit not modeled by the triggeredAbility schema.",
+    "handler": "L5R.Engine.Cards.Scripts.SpyglassDrawOnParentJoiningConflict"
+  }
+}

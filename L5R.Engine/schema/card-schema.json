@@ -224,7 +224,7 @@
         "numCards": {
           "type": "integer",
           "minimum": 0,
-          "description": "mode: 'maxStat' only. Maximum number of cards to select; 0 means unlimited (bounded only by statBudget). ringteki TargetModes.MaxStat's numCards."
+          "description": "mode: 'upTo'/'exactly'/'maxStat'. How many cards to select (for maxStat, also bounded by statBudget; 0 there means unlimited count). ringteki's numCards is shared across all three selector types, not maxStat-specific - corrected after staging-ground/ambush both needed it."
         },
         "cardStat": {
           "type": "string",

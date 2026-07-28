@@ -1,0 +1,27 @@
+{
+  "id": "soshi-illusionist",
+  "name": "Soshi Illusionist",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["shugenja", "air"],
+  "unique": false,
+  "printedCost": 2,
+  "military": 1,
+  "political": 3,
+  "glory": 1,
+  "abilities": {
+    "actions": [
+      {
+        "title": "Discard status from character",
+        "cost": [{ "name": "payFate", "params": { "amount": 1 } }],
+        "target": {
+          "cardType": "character",
+          "gameAction": {
+            "name": "discardStatusToken",
+            "params": { "target": { "contextPath": "target.personalHonor" } }
+          }
+        }
+      }
+    ]
+  }
+}
