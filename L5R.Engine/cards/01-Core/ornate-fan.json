@@ -1,0 +1,12 @@
+{
+  "id": "ornate-fan",
+  "name": "Ornate Fan",
+  "type": "attachment",
+  "faction": "neutral",
+  "traits": ["item"],
+  "unique": false,
+  "printedCost": 0,
+  "influenceCost": 0,
+  "militaryBonus": 0,
+  "politicalBonus": 2
+}

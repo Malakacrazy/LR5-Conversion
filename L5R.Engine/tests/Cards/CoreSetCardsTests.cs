@@ -229,6 +229,13 @@ public class CoreSetCardsTests
     [TestCase("kitsuki-s-method")]
     [TestCase("matsu-berserker")]
     [TestCase("moto-horde")]
+    [TestCase("naive-student")]
+    [TestCase("ornate-fan")]
+    [TestCase("serene-warrior")]
+    [TestCase("unassuming-yojimbo")]
+    [TestCase("seeker-of-void")]
+    [TestCase("seeker-of-water")]
+    [TestCase("solemn-scholar")]
     public void RealCoreSetCard_LoadsWithoutError(string cardId)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
@@ -347,6 +354,9 @@ public class CoreSetCardsTests
     [TestCase("blackmail-artist", typeof(BlackmailArtistTakeHonorOnPoliticalWin))]
     [TestCase("borderlands-fortifications", typeof(BorderlandsFortificationsSwapWithProvinceCard))]
     [TestCase("doji-hotaru", typeof(DojiHotaruResolveRingOnClaimDuringPolitical))]
+    [TestCase("seeker-of-void", typeof(SeekerOfVoidGainFateOnMatchingProvinceReveal))]
+    [TestCase("seeker-of-water", typeof(SeekerOfWaterGainFateOnMatchingProvinceReveal))]
+    [TestCase("solemn-scholar", typeof(SolemnScholarBowAttackerIfEarthClaimed))]
     public void Card_ResolvesItsScriptOverrideHandler(string cardId, Type expectedHandlerType)
     {
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);

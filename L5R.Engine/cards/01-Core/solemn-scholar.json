@@ -1,0 +1,16 @@
+{
+  "id": "solemn-scholar",
+  "name": "Solemn Scholar",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["shugenja", "earth", "scholar"],
+  "unique": false,
+  "printedCost": 1,
+  "military": 1,
+  "political": 1,
+  "glory": 1,
+  "scriptOverride": {
+    "reason": "Condition needs 'is the earth ring considered claimed by this player' - a specific-ring-ownership check (this.game.rings.earth.isConsideredClaimed(player)) beyond countClaimedRings' aggregate count, since it targets one named ring rather than counting across all rings.",
+    "handler": "L5R.Engine.Cards.Scripts.SolemnScholarBowAttackerIfEarthClaimed"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "naive-student",
+  "name": "Naive Student",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["courtier", "scholar"],
+  "unique": false,
+  "printedCost": 1,
+  "political": 2,
+  "glory": 2
+}

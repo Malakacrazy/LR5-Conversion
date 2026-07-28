@@ -1,0 +1,12 @@
+{
+  "id": "serene-warrior",
+  "name": "Serene Warrior",
+  "type": "character",
+  "faction": "phoenix",
+  "traits": ["bushi"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 2,
+  "glory": 4
+}

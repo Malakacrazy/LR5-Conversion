@@ -1,0 +1,13 @@
+{
+  "id": "unassuming-yojimbo",
+  "name": "Unassuming Yōjimbō",
+  "type": "character",
+  "faction": "scorpion",
+  "traits": ["bushi", "yojimbo"],
+  "unique": false,
+  "printedCost": 3,
+  "military": 3,
+  "political": 1,
+  "glory": 0,
+  "influenceCost": 2
+}
