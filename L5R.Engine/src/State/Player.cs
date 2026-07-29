@@ -48,4 +48,12 @@ public sealed class Player
     /// of the 4 regular province slots).
     /// </summary>
     public Card? Stronghold { get; set; }
+
+    /// <summary>
+    /// This player's role card (seeker-initiate/keeper-initiate's own "context.player.role.
+    /// hasTrait(...)" check) - null until set, same convention as Stronghold. Not moved into
+    /// any zone list; a role isn't part of the deck/discard/play-area lifecycle any ported
+    /// card's executable slice needs yet.
+    /// </summary>
+    public Card? Role { get; set; }
 }
