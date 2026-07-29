@@ -1,6 +1,8 @@
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards.Scripts;
 using L5R.Engine.Dsl;
+using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Tests.Cards.PerCard;
@@ -55,5 +57,43 @@ public class GoodOmenTests
         executor.Execute(action, context, chosenTarget: target);
 
         Assert.That(target.Fate, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void WithLowerBidThanTheOpponent_CanBePlayed()
+    {
+        var game = NewGame(out var p1, out var p2);
+        p1.ShowBid = 1;
+        p2.ShowBid = 5;
+        var goodOmen = new Card
+        {
+            Id = "good-omen", Type = CardType.Event, Controller = p1,
+            PrintedCost = 0, PlayScript = new GoodOmenCannotPlayWithoutComposure()
+        };
+        p1.Hand.Add(goodOmen);
+
+        var context = new AbilityContext { Game = game, Player = p1, Source = goodOmen, Target = goodOmen };
+
+        new PlayCardGameActionHandler().Execute(context, null);
+
+        Assert.That(p1.PlayArea, Does.Contain(goodOmen));
+    }
+
+    [Test]
+    public void WithoutALowerBidThanTheOpponent_CannotBePlayed()
+    {
+        var game = NewGame(out var p1, out var p2);
+        p1.ShowBid = 5;
+        p2.ShowBid = 5;
+        var goodOmen = new Card
+        {
+            Id = "good-omen", Type = CardType.Event, Controller = p1,
+            PrintedCost = 0, PlayScript = new GoodOmenCannotPlayWithoutComposure()
+        };
+        p1.Hand.Add(goodOmen);
+
+        var context = new AbilityContext { Game = game, Player = p1, Source = goodOmen, Target = goodOmen };
+
+        Assert.Throws<InvalidOperationException>(() => new PlayCardGameActionHandler().Execute(context, null));
     }
 }
