@@ -31,7 +31,11 @@ public sealed class GameActionRegistry
         ["modifyBid"] = new ModifyBidGameActionHandler(),
         ["selectRing"] = new SelectRingGameActionHandler(),
         ["cancel"] = new CancelGameActionHandler(),
-        ["chosenDiscard"] = new ChosenDiscardGameActionHandler()
+        ["chosenDiscard"] = new ChosenDiscardGameActionHandler(),
+        ["gainHonor"] = new GainHonorGameActionHandler(),
+        ["loseHonor"] = new LoseHonorGameActionHandler(),
+        ["takeFate"] = new TakeFateGameActionHandler(),
+        ["takeHonor"] = new TakeHonorGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>
