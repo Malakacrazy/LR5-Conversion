@@ -60,6 +60,20 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
             return;
         }
 
+        // bayushi-yunako's switchBaseSkills - no "value" key at all (a bare toggle), so it's
+        // dispatched before the value-carrying branches below. Reuses the LastingEffects
+        // list with a sentinel Stat name rather than a whole new list: it never matches
+        // "military"/"political" in EffectiveStat's own additive/multiplier sums, and
+        // GameState.EffectiveMilitarySkill/EffectivePoliticalSkill check for it directly to
+        // swap which printed value feeds the stat's base (ringteki getBaseSkillModifiers'
+        // SwitchBaseSkills case).
+        if (effectName == "switchBaseSkills")
+        {
+            foreach (var recipient in recipients)
+                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "switchBaseSkills", Value = 0, Duration = duration });
+            return;
+        }
+
         // adept-of-the-waves' addKeyword - a string value, so it's dispatched before the
         // int-only stat-effect branches below rather than falling through to ResolveInt.
         if (effectName == "addKeyword")

@@ -53,9 +53,14 @@ public sealed class GameState
 
     public int EffectiveGlory(Card card) => EffectiveStat(card, "glory", card.PrintedGlory);
 
-    public int EffectiveMilitarySkill(Card card) => EffectiveStat(card, "military", card.PrintedMilitarySkill);
+    public int EffectiveMilitarySkill(Card card) =>
+        EffectiveStat(card, "military", HasSwitchedBaseSkills(card) ? card.PrintedPoliticalSkill : card.PrintedMilitarySkill);
 
-    public int EffectivePoliticalSkill(Card card) => EffectiveStat(card, "political", card.PrintedPoliticalSkill);
+    public int EffectivePoliticalSkill(Card card) =>
+        EffectiveStat(card, "political", HasSwitchedBaseSkills(card) ? card.PrintedMilitarySkill : card.PrintedPoliticalSkill);
+
+    /// <summary>bayushi-yunako's switchBaseSkills - see CardLastingEffectGameActionHandler's own doc comment for why this reuses LastingEffects with a sentinel Stat name instead of a new list.</summary>
+    private bool HasSwitchedBaseSkills(Card card) => LastingEffects.Any(e => e.Target == card && e.Stat == "switchBaseSkills");
 
     public int EffectiveProvinceStrength(Card card) => EffectiveStat(card, "provinceStrength", card.PrintedProvinceStrength);
 
