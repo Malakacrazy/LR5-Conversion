@@ -30,8 +30,21 @@ public static class ValueRefResolver
     private static int ResolveDynamic(string name, JsonElement valueRef, AbilityContext context) => name switch
     {
         "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
+        "countHoldingsInPlay" => ResolveForPlayer(valueRef, context).PlayArea.Count(c => c.Type == CardType.Holding),
         _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
     };
+
+    /// <summary>valueRef's "for" (self/opponent, default self) - resolved relative to context.Player.</summary>
+    private static Player ResolveForPlayer(JsonElement valueRef, AbilityContext context)
+    {
+        var forWhom = valueRef.TryGetProperty("for", out var forElement) ? forElement.GetString() : "self";
+        return forWhom switch
+        {
+            "self" => context.Player,
+            "opponent" => context.Game.Opponent(context.Player),
+            _ => throw new NotSupportedException($"Unknown 'for' value '{forWhom}'.")
+        };
+    }
 
     /// <summary>ringteki currentConflict.getNumberOfParticipantsFor(role) - "own" resolves to whichever role context.Source's controller currently holds.</summary>
     private static int ResolveConflictParticipantCount(JsonElement valueRef, AbilityContext context)
