@@ -107,4 +107,15 @@ public sealed class AbilityContext
     /// isn't this".
     /// </summary>
     public Card? DuelWinner { get; set; }
+
+    /// <summary>
+    /// ready-for-battle's own trigger condition: "event.context.source.type === 'ring' ||
+    /// event.context.player === context.player.opponent" - was the bow that just happened
+    /// caused by something other than the reacting player's own ability (a ring effect or
+    /// the opponent), as opposed to the player bowing their own character as a cost. This
+    /// engine has no event bus recording which ability/player caused a given bow, so (like
+    /// every other event-shaped script this session) the caller sets this fact directly;
+    /// false until then.
+    /// </summary>
+    public bool BowCausedBySelf { get; set; }
 }
