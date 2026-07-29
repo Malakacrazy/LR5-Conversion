@@ -237,6 +237,23 @@ public sealed class GameState
             || conflict.Elements.Contains(type)
             || conflict.Attackers.Any(attacker => HasAddEffect(attacker, "addElementAsAttacker", type)));
 
+    /// <summary>
+    /// mirumoto-prodigy's "while attacking alone, the defending player may declare at most 1
+    /// defender" - ringteki models this as a conflict-scoped static effect
+    /// (EffectNames.RestrictNumberOfDefenders), but card-schema.json expresses it as an
+    /// ordinary "match": "self" persistentEffect on the attacker, so it's queried the same
+    /// way as addElementAsAttacker: scan the attacking card's own persistentEffects rather
+    /// than a separate conflict-level field. No defender-declaration flow exists yet to
+    /// enforce this automatically (matches this engine's general lack of a
+    /// declare-defenders step) - int.MaxValue means "no restriction found".
+    /// </summary>
+    public int MaxDefendersFor(Card attacker) =>
+        ActivePersistentEffectsAffecting(attacker)
+            .Where(pair => pair.Effect.GetProperty("name").GetString() == "restrictNumberOfDefenders")
+            .Select(pair => pair.Effect.GetProperty("value").GetInt32())
+            .DefaultIfEmpty(int.MaxValue)
+            .Min();
+
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 
