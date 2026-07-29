@@ -7,6 +7,39 @@ public sealed class GameState
     public Phase CurrentPhase { get; set; }
     public required Player ActivePlayer { get; set; }
 
+    /// <summary>
+    /// ringteki game.js: roundNumber starts at 0 and is bumped to 1 by DynastyPhase.
+    /// createPhase() the first time the game enters Dynasty. Our GameState is always
+    /// constructed already "mid-game" (tests set CurrentPhase directly, with no separate
+    /// game-start step), so 1 is the sensible resting default rather than a pre-game 0
+    /// nothing in this engine represents yet.
+    /// </summary>
+    public int RoundNumber { get; set; } = 1;
+
     /// <summary>All cards controlled by either player, regardless of zone.</summary>
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
+
+    /// <summary>
+    /// ringteki game.js beginRound(): queues DynastyPhase, DrawPhase, ConflictPhase,
+    /// FatePhase, then loops back into a new DynastyPhase - Regroup is a real Phases enum
+    /// value in Constants.ts, but this ringteki version's round loop never actually queues
+    /// a separate Regroup phase (FatePhase's own steps cover readying cards/returning rings
+    /// instead), so it's unreachable here too. This method only moves CurrentPhase/
+    /// RoundNumber forward; it has no side effects yet (no fate collection, no lasting-
+    /// effect expiration) - those are added only once a card actually needs them.
+    /// </summary>
+    public void AdvancePhase()
+    {
+        CurrentPhase = CurrentPhase switch
+        {
+            Phase.Dynasty => Phase.Draw,
+            Phase.Draw => Phase.Conflict,
+            Phase.Conflict => Phase.Fate,
+            Phase.Fate => Phase.Dynasty,
+            _ => throw new NotSupportedException($"AdvancePhase does not support starting from '{CurrentPhase}'.")
+        };
+
+        if (CurrentPhase == Phase.Dynasty)
+            RoundNumber++;
+    }
 }
