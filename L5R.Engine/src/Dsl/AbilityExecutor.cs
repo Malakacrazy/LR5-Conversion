@@ -239,10 +239,16 @@ public sealed class AbilityExecutor
     /// An entry with its own Target override (e.g. the-art-of-peace's "honor all
     /// defenders") targets a completely different card set than the ambient context.Target,
     /// so it's run independently against every resolved candidate rather than joining the
-    /// shared CanAffect race the other entries run against each other.
+    /// shared CanAffect race the other entries run against each other. The ambient target is
+    /// saved and restored around that loop (court-mask's [returnToHand, dishonor w/ its own
+    /// "source.parent" Target] is the first ported card to mix both shapes in one array) -
+    /// without this, the last per-entry candidate would leak into context.Target and get
+    /// used as the shared group's target instead of context.Source.
     /// </summary>
     private void RunGameActions(IReadOnlyList<GameActionDefinition> gameActions, AbilityContext context)
     {
+        var ambientTarget = context.Target;
+
         foreach (var gameAction in gameActions.Where(ga => ga.Target is not null))
         {
             var handler = _gameActions.Resolve(gameAction.Name);
@@ -252,6 +258,8 @@ public sealed class AbilityExecutor
                 handler.Execute(context, gameAction.Params);
             }
         }
+
+        context.Target = ambientTarget;
 
         var sharedTarget = gameActions.Where(ga => ga.Target is null).ToList();
         var toRun = sharedTarget

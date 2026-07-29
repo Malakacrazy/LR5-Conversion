@@ -137,6 +137,12 @@ public static class ValueRefResolver
                 (Player p, "showBid") => p.ShowBid,
                 (Player p, "imperialFavor") => p.ImperialFavor,
                 (Player p, "opponent") => context.Game.Opponent(p),
+                // court-mask/favored-mount: "source.parent" - the character an attachment
+                // (context.Source) is currently attached to. Only meaningful for an
+                // attachment mid-resolution, so an unattached source is a real error, not
+                // a null/no-op - matches ValueRefResolver's fail-loud policy elsewhere.
+                (Card c, "parent") => c.AttachedTo
+                    ?? throw new InvalidOperationException($"'{c.Id}' is not currently attached to anything."),
                 _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath segment '{segments[i]}' on {current.GetType().Name}.")
             };
         }
