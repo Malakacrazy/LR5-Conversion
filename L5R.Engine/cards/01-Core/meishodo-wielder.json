@@ -9,8 +9,14 @@
   "military": 2,
   "political": 2,
   "glory": 1,
-  "scriptOverride": {
-    "reason": "Persistent effect's condition needs this.game.getFirstPlayer() === context.player - a 'first player' game-state check with no equivalent in the closed predicate vocabulary.",
-    "handler": "L5R.Engine.Cards.Scripts.MeishodoWielderReduceCostWhileFirstPlayer"
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "sourceLocation": "any",
+        "condition": { "op": "isFirstPlayer" },
+        "effect": { "name": "reduceCost", "value": 1 }
+      }
+    ]
   }
 }
