@@ -33,4 +33,7 @@ public sealed class Conflict
     /// </summary>
     public Player? Winner { get; set; }
     public Player? Loser { get; set; }
+
+    /// <summary>event.conflict.skillDifference (fallen-in-battle's "won by 5+ skill") - same caller-set-fact convention as Winner/Loser, no skill-comparison pipeline computes this automatically.</summary>
+    public int SkillDifference { get; set; }
 }
