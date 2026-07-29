@@ -22,4 +22,15 @@ public sealed class Conflict
 
     /// <summary>Ring element(s) in play for this conflict, e.g. ["fire"]. ringteki's isDuringConflict checks conflictType.concat(elements) against the same list.</summary>
     public List<string> Elements { get; init; } = new();
+
+    /// <summary>
+    /// event.conflict.winner/loser (honored-blade and several other afterConflict reactions'
+    /// own scriptOverride reason) - no skill-comparison/breach resolution pipeline exists to
+    /// compute these automatically (matches this engine's general lack of one), so they're
+    /// caller-set facts, same convention as ConflictType/Elements' own "no declaration
+    /// pipeline" doc comment above. Null until a caller sets them (e.g. before invoking a
+    /// script that reacts to the conflict's own outcome).
+    /// </summary>
+    public Player? Winner { get; set; }
+    public Player? Loser { get; set; }
 }
