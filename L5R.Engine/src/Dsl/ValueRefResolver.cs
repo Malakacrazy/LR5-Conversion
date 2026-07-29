@@ -142,6 +142,11 @@ public static class ValueRefResolver
                 (Player p, "showBid") => p.ShowBid,
                 (Player p, "imperialFavor") => p.ImperialFavor,
                 (Player p, "opponent") => context.Game.Opponent(p),
+                // kitsuki-investigator's "player.opponent.hand" - returns the List<Card>
+                // itself rather than a single card; TargetResolver.ResolveAllCardsMatching is
+                // what actually consumes this shape (its contextPath branch accepts either a
+                // single Card or a card list).
+                (Player p, "hand") => p.Hand,
                 // court-mask/favored-mount: "source.parent" - the character an attachment
                 // (context.Source) is currently attached to. Only meaningful for an
                 // attachment mid-resolution, so an unattached source is a real error, not

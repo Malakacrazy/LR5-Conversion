@@ -14,17 +14,21 @@ public static class TargetResolver
     /// Resolves a gameActionEntry's own "target" override, either the "allCardsMatching"
     /// valueRef shape (card-schema.json) - a bulk target, e.g. the-art-of-peace's "every
     /// attacking character" - or a "contextPath" resolving to a single card (court-mask's
-    /// "dishonor the character this is attached to": {"contextPath": "source.parent"}),
-    /// delegated to ValueRefResolver since it already understands that shape. Other valueRef
-    /// shapes on a gameAction's target throw.
+    /// "dishonor the character this is attached to": {"contextPath": "source.parent"}) or a
+    /// whole card list (kitsuki-investigator's "player.opponent.hand"), delegated to
+    /// ValueRefResolver since it already understands both shapes. Other valueRef shapes on a
+    /// gameAction's target throw.
     /// </summary>
     public static IReadOnlyList<Card> ResolveAllCardsMatching(JsonElement targetValueRef, AbilityContext context)
     {
         if (targetValueRef.TryGetProperty("contextPath", out _))
         {
-            return ValueRefResolver.Resolve(targetValueRef, context) is Card card
-                ? new[] { card }
-                : throw new InvalidOperationException("gameAction target 'contextPath' did not resolve to a card.");
+            return ValueRefResolver.Resolve(targetValueRef, context) switch
+            {
+                Card card => new[] { card },
+                IReadOnlyList<Card> cards => cards,
+                _ => throw new InvalidOperationException("gameAction target 'contextPath' did not resolve to a card or card list.")
+            };
         }
 
         if (!targetValueRef.TryGetProperty("allCardsMatching", out var allCardsMatching))

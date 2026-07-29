@@ -80,4 +80,11 @@ public sealed class AbilityContext
     /// the caller sets this directly; null until then.
     /// </summary>
     public Card? ChosenDeckSearchCard { get; set; }
+
+    /// <summary>
+    /// ringteki CardMenuAction: which card the acting player picked from the menu (kitsuki-
+    /// investigator's "player.opponent.hand"). No selection-menu UI exists, so (like every
+    /// other ChosenX field) the caller supplies this directly; null until then.
+    /// </summary>
+    public Card? ChosenCardMenuCard { get; set; }
 }
