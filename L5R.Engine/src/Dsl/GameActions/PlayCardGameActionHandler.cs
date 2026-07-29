@@ -13,7 +13,9 @@ namespace L5R.Engine.Dsl.GameActions;
 /// attach-target search/prompt exists, same trust-the-caller convention as every other
 /// target) and is attached directly rather than routed through a separate "attach"
 /// gameAction. Non-attachment types just move to play area with no attach step - the same
-/// one-line ZoneMover call, not separately exercised by any ported card yet.
+/// one-line ZoneMover call, not separately exercised by any ported card yet. Also checks
+/// Card.PlayScript?.CanPlay (height-of-fashion/pacifism/cloud-the-mind/blackmail/good-omen's
+/// canPlay overrides) - the one narrow wiring point between ICardScript and this handler.
 /// </summary>
 public sealed class PlayCardGameActionHandler : IGameActionHandler
 {
@@ -22,6 +24,9 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
         var card = context.Target ?? context.Source;
 
         if (context.Game.IsPlayerRestrictedFrom(context.Player, "play", card))
+            throw new InvalidOperationException($"'{context.Player.Name}' cannot play '{card.Id}' right now.");
+
+        if (card.PlayScript?.CanPlay(context) == false)
             throw new InvalidOperationException($"'{context.Player.Name}' cannot play '{card.Id}' right now.");
 
         var cost = context.Game.EffectiveCost(card, context.Player);

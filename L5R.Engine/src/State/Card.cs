@@ -79,4 +79,12 @@ public sealed class Card
     /// same convention as PersistentEffects.
     /// </summary>
     public IReadOnlyList<Dsl.WhileAttachedDefinition> WhileAttachedEffects { get; init; } = Array.Empty<Dsl.WhileAttachedDefinition>();
+
+    /// <summary>
+    /// The scriptOverride handler backing this card's ICardScript.CanPlay gate (height-of-
+    /// fashion/pacifism/cloud-the-mind/blackmail/good-omen) - null for every card with no
+    /// extra play-eligibility restriction. Set directly by the caller, like every other
+    /// optional wiring field - CardLoader still doesn't instantiate scripts at runtime.
+    /// </summary>
+    public Cards.ICardScript? PlayScript { get; set; }
 }
