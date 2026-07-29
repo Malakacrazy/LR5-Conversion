@@ -11,11 +11,10 @@ namespace L5R.Engine.Dsl;
 /// (contextPath's "imperialFavor" segment, a bare string literal like compareValues'
 /// right: "") resolve to strings instead - Resolve returns the untyped value so
 /// PredicateEvaluator's compareValues can dispatch on whichever type both sides turn out
-/// to be. Deliberately covers only plain literals, the "conflictParticipantCount"/
-/// "countHoldingsInPlay"/"countCardsMatching" dynamics, and a few contextPath segments so
-/// far - anything else throws until a card in the executable set needs it, per the same
-/// fail-loud policy as PredicateEvaluator. No multiplier/offset support yet either - no
-/// ported card in the executable set uses them on a dynamic this resolver understands.
+/// to be. Deliberately covers only plain literals, a handful of named dynamics (each with
+/// optional multiplier/offset arithmetic applied uniformly), and a few contextPath segments
+/// so far - anything else throws until a card in the executable set needs it, per the same
+/// fail-loud policy as PredicateEvaluator.
 /// </summary>
 public static class ValueRefResolver
 {
@@ -41,14 +40,28 @@ public static class ValueRefResolver
         throw new NotSupportedException("ValueRefResolver only supports plain literals, 'dynamic', and 'contextPath' so far.");
     }
 
-    private static int ResolveDynamic(string name, JsonElement valueRef, AbilityContext context) => name switch
+    private static int ResolveDynamic(string name, JsonElement valueRef, AbilityContext context)
     {
-        "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
-        "countHoldingsInPlay" => ResolveForPlayer(valueRef, context).PlayArea.Count(c => c.Type == CardType.Holding),
-        "countCardsMatching" => ResolveCountCardsMatching(valueRef, context),
-        "countClaimedRings" => ResolveForPlayer(valueRef, context).ClaimedRingsCount,
-        _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
-    };
+        var raw = name switch
+        {
+            "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
+            "countHoldingsInPlay" => ResolveForPlayer(valueRef, context).PlayArea.Count(c => c.Type == CardType.Holding),
+            "countCardsMatching" => ResolveCountCardsMatching(valueRef, context),
+            "countClaimedRings" => ResolveForPlayer(valueRef, context).ClaimedRingsCount,
+            "countCardsInHand" => ResolveForPlayer(valueRef, context).Hand.Count,
+            _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
+        };
+
+        // card-schema.json: multiplier (default 1) and offset (default 0) apply to any
+        // dynamic uniformly - restoration-of-balance's "opponent's hand size minus 4" is
+        // {dynamic: countCardsInHand, for: opponent, offset: -4} rather than a bespoke
+        // "count down to N" dynamic. Can go negative (e.g. a hand of 2 minus 4) - it's each
+        // dynamic's own consumer (ChosenDiscardGameActionHandler) that clamps to what
+        // actually makes sense for it, not this general-purpose arithmetic step.
+        var multiplier = valueRef.TryGetProperty("multiplier", out var m) ? m.GetInt32() : 1;
+        var offset = valueRef.TryGetProperty("offset", out var o) ? o.GetInt32() : 0;
+        return raw * multiplier + offset;
+    }
 
     /// <summary>
     /// The counting equivalent of allCardsMatching/target's controller+of filter - schema

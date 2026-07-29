@@ -41,4 +41,12 @@ public sealed class AbilityContext
     /// the cancelling ability's own context before running it.
     /// </summary>
     public Dsl.PendingAbility? InterruptedAbility { get; set; }
+
+    /// <summary>
+    /// ringteki ChosenDiscardAction: which specific cards from the affected player's hand
+    /// get discarded - a real player choice (via promptForSelect), not something this
+    /// engine's chosenDiscard gameAction resolves itself. Same caller-supplies-the-choice
+    /// convention as ChosenRingElement; null until set.
+    /// </summary>
+    public IReadOnlyList<Card>? ChosenDiscardCards { get; set; }
 }

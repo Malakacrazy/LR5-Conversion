@@ -30,7 +30,8 @@ public sealed class GameActionRegistry
         ["putIntoConflict"] = new PutIntoConflictGameActionHandler(),
         ["modifyBid"] = new ModifyBidGameActionHandler(),
         ["selectRing"] = new SelectRingGameActionHandler(),
-        ["cancel"] = new CancelGameActionHandler()
+        ["cancel"] = new CancelGameActionHandler(),
+        ["chosenDiscard"] = new ChosenDiscardGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>
