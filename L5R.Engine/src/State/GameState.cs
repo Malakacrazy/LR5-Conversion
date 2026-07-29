@@ -334,15 +334,22 @@ public sealed class GameState
     }
 
     /// <summary>
-    /// way-of-the-dragon/court-mask/favored-mount's "attachmentMyControlOnly" - ringteki
-    /// basecard.ts.canAttach: legal only if the acting player controls the target character,
-    /// or the attachment's own controller does. Wired into PlayCardGameActionHandler, the
-    /// one real attach execution path in this engine.
+    /// way-of-the-dragon/court-mask/favored-mount/daimyo-s-favor's "attachmentMyControlOnly" -
+    /// ringteki basecard.ts.canAttach: legal only if the acting player controls the target
+    /// character, or the attachment's own controller does. Wired into
+    /// PlayCardGameActionHandler, the one real attach execution path in this engine - checked
+    /// *before* the card moves into play area, so (unlike ExceedsAttachmentLimit) this reads
+    /// attachment.PersistentEffects directly rather than going through
+    /// ActivePersistentEffectsAffecting's SourceLocation gate (most ported cards default that
+    /// to "play area", which the card doesn't sit in yet at the moment this decides whether
+    /// the attach is even legal - the restriction is a property of the printed card, not
+    /// something that only turns on once it's already settled into a zone).
     /// </summary>
     public bool IsAttachRestricted(Card attachment, Card parent, Player actingPlayer)
     {
-        var hasRestriction = ActivePersistentEffectsAffecting(attachment)
-            .Any(pair => pair.Effect.GetProperty("name").GetString() == "attachmentMyControlOnly");
+        var hasRestriction = attachment.PersistentEffects.Any(definition =>
+            definition.Match is { ValueKind: JsonValueKind.String } match && match.GetString() == "self"
+            && definition.Effects.Any(effect => effect.GetProperty("name").GetString() == "attachmentMyControlOnly"));
 
         return hasRestriction && actingPlayer != parent.Controller && attachment.Controller != parent.Controller;
     }
