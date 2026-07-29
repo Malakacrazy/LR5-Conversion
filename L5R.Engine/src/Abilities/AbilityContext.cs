@@ -96,4 +96,15 @@ public sealed class AbilityContext
     /// too (asako-diplomat's own "Honor this character" vs "Dishonor this character").
     /// </summary>
     public string? ChosenChoice { get; set; }
+
+    /// <summary>
+    /// ringteki Duel's own winner (mirumoto-raitsugu/kakita-kaezin's duel-outcome-dependent
+    /// follow-up) - a real duel resolution compares skill *and* the honor bid
+    /// (Duel.getChallengerStatisticTotal/getTargetStatisticTotal), which this engine doesn't
+    /// model. Same caller-set-fact convention as Conflict.Winner/Loser - the caller supplies
+    /// which of the two duelists (context.Source as challenger, context.Target as the
+    /// opponent's chosen character) won; the script derives the loser as "whichever one
+    /// isn't this".
+    /// </summary>
+    public Card? DuelWinner { get; set; }
 }
