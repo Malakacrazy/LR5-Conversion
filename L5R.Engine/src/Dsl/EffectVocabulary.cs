@@ -70,15 +70,19 @@ public static class EffectVocabulary
     /// <summary>
     /// qualifier is non-null only for cannotParticipateAsAttacker/Defender's optional
     /// conflict-type/element scoping (pacifism's "military") - null means unconditional.
-    /// cardCannot/doesNotBow never carry one (no ported card qualifies them).
+    /// restricts is cardCannot's own sibling qualifier (above-question's "opponentsEvents") -
+    /// which *ability* the restriction applies against, checked via GameState.
+    /// IsRestrictedFrom's consideringCard parameter rather than the conflict-type/element
+    /// GameState.CurrentConflict qualifier checks. doesNotBow never carries either.
     /// </summary>
-    public static bool TryGetRestrictionAction(string? effectName, JsonElement? value, out string action, out string? qualifier)
+    public static bool TryGetRestrictionAction(string? effectName, JsonElement? value, out string action, out string? qualifier, out string? restricts)
     {
         qualifier = null;
+        restricts = null;
         switch (effectName)
         {
             case "cardCannot":
-                action = ParseCannotValue(value!.Value);
+                (action, restricts) = ParseCannotValue(value!.Value);
                 return true;
             case "cannotParticipateAsAttacker":
                 action = "declareAsAttacker";
@@ -97,16 +101,15 @@ public static class EffectVocabulary
         }
     }
 
-    /// <summary>cardCannot's value is either a bare string (hiruma-yojimbo/aggressive-moto) or an object with a "cannot" key (hiruma-ambusher/tranquility). "restricts" (who the restriction applies against, e.g. "opponentsCardEffects") isn't supported yet - throws rather than silently applying a broader-than-intended restriction.</summary>
-    private static string ParseCannotValue(JsonElement value)
+    /// <summary>cardCannot's value is either a bare string (hiruma-yojimbo/aggressive-moto) or an object with a "cannot" key (hiruma-ambusher/tranquility), optionally with a "restricts" key (above-question's "opponentsEvents") scoping which ability the restriction applies against.</summary>
+    private static (string Action, string? Restricts) ParseCannotValue(JsonElement value)
     {
         if (value.ValueKind == JsonValueKind.String)
-            return value.GetString()!;
+            return (value.GetString()!, null);
 
-        if (value.TryGetProperty("restricts", out _))
-            throw new NotSupportedException("cardCannot's 'restricts' qualifier (scoping who the restriction applies against) isn't supported yet.");
-
-        return value.GetProperty("cannot").GetString()!;
+        var action = value.GetProperty("cannot").GetString()!;
+        var restricts = value.TryGetProperty("restricts", out var r) ? r.GetString() : null;
+        return (action, restricts);
     }
 
     /// <summary>

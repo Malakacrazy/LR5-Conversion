@@ -45,7 +45,7 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
             ? TargetResolver.ResolveAllCardsMatching(targetElement, context)
             : new[] { context.Target ?? throw new InvalidOperationException("cardLastingEffect requires context.Target to be set.") };
 
-        if (EffectVocabulary.TryGetRestrictionAction(effectName, effectValue, out var action, out var qualifier))
+        if (EffectVocabulary.TryGetRestrictionAction(effectName, effectValue, out var action, out var qualifier, out _))
         {
             foreach (var recipient in recipients)
                 context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration, Qualifier = qualifier, Condition = restrictionCondition });

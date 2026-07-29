@@ -135,7 +135,15 @@ public sealed class GameState
         ControlChanges.RemoveAll(c => toRevert.Contains(c));
     }
 
-    public bool IsRestrictedFrom(Card card, string action)
+    /// <summary>
+    /// consideringCard is above-question's own need: "target" is restricted only against
+    /// opponentsEvents, which - unlike every other restriction action checked so far (bow,
+    /// declareAsAttacker/Defender, receiveDishonorToken, triggerAbilities) - depends on what
+    /// is *attempting* the restricted action, not just whether card can do it at all. Null
+    /// for every existing call site, matching the trust-the-caller convention (no target-
+    /// legality pipeline exists to supply this automatically yet - see MatchesRestricts).
+    /// </summary>
+    public bool IsRestrictedFrom(Card card, string action, Card? consideringCard = null)
     {
         bool MatchesCondition(CardRestriction r) =>
             r.Condition is not { } condition || PredicateEvaluator.Evaluate(condition, card, SourceContextFor(card));
@@ -149,8 +157,9 @@ public sealed class GameState
                 pair.Effect.GetProperty("name").GetString(),
                 pair.Effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null,
                 out var restrictedAction,
-                out var qualifier);
-            return isRestriction && restrictedAction == action && MatchesQualifier(qualifier);
+                out var qualifier,
+                out var restricts);
+            return isRestriction && restrictedAction == action && MatchesQualifier(qualifier) && MatchesRestricts(restricts, pair.Source.Controller, consideringCard);
         }
 
         return ActivePersistentEffectsAffecting(card).Any(MatchesAction)
@@ -160,6 +169,28 @@ public sealed class GameState
     /// <summary>A restriction with no qualifier always applies; one with a qualifier (pacifism's "military") only applies during a conflict of that type/element - same check as isDuringConflict's "type" filter.</summary>
     private bool MatchesQualifier(string? qualifier) =>
         qualifier is null || (CurrentConflict is { } conflict && (qualifier == conflict.ConflictType || conflict.Elements.Contains(qualifier)));
+
+    /// <summary>
+    /// above-question's "opponentsEvents": true only when consideringCard is controlled by
+    /// restrictionOwner's opponent (ringteki Restriction.js: context.player === effect.
+    /// context.player.opponent) and is itself an event (ringteki: context.source.type ===
+    /// CardTypes.Event). restrictionOwner is whoever controls the card that granted the
+    /// restriction (above-question's controller), not `card`'s own controller.
+    /// </summary>
+    private bool MatchesRestricts(string? restricts, Player restrictionOwner, Card? consideringCard)
+    {
+        if (restricts is null)
+            return true;
+
+        if (consideringCard is null)
+            return false;
+
+        return restricts switch
+        {
+            "opponentsEvents" => consideringCard.Controller == Opponent(restrictionOwner) && consideringCard.Type == CardType.Event,
+            _ => throw new NotSupportedException($"Unknown cardCannot 'restricts' qualifier '{restricts}'.")
+        };
+    }
 
     /// <summary>
     /// Active playerCannot restrictions - see PlayerRestriction's own doc comment. Same two
