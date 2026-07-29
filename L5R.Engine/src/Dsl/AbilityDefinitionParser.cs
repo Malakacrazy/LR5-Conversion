@@ -27,6 +27,45 @@ public static class AbilityDefinitionParser
         return result;
     }
 
+    public static IReadOnlyList<TriggeredAbilityDefinition> ParseTriggeredAbilities(JsonElement cardRoot)
+    {
+        if (!cardRoot.TryGetProperty("abilities", out var abilities))
+            return Array.Empty<TriggeredAbilityDefinition>();
+
+        if (!abilities.TryGetProperty("triggeredAbilities", out var triggeredAbilities))
+            return Array.Empty<TriggeredAbilityDefinition>();
+
+        var result = new List<TriggeredAbilityDefinition>();
+        foreach (var ability in triggeredAbilities.EnumerateArray())
+            result.Add(ParseTriggeredAbility(ability));
+
+        return result;
+    }
+
+    private static TriggeredAbilityDefinition ParseTriggeredAbility(JsonElement ability)
+    {
+        var trigger = ability.GetProperty("trigger").GetString()!;
+        var title = ability.GetProperty("title").GetString()!;
+
+        var when = ability.GetProperty("when").EnumerateObject().Single();
+        var whenEvent = when.Name;
+        var whenCondition = when.Value.Clone();
+
+        var costs = ability.TryGetProperty("cost", out var costElement)
+            ? ParseCosts(costElement)
+            : Array.Empty<CostDefinition>();
+
+        var target = ability.TryGetProperty("target", out var targetElement)
+            ? ParseTarget(targetElement)
+            : null;
+
+        var gameActions = ability.TryGetProperty("gameAction", out var gameActionElement)
+            ? ParseGameActions(gameActionElement)
+            : Array.Empty<GameActionDefinition>();
+
+        return new TriggeredAbilityDefinition(trigger, title, whenEvent, whenCondition, costs, target, gameActions);
+    }
+
     private static ActionDefinition ParseAction(JsonElement action)
     {
         var title = action.GetProperty("title").GetString()!;

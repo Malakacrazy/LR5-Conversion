@@ -26,3 +26,23 @@ public sealed record TargetDefinition(
     IReadOnlyList<GameActionDefinition> GameActions);
 
 public sealed record GameActionDefinition(string Name, JsonElement? Params);
+
+/// <summary>
+/// One entry from a loaded card's abilities.triggeredAbilities[] (reactions/interrupts).
+/// Shares Costs/Target/GameActions with ActionDefinition, but is gated by a "when" clause
+/// instead of a plain condition - {WhenEvent: WhenCondition} mirrors the JSON's single-key
+/// `when: { eventName: predicate }` object. No event bus exists yet, so there's no way to
+/// know an event actually happened; the caller (a test, for now) asserts it did by passing
+/// the event's subject card directly to AbilityExecutor.ExecuteTriggered, and the predicate
+/// is evaluated against that card exactly like a normal cardCondition would be.
+/// Trigger ("reaction"/"interrupt"/"wouldInterrupt") is kept for documentation but not
+/// enforced - there's no timing-window/priority system yet to make it meaningful.
+/// </summary>
+public sealed record TriggeredAbilityDefinition(
+    string Trigger,
+    string Title,
+    string WhenEvent,
+    JsonElement WhenCondition,
+    IReadOnlyList<CostDefinition> Costs,
+    TargetDefinition? Target,
+    IReadOnlyList<GameActionDefinition> GameActions);

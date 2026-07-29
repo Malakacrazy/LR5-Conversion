@@ -4,12 +4,13 @@ using L5R.Engine.State;
 namespace L5R.Engine.Dsl;
 
 /// <summary>
-/// Executes one already-parsed ActionDefinition: pay costs, then run its (and its
-/// target's) gameActions. Target selection itself is not modeled yet - the caller passes
-/// the chosen target directly, matching how far the interpreter has grown so far (task
-/// 9's first slice: prove one simple real card runs end to end, not build a full prompt
-/// pipeline). An action-level condition's implicit candidate is context.Source, matching
-/// the convention established throughout card-porting (e.g. kaiu-shuichi/mirumoto-prodigy).
+/// Executes one already-parsed ActionDefinition or TriggeredAbilityDefinition: pay costs,
+/// then run its (and its target's) gameActions. Target selection itself is not modeled yet
+/// - the caller passes the chosen target directly, matching how far the interpreter has
+/// grown so far (task 9's first slice: prove one simple real card runs end to end, not
+/// build a full prompt pipeline). An action-level condition's implicit candidate is
+/// context.Source, matching the convention established throughout card-porting (e.g.
+/// kaiu-shuichi/mirumoto-prodigy).
 /// </summary>
 public sealed class AbilityExecutor
 {
@@ -34,29 +35,55 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
 
+        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget);
+    }
+
+    /// <summary>
+    /// Runs a triggeredAbilities[] entry. No event bus exists to know an event actually
+    /// happened, so the caller asserts it did by passing the event's subject card directly;
+    /// the when-clause's predicate is evaluated against it exactly like a normal
+    /// cardCondition would be against a target candidate.
+    /// </summary>
+    public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null)
+    {
+        if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
+            throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
+
+        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget);
+    }
+
+    private void RunCostsTargetAndGameActions(
+        string title,
+        IReadOnlyList<CostDefinition> costs,
+        TargetDefinition? target,
+        IReadOnlyList<GameActionDefinition> gameActions,
+        AbilityContext context,
+        Card? chosenTarget,
+        Card? chosenCostTarget)
+    {
         context.CostTarget = chosenCostTarget;
 
-        foreach (var cost in action.Costs)
+        foreach (var cost in costs)
         {
             var handler = _costs.Resolve(cost.Name);
             if (!handler.CanPay(context, cost.Params))
                 throw new InvalidOperationException($"Cost '{cost.Name}' cannot currently be paid.");
         }
 
-        foreach (var cost in action.Costs)
+        foreach (var cost in costs)
             _costs.Resolve(cost.Name).Pay(context, cost.Params);
 
         // ringteki CardGameAction.defaultTargets: a gameAction with no explicit target
         // defaults to context.source, e.g. adept-of-shadows' returnToHand.
         context.Target = context.Source;
-        RunGameActions(action.GameActions, context);
+        RunGameActions(gameActions, context);
 
-        if (action.Target is not null)
+        if (target is not null)
         {
             context.Target = chosenTarget
-                ?? throw new InvalidOperationException($"Action '{action.Title}' requires a target but none was supplied.");
+                ?? throw new InvalidOperationException($"Ability '{title}' requires a target but none was supplied.");
 
-            RunGameActions(action.Target.GameActions, context);
+            RunGameActions(target.GameActions, context);
         }
     }
 
