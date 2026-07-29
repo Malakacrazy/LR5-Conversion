@@ -43,9 +43,19 @@ public sealed class AbilityExecutor
     /// happened, so the caller asserts it did by passing the event's subject card directly;
     /// the when-clause's predicate is evaluated against it exactly like a normal
     /// cardCondition would be against a target candidate.
+    ///
+    /// ringteki CardAbility.js: isTriggeredAbility() && !card.canTriggerAbilities(context)
+    /// blocks resolution - basecard.ts's canTriggerAbilities checks
+    /// checkRestrictions('triggerAbilities'), i.e. a "cardCannot: triggerAbilities"
+    /// cardLastingEffect placed on this card by some other card (hiruma-ambusher,
+    /// tranquility). Plain actions (CardAction.js) have no equivalent check, so Execute
+    /// deliberately doesn't gate on this - only triggered reactions/interrupts do.
     /// </summary>
     public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null)
     {
+        if (context.Game.IsRestrictedFrom(context.Source, "triggerAbilities"))
+            throw new InvalidOperationException($"'{context.Source.Id}' cannot trigger abilities right now.");
+
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 

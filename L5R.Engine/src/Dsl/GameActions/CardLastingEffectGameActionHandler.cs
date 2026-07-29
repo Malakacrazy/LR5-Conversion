@@ -33,12 +33,23 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
 
         var effect = props.GetProperty("effect");
         var effectName = effect.GetProperty("name").GetString();
-        var value = ValueRefResolver.ResolveInt(effect.GetProperty("value"), context);
 
         var recipients = props.TryGetProperty("target", out var targetElement)
             ? TargetResolver.ResolveAllCardsMatching(targetElement, context)
             : new[] { context.Target ?? throw new InvalidOperationException("cardLastingEffect requires context.Target to be set.") };
 
+        if (effectName == "cardCannot")
+        {
+            // {"cannot": "..."} is the only value shape ported so far - a bare string value
+            // (hiruma-yojimbo) or an object with a "restricts" sibling both exist in
+            // ringteki but no card in the executable set needs them yet.
+            var action = effect.GetProperty("value").GetProperty("cannot").GetString()!;
+            foreach (var recipient in recipients)
+                context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration });
+            return;
+        }
+
+        var value = ValueRefResolver.ResolveInt(effect.GetProperty("value"), context);
         foreach (var recipient in recipients)
             AddEffect(context, recipient, effectName, value, duration);
     }

@@ -40,6 +40,16 @@ public sealed class GameState
         (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
 
     /// <summary>
+    /// Active cardCannot restrictions - see CardRestriction's own doc comment. Same two
+    /// durations and expiry rules as LastingEffects (AdvancePhase clears everything,
+    /// EndConflict only the untilEndOfConflict ones).
+    /// </summary>
+    public List<CardRestriction> Restrictions { get; } = new();
+
+    public bool IsRestrictedFrom(Card card, string action) =>
+        Restrictions.Any(r => r.Target == card && r.Action == action);
+
+    /// <summary>
     /// ringteki game.js beginRound(): queues DynastyPhase, DrawPhase, ConflictPhase,
     /// FatePhase, then loops back into a new DynastyPhase - Regroup is a real Phases enum
     /// value in Constants.ts, but this ringteki version's round loop never actually queues
@@ -64,18 +74,20 @@ public sealed class GameState
             RoundNumber++;
 
         LastingEffects.Clear();
+        Restrictions.Clear();
     }
 
     /// <summary>
-    /// Clears the current conflict and expires its "untilEndOfConflict" lasting effects -
-    /// "untilEndOfPhase" ones outlive it, since a Conflict phase can (once the engine models
-    /// it) contain several conflicts declared one after another. No caller in this engine
-    /// yet drives repeated conflicts within a single phase, so this is exercised directly by
-    /// tests for now rather than by a phase-step loop.
+    /// Clears the current conflict and expires its "untilEndOfConflict" lasting effects and
+    /// restrictions - "untilEndOfPhase" ones outlive it, since a Conflict phase can (once the
+    /// engine models it) contain several conflicts declared one after another. No caller in
+    /// this engine yet drives repeated conflicts within a single phase, so this is exercised
+    /// directly by tests for now rather than by a phase-step loop.
     /// </summary>
     public void EndConflict()
     {
         CurrentConflict = null;
         LastingEffects.RemoveAll(e => e.Duration == "untilEndOfConflict");
+        Restrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
     }
 }
