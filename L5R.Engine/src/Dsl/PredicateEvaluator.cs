@@ -88,6 +88,7 @@ public static class PredicateEvaluator
     {
         "isBowed" => candidate.Bowed,
         "isUnique" => candidate.Unique,
+        "isFacedown" => candidate.Facedown,
         "isHonored" => candidate.IsHonored,
         "isDishonored" => candidate.IsDishonored,
         "isParticipating" => context.Game.CurrentConflict is { } conflict

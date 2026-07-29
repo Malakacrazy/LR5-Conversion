@@ -48,9 +48,20 @@ public static class TargetResolver
         return candidates.ToList();
     }
 
+    /// <summary>
+    /// GameState.AllCards() only concatenates Hand+PlayArea for both players - deliberately,
+    /// since it feeds the persistentEffects/whileAttached board-wide scans and dynamic
+    /// counts, which should never see facedown-in-province cards as "in play". A target
+    /// whose Location includes "province" (daidoji-nerishma/staging-ground/iuchi-wayfinder,
+    /// possibly alongside other locations like ambush's ["hand", "province"]) needs
+    /// Provinces added to the pool instead of widening AllCards() itself and risking
+    /// exposing province cards to those unrelated scans.
+    /// </summary>
     public static IReadOnlyList<Card> ResolveLegalTargets(TargetDefinition target, AbilityContext context)
     {
         IEnumerable<Card> candidates = context.Game.AllCards();
+        if (target.Location?.Contains("province") == true)
+            candidates = candidates.Concat(context.Game.Player1.Provinces).Concat(context.Game.Player2.Provinces);
 
         if (target.CardType is not null)
         {
@@ -65,6 +76,9 @@ public static class TargetResolver
             "any" => candidates,
             _ => throw new NotSupportedException($"Unknown target controller '{target.Controller}'.")
         };
+
+        if (target.Location is not null)
+            candidates = candidates.Where(card => target.Location.Contains(card.Location));
 
         if (target.CardCondition is not null)
             candidates = candidates.Where(card => PredicateEvaluator.Evaluate(target.CardCondition.Value, card, context));

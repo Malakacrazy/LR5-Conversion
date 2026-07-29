@@ -42,7 +42,9 @@ public sealed class GameActionRegistry
         // ported card actually uses (know-the-world) - is "takeRing".
         ["takeRing"] = new TakeRingGameActionHandler(),
         ["playerLastingEffect"] = new PlayerLastingEffectGameActionHandler(),
-        ["playCard"] = new PlayCardGameActionHandler()
+        ["playCard"] = new PlayCardGameActionHandler(),
+        ["flipDynasty"] = new FlipDynastyGameActionHandler(),
+        ["lookAt"] = new LookAtGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

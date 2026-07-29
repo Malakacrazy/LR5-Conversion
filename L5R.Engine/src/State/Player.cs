@@ -31,4 +31,13 @@ public sealed class Player
     /// card needs that distinction. Index 0 is the top of the deck.
     /// </summary>
     public List<Card> Deck { get; } = new();
+
+    /// <summary>
+    /// A flat list rather than ringteki's 5 fixed, individually-named slots (stronghold +
+    /// 4 provinces) - no ported card's executable slice needs to distinguish *which*
+    /// province slot a card sits in, only that it's a province (Card.Location = "province")
+    /// and possibly facedown (Card.Facedown). Not touched by ZoneMover yet - no ported
+    /// gameAction moves a card into or out of this zone (flipDynasty only flips the flag).
+    /// </summary>
+    public List<Card> Provinces { get; } = new();
 }

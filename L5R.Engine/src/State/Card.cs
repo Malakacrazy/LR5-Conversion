@@ -24,6 +24,15 @@ public sealed class Card
     public int? PrintedProvinceStrength { get; init; }
     public bool IsHonored { get; set; }
     public bool IsDishonored { get; set; }
+
+    /// <summary>
+    /// A province card's own facedown state (ringteki basecard.ts: a plain boolean on the
+    /// card, not a separate zone/wrapper type). Checked by PredicateEvaluator's "isFacedown"
+    /// hasStatus case and flipped by FlipDynastyGameActionHandler. Set directly by the
+    /// caller, same convention as Bowed/IsHonored - no dynasty-phase reveal/refill flow
+    /// exists to set it automatically.
+    /// </summary>
+    public bool Facedown { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
     public List<Abilities.CardAction> Actions { get; } = new();
 

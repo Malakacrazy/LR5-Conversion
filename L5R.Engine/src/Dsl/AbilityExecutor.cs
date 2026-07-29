@@ -221,6 +221,28 @@ public sealed class AbilityExecutor
                 return;
             }
 
+            // "mode": "upTo" (staging-ground's "flip up to 2 dynasty cards") - like MaxStat
+            // above but with only a count cap, no cardStat/statBudget at all.
+            if (target.UpToNumCards is { } upToNumCards)
+            {
+                var chosen = chosenTargets
+                    ?? throw new InvalidOperationException($"Ability '{title}' requires chosen targets but none were supplied.");
+
+                if (chosen.Count > upToNumCards)
+                    throw new InvalidOperationException($"Ability '{title}' allows at most {upToNumCards} targets, got {chosen.Count}.");
+
+                foreach (var card in chosen)
+                {
+                    if (target.CardCondition is { } condition && !PredicateEvaluator.Evaluate(condition, card, context))
+                        throw new InvalidOperationException($"'{card.Id}' does not satisfy ability '{title}''s target condition.");
+
+                    context.Target = card;
+                    RunGameActions(target.GameActions, context);
+                }
+
+                return;
+            }
+
             context.Target = chosenTarget
                 ?? throw new InvalidOperationException($"Ability '{title}' requires a target but none was supplied.");
 

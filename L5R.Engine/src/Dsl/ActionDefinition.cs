@@ -44,6 +44,14 @@ public sealed record CostDefinition(string Name, JsonElement? Params);
 /// No selection UI exists, so the caller supplies the chosen label directly (same
 /// ChosenX-parameter convention as ChosenTarget/ChosenCostTarget/ChosenRingElement).
 /// CardType/Controller/CardCondition/GameActions are meaningless when Choices is set.
+///
+/// Location (null = unrestricted) is the target's own filter - daidoji-nerishma/
+/// staging-ground/iuchi-wayfinder's "location": "province" - a different concept from
+/// ActionDefinition.Location, which constrains where the *ability's own source* must sit.
+/// A list rather than a single string because card-schema.json allows either a bare string
+/// or an array of alternatives (shosuro-actress' ["conflict discard pile", "dynasty discard
+/// pile"], ambush's ["hand", "province"]) - a candidate matches if its own Location is any
+/// one of these.
 /// </summary>
 public sealed record TargetDefinition(
     string? CardType,
@@ -51,7 +59,9 @@ public sealed record TargetDefinition(
     JsonElement? CardCondition,
     IReadOnlyList<GameActionDefinition> GameActions,
     IReadOnlyDictionary<string, GameActionDefinition>? Choices = null,
-    MaxStatSelection? MaxStat = null);
+    MaxStatSelection? MaxStat = null,
+    IReadOnlyList<string>? Location = null,
+    int? UpToNumCards = null);
 
 /// <summary>
 /// "mode": "maxStat" - pick up to NumCards cards (0 means unlimited) matching CardType/

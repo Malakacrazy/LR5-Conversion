@@ -234,7 +234,7 @@ public static class AbilityDefinitionParser
             return new TargetDefinition(null, "any", null, Array.Empty<GameActionDefinition>(), choices);
         }
 
-        if (mode != "single" && mode != "maxStat")
+        if (mode != "single" && mode != "maxStat" && mode != "upTo")
             throw new NotSupportedException($"AbilityDefinitionParser does not yet support target mode '{mode}'.");
 
         string? cardType = targetElement.TryGetProperty("cardType", out var cardTypeElement)
@@ -253,6 +253,16 @@ public static class AbilityDefinitionParser
             ? ParseGameActions(gameActionElement)
             : Array.Empty<GameActionDefinition>();
 
+        // card-schema.json target.location (daidoji-nerishma/staging-ground/iuchi-wayfinder's
+        // "province") - null means unrestricted, unlike ActionDefinition.Location's real
+        // "play area" default (see TargetDefinition's own doc comment for the distinction).
+        // Either a bare string or an array of alternatives (shosuro-actress/ambush).
+        IReadOnlyList<string>? location = targetElement.TryGetProperty("location", out var locationElement)
+            ? (locationElement.ValueKind == JsonValueKind.Array
+                ? locationElement.EnumerateArray().Select(e => e.GetString()!).ToList()
+                : new List<string> { locationElement.GetString()! })
+            : null;
+
         MaxStatSelection? maxStat = mode == "maxStat"
             ? new MaxStatSelection(
                 targetElement.GetProperty("numCards").GetInt32(),
@@ -260,7 +270,11 @@ public static class AbilityDefinitionParser
                 targetElement.GetProperty("statBudget").Clone())
             : null;
 
-        return new TargetDefinition(cardType, controller, cardCondition, gameActions, MaxStat: maxStat);
+        // "mode": "upTo" (staging-ground) - like maxStat but with only a count cap, no
+        // cardStat/statBudget at all.
+        int? upToNumCards = mode == "upTo" ? targetElement.GetProperty("numCards").GetInt32() : null;
+
+        return new TargetDefinition(cardType, controller, cardCondition, gameActions, MaxStat: maxStat, Location: location, UpToNumCards: upToNumCards);
     }
 
     private static IReadOnlyList<GameActionDefinition> ParseGameActions(JsonElement gameActionElement)
