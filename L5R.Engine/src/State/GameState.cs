@@ -20,13 +20,23 @@ public sealed class GameState
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
 
     /// <summary>
+    /// Active cardLastingEffect modifiers - see CardLastingEffectGameActionHandler and
+    /// LastingEffect's own doc comment for why every entry here is always "untilEndOfPhase".
+    /// </summary>
+    public List<LastingEffect> LastingEffects { get; } = new();
+
+    public int EffectiveGlory(Card card) =>
+        (card.PrintedGlory ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == "glory").Sum(e => e.Value);
+
+    /// <summary>
     /// ringteki game.js beginRound(): queues DynastyPhase, DrawPhase, ConflictPhase,
     /// FatePhase, then loops back into a new DynastyPhase - Regroup is a real Phases enum
     /// value in Constants.ts, but this ringteki version's round loop never actually queues
     /// a separate Regroup phase (FatePhase's own steps cover readying cards/returning rings
     /// instead), so it's unreachable here too. This method only moves CurrentPhase/
-    /// RoundNumber forward; it has no side effects yet (no fate collection, no lasting-
-    /// effect expiration) - those are added only once a card actually needs them.
+    /// RoundNumber forward and expires untilEndOfPhase lasting effects; no other side
+    /// effects yet (no fate collection, no card flipping) - those are added only once a
+    /// card actually needs them.
     /// </summary>
     public void AdvancePhase()
     {
@@ -41,5 +51,7 @@ public sealed class GameState
 
         if (CurrentPhase == Phase.Dynasty)
             RoundNumber++;
+
+        LastingEffects.Clear();
     }
 }

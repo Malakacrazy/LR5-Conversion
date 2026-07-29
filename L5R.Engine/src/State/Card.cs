@@ -18,6 +18,7 @@ public sealed class Card
     public string? Faction { get; init; }
     public bool Unique { get; init; }
     public int? PrintedCost { get; init; }
+    public int? PrintedGlory { get; init; }
     public bool IsHonored { get; set; }
     public bool IsDishonored { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
