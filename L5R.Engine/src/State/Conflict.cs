@@ -40,4 +40,7 @@ public sealed class Conflict
     /// <summary>this.game.currentConflict.attackerSkill/defenderSkill (kakita-asami's own comparison) - same caller-set-fact convention as Winner/Loser/SkillDifference; no skill-totaling pipeline sums participants' effective skill automatically.</summary>
     public int AttackerSkill { get; set; }
     public int DefenderSkill { get; set; }
+
+    /// <summary>event.conflict.conflictProvince (secret-cache's own "declared at this province" check) - which province card this conflict was declared against. No conflict-declaration pipeline picks a province automatically (matches this engine's general lack of one), so it's a caller-set fact, same convention as every other Conflict field above.</summary>
+    public Card? DeclaredProvince { get; set; }
 }
