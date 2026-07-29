@@ -127,6 +127,10 @@ public static class ValueRefResolver
         {
             "player" => context.Player,
             "source" => context.Source,
+            // soshi-illusionist's "target.personalHonor" - the ability's currently chosen
+            // target (set by AbilityExecutor.Resolve before a target-scoped gameAction runs).
+            "target" => context.Target
+                ?? throw new InvalidOperationException("contextPath root 'target' requires context.Target to be set."),
             _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath root '{segments[0]}'.")
         };
 
@@ -144,6 +148,13 @@ public static class ValueRefResolver
                 // a null/no-op - matches ValueRefResolver's fail-loud policy elsewhere.
                 (Card c, "parent") => c.AttachedTo
                     ?? throw new InvalidOperationException($"'{c.Id}' is not currently attached to anything."),
+                // soshi-illusionist's "target.personalHonor" - ringteki's StatusToken is a
+                // real object a card holds in one slot; this engine flattens honored/
+                // dishonored onto Card.IsHonored/IsDishonored directly (see
+                // DiscardStatusTokenGameActionHandler), so there is no separate token object
+                // to resolve to - "the status-token slot on this card" and "this card" are
+                // the same thing here. A deliberate passthrough, not a real property walk.
+                (Card c, "personalHonor") => c,
                 _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath segment '{segments[i]}' on {current.GetType().Name}.")
             };
         }

@@ -45,7 +45,8 @@ public sealed class GameActionRegistry
         ["playCard"] = new PlayCardGameActionHandler(),
         ["flipDynasty"] = new FlipDynastyGameActionHandler(),
         ["lookAt"] = new LookAtGameActionHandler(),
-        ["deckSearch"] = new DeckSearchGameActionHandler()
+        ["deckSearch"] = new DeckSearchGameActionHandler(),
+        ["discardStatusToken"] = new DiscardStatusTokenGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>
