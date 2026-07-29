@@ -26,4 +26,11 @@ public sealed class AbilityContext
     /// the caller supplies the choice directly; null until then.
     /// </summary>
     public string? ChosenRingElement { get; set; }
+
+    /// <summary>
+    /// ringteki ModifyBidAction's Direction.Prompt - "increase" or "decrease", for
+    /// modifyBid's "direction": "prompt". No choice-prompt UI exists, so (like
+    /// ChosenRingElement) the caller supplies the choice directly; null until then.
+    /// </summary>
+    public string? ChosenBidDirection { get; set; }
 }
