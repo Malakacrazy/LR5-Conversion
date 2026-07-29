@@ -25,7 +25,9 @@ public sealed class GameActionRegistry
         ["ready"] = new ReadyGameActionHandler(),
         ["moveToConflict"] = new MoveToConflictGameActionHandler(),
         ["sendHome"] = new SendHomeGameActionHandler(),
-        ["removeFate"] = new RemoveFateGameActionHandler()
+        ["removeFate"] = new RemoveFateGameActionHandler(),
+        ["switchConflictType"] = new SwitchConflictTypeGameActionHandler(),
+        ["putIntoConflict"] = new PutIntoConflictGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

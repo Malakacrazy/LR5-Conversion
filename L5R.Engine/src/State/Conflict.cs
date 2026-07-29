@@ -8,8 +8,7 @@ namespace L5R.Engine.State;
 /// (this.ring.conflictType, this.ring.elements), but no ported card's executable slice
 /// needs the ring object itself yet, only the two values it would produce - so they're
 /// plain fields set directly by the caller (like GameState.CurrentPhase), not created
-/// through a declaration/ring pipeline. switchConflictType (mutating this after creation)
-/// stays unsupported until a card forces that in.
+/// through a declaration/ring pipeline.
 /// </summary>
 public sealed class Conflict
 {
@@ -18,8 +17,8 @@ public sealed class Conflict
     public List<Card> Attackers { get; } = new();
     public List<Card> Defenders { get; } = new();
 
-    /// <summary>"military" or "political". Optional since not every existing test/card cares about it.</summary>
-    public string? ConflictType { get; init; }
+    /// <summary>"military" or "political". Optional since not every existing test/card cares about it. Settable - see SwitchConflictTypeGameActionHandler.</summary>
+    public string? ConflictType { get; set; }
 
     /// <summary>Ring element(s) in play for this conflict, e.g. ["fire"]. ringteki's isDuringConflict checks conflictType.concat(elements) against the same list.</summary>
     public List<string> Elements { get; init; } = new();
