@@ -45,6 +45,13 @@ public sealed class Card
     /// exists to set it automatically.
     /// </summary>
     public bool Facedown { get; set; }
+
+    /// <summary>
+    /// A province card's own broken state (endless-plains' "cost: breakSelf()" - the province
+    /// pays its own break as a cost). Set directly by the caller, same convention as
+    /// Facedown/Bowed - no province-breach-resolution pipeline exists to set it automatically.
+    /// </summary>
+    public bool Broken { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
     public List<Abilities.CardAction> Actions { get; } = new();
 
