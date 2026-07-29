@@ -21,6 +21,7 @@ public static class EffectVocabulary
             "modifyMilitarySkill" => new[] { ("military", value) },
             "modifyPoliticalSkill" => new[] { ("political", value) },
             "modifyBothSkills" => new[] { ("military", value), ("political", value) },
+            "modifyProvinceStrength" => new[] { ("provinceStrength", value) },
             _ => Array.Empty<(string, int)>()
         };
         return deltas.Count > 0;

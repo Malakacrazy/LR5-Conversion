@@ -40,6 +40,8 @@ public sealed class GameState
 
     public int EffectivePoliticalSkill(Card card) => EffectiveStat(card, "political", card.PrintedPoliticalSkill);
 
+    public int EffectiveProvinceStrength(Card card) => EffectiveStat(card, "provinceStrength", card.PrintedProvinceStrength);
+
     private int EffectiveStat(Card card, string stat, int? printedValue)
     {
         var total = (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);

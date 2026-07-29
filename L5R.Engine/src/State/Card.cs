@@ -21,6 +21,7 @@ public sealed class Card
     public int? PrintedGlory { get; init; }
     public int? PrintedMilitarySkill { get; init; }
     public int? PrintedPoliticalSkill { get; init; }
+    public int? PrintedProvinceStrength { get; init; }
     public bool IsHonored { get; set; }
     public bool IsDishonored { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
