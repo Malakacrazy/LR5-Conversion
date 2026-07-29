@@ -26,7 +26,7 @@ public sealed class AbilityExecutor
     public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
         action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
 
-    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
+    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null)
     {
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
@@ -35,7 +35,7 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
 
-        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice);
+        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public sealed class AbilityExecutor
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 
-        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice);
+        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null);
     }
 
     private void RunCostsTargetAndGameActions(
@@ -70,7 +70,8 @@ public sealed class AbilityExecutor
         AbilityContext context,
         Card? chosenTarget,
         Card? chosenCostTarget,
-        string? chosenChoice)
+        string? chosenChoice,
+        IReadOnlyList<Card>? chosenTargets)
     {
         context.CostTarget = chosenCostTarget;
 
@@ -104,6 +105,37 @@ public sealed class AbilityExecutor
 
                 context.Target = context.Source;
                 _gameActions.Resolve(chosenGameAction.Name).Execute(context, chosenGameAction.Params);
+                return;
+            }
+
+            // "mode": "maxStat" - up to NumCards cards (0 = unlimited) totaling at most
+            // StatBudget of CardStat. No solver exists to search for a legal combination,
+            // so the caller supplies the chosen set directly and this only validates it.
+            if (target.MaxStat is { } maxStat)
+            {
+                var chosen = chosenTargets
+                    ?? throw new InvalidOperationException($"Ability '{title}' requires chosen targets but none were supplied.");
+
+                if (maxStat.NumCards > 0 && chosen.Count > maxStat.NumCards)
+                    throw new InvalidOperationException($"Ability '{title}' allows at most {maxStat.NumCards} targets, got {chosen.Count}.");
+
+                foreach (var card in chosen)
+                {
+                    if (target.CardCondition is { } condition && !PredicateEvaluator.Evaluate(condition, card, context))
+                        throw new InvalidOperationException($"'{card.Id}' does not satisfy ability '{title}''s target condition.");
+                }
+
+                var budget = ValueRefResolver.ResolveInt(maxStat.StatBudget, context);
+                var total = chosen.Sum(card => PredicateEvaluator.ResolveCardStat(maxStat.CardStat, card));
+                if (total > budget)
+                    throw new InvalidOperationException($"Ability '{title}''s chosen targets total {total} {maxStat.CardStat}, exceeding the budget of {budget}.");
+
+                foreach (var card in chosen)
+                {
+                    context.Target = card;
+                    RunGameActions(target.GameActions, context);
+                }
+
                 return;
             }
 

@@ -100,15 +100,16 @@ public static class PredicateEvaluator
         var comparator = predicate.GetProperty("comparator").GetString()!;
         var value = ValueRefResolver.ResolveInt(predicate.GetProperty("value"), context);
 
-        var candidateValue = stat switch
-        {
-            "printedCost" => candidate.PrintedCost
-                ?? throw new InvalidOperationException($"Card '{candidate.Id}' has no printedCost to compare."),
-            _ => throw new NotSupportedException($"PredicateEvaluator does not yet support compareStat stat '{stat}'.")
-        };
-
-        return Compare(candidateValue, comparator, value);
+        return Compare(ResolveCardStat(stat, candidate), comparator, value);
     }
+
+    /// <summary>Shared with "mode": "maxStat" target budgeting (AbilityExecutor), which sums this same stat across a caller-chosen set of cards.</summary>
+    internal static int ResolveCardStat(string stat, Card card) => stat switch
+    {
+        "printedCost" => card.PrintedCost
+            ?? throw new InvalidOperationException($"Card '{card.Id}' has no printedCost."),
+        _ => throw new NotSupportedException($"PredicateEvaluator does not yet support card stat '{stat}'.")
+    };
 
     /// <summary>
     /// compareValues' left/right are usually both ints (dynamics, honor totals), but a

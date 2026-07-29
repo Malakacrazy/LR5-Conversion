@@ -31,7 +31,18 @@ public sealed record TargetDefinition(
     string Controller,
     JsonElement? CardCondition,
     IReadOnlyList<GameActionDefinition> GameActions,
-    IReadOnlyDictionary<string, GameActionDefinition>? Choices = null);
+    IReadOnlyDictionary<string, GameActionDefinition>? Choices = null,
+    MaxStatSelection? MaxStat = null);
+
+/// <summary>
+/// "mode": "maxStat" - pick up to NumCards cards (0 means unlimited) matching CardType/
+/// Controller/CardCondition, whose CardStat totals at most StatBudget (e.g. ambush's "up to
+/// 2 Scorpion characters totaling printedCost 6 or less"). No selection UI exists to search
+/// for a legal combination itself, so the caller supplies the chosen set directly (like
+/// ChosenTarget) and AbilityExecutor just validates it against the count/condition/budget
+/// constraints rather than solving the knapsack itself.
+/// </summary>
+public sealed record MaxStatSelection(int NumCards, string CardStat, JsonElement StatBudget);
 
 /// <summary>
 /// Target is card-schema.json gameActionEntry's own optional override (a sibling of

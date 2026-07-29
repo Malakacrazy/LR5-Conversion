@@ -161,7 +161,7 @@ public static class AbilityDefinitionParser
             return new TargetDefinition(null, "any", null, Array.Empty<GameActionDefinition>(), choices);
         }
 
-        if (mode != "single")
+        if (mode != "single" && mode != "maxStat")
             throw new NotSupportedException($"AbilityDefinitionParser does not yet support target mode '{mode}'.");
 
         string? cardType = targetElement.TryGetProperty("cardType", out var cardTypeElement)
@@ -180,7 +180,14 @@ public static class AbilityDefinitionParser
             ? ParseGameActions(gameActionElement)
             : Array.Empty<GameActionDefinition>();
 
-        return new TargetDefinition(cardType, controller, cardCondition, gameActions);
+        MaxStatSelection? maxStat = mode == "maxStat"
+            ? new MaxStatSelection(
+                targetElement.GetProperty("numCards").GetInt32(),
+                targetElement.GetProperty("cardStat").GetString()!,
+                targetElement.GetProperty("statBudget").Clone())
+            : null;
+
+        return new TargetDefinition(cardType, controller, cardCondition, gameActions, MaxStat: maxStat);
     }
 
     private static IReadOnlyList<GameActionDefinition> ParseGameActions(JsonElement gameActionElement)
