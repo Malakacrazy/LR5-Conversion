@@ -14,6 +14,9 @@ public sealed class GameActionRegistry
         ["returnToHand"] = new ReturnToHandGameActionHandler(),
         ["draw"] = new DrawGameActionHandler(),
         ["discardFromPlay"] = new DiscardFromPlayGameActionHandler(),
+        // ringteki GameActions.ts: sacrifice is `new DiscardFromPlayAction(propertyFactory, true)` -
+        // the exact same action class as discardFromPlay, only the display name differs.
+        ["sacrifice"] = new DiscardFromPlayGameActionHandler(),
         ["honor"] = new HonorGameActionHandler(),
         ["dishonor"] = new DishonorGameActionHandler(),
         ["bow"] = new BowGameActionHandler(),
