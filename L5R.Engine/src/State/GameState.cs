@@ -58,7 +58,18 @@ public sealed class GameState
 
     private int EffectiveStat(Card card, string stat, int? printedValue)
     {
-        var total = (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
+        // way-of-the-lion's modifyBaseMilitarySkillMultiplier multiplies the printed base
+        // before any additive delta is applied - see LastingEffect.Multiplier's own doc
+        // comment. Every other LastingEffect entry has Multiplier == null and contributes
+        // through Value exactly as before.
+        var multiplier = LastingEffects
+            .Where(e => e.Target == card && e.Stat == stat && e.Multiplier is not null)
+            .Select(e => e.Multiplier!.Value)
+            .DefaultIfEmpty(1)
+            .Aggregate((a, b) => a * b);
+
+        var total = (printedValue ?? 0) * multiplier
+            + LastingEffects.Where(e => e.Target == card && e.Stat == stat && e.Multiplier is null).Sum(e => e.Value);
 
         total += SumStatDeltas(ActivePersistentEffectsAffecting(card), stat);
         total += SumStatDeltas(ActiveWhileAttachedEffectsFor(card), stat);

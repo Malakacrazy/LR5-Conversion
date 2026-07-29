@@ -46,6 +46,28 @@ public static class EffectVocabulary
     }
 
     /// <summary>
+    /// way-of-the-lion's modifyBaseMilitarySkillMultiplier(2) - multiplies the printed base
+    /// stat instead of adding a delta to it (see LastingEffect.Multiplier's own doc
+    /// comment). Deliberately separate from TryGetStatDeltas rather than one method with a
+    /// "is this additive or multiplicative" out-flag, since the two apply to GameState.
+    /// EffectiveStat's formula in structurally different ways (added after vs. multiplying
+    /// the base before deltas are summed).
+    /// </summary>
+    public static bool TryGetStatMultiplier(string? effectName, int value, out string stat, out int multiplier)
+    {
+        if (effectName != "modifyBaseMilitarySkillMultiplier")
+        {
+            stat = "";
+            multiplier = 1;
+            return false;
+        }
+
+        stat = "military";
+        multiplier = value;
+        return true;
+    }
+
+    /// <summary>
     /// qualifier is non-null only for cannotParticipateAsAttacker/Defender's optional
     /// conflict-type/element scoping (pacifism's "military") - null means unconditional.
     /// cardCannot/doesNotBow never carry one (no ported card qualifies them).

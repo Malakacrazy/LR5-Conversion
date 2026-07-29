@@ -14,4 +14,14 @@ public sealed class LastingEffect
     public required string Stat { get; init; }
     public required int Value { get; init; }
     public required string Duration { get; init; }
+
+    /// <summary>
+    /// Null for every ordinary additive effect (Value is added to the stat's printed base,
+    /// the only shape that existed before way-of-the-lion). Set only by
+    /// modifyBaseMilitarySkillMultiplier - the printed base is multiplied by this instead of
+    /// Value being added. GameState.EffectiveStat applies at most one of these per stat;
+    /// multiple simultaneous multipliers on the same card/stat aren't exercised by any
+    /// ported card yet.
+    /// </summary>
+    public int? Multiplier { get; init; }
 }

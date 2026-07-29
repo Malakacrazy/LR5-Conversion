@@ -111,6 +111,10 @@ public static class PredicateEvaluator
     {
         "printedCost" => card.PrintedCost
             ?? throw new InvalidOperationException($"Card '{card.Id}' has no printedCost."),
+        // way-of-the-lion's cardCondition ("card.getBaseMilitarySkill() > 0") - the printed
+        // stat, deliberately unaffected by any LastingEffect/persistentEffect/whileAttached
+        // modifier (unlike GameState.EffectiveMilitarySkill).
+        "baseMilitarySkill" => card.PrintedMilitarySkill ?? 0,
         _ => throw new NotSupportedException($"PredicateEvaluator does not yet support card stat '{stat}'.")
     };
 

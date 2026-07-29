@@ -54,6 +54,14 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         }
 
         var value = ValueRefResolver.ResolveInt(effectValue!.Value, context);
+
+        if (EffectVocabulary.TryGetStatMultiplier(effectName, value, out var multiplierStat, out var multiplier))
+        {
+            foreach (var recipient in recipients)
+                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = multiplierStat, Value = 0, Multiplier = multiplier, Duration = duration });
+            return;
+        }
+
         if (!EffectVocabulary.TryGetStatDeltas(effectName, value, out var deltas))
             throw new NotSupportedException($"CardLastingEffectGameActionHandler does not yet support effect '{effectName}'.");
 
