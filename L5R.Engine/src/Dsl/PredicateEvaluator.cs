@@ -104,11 +104,11 @@ public static class PredicateEvaluator
         var comparator = predicate.GetProperty("comparator").GetString()!;
         var value = ValueRefResolver.ResolveInt(predicate.GetProperty("value"), context);
 
-        return Compare(ResolveCardStat(stat, candidate), comparator, value);
+        return Compare(ResolveCardStat(stat, candidate, context), comparator, value);
     }
 
     /// <summary>Shared with "mode": "maxStat" target budgeting (AbilityExecutor), which sums this same stat across a caller-chosen set of cards.</summary>
-    internal static int ResolveCardStat(string stat, Card card) => stat switch
+    internal static int ResolveCardStat(string stat, Card card, AbilityContext context) => stat switch
     {
         "printedCost" => card.PrintedCost
             ?? throw new InvalidOperationException($"Card '{card.Id}' has no printedCost."),
@@ -116,6 +116,9 @@ public static class PredicateEvaluator
         // stat, deliberately unaffected by any LastingEffect/persistentEffect/whileAttached
         // modifier (unlike GameState.EffectiveMilitarySkill).
         "baseMilitarySkill" => card.PrintedMilitarySkill ?? 0,
+        // mirumoto-s-fury's cardCondition ("card.getGlory()") - ringteki's getGlory() applies
+        // modifiers, unlike getBaseMilitarySkill() above, so this is the *effective* stat.
+        "glory" => context.Game.EffectiveGlory(card),
         _ => throw new NotSupportedException($"PredicateEvaluator does not yet support card stat '{stat}'.")
     };
 

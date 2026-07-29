@@ -208,7 +208,7 @@ public sealed class AbilityExecutor
                 }
 
                 var budget = ValueRefResolver.ResolveInt(maxStat.StatBudget, context);
-                var total = chosen.Sum(card => PredicateEvaluator.ResolveCardStat(maxStat.CardStat, card));
+                var total = chosen.Sum(card => PredicateEvaluator.ResolveCardStat(maxStat.CardStat, card, context));
                 if (total > budget)
                     throw new InvalidOperationException($"Ability '{title}''s chosen targets total {total} {maxStat.CardStat}, exceeding the budget of {budget}.");
 

@@ -50,6 +50,7 @@ public static class ValueRefResolver
             "countClaimedRings" => context.Game.Rings.Count(r => r.ClaimedBy == ResolveForPlayer(valueRef, context)),
             "countUnclaimedRings" => context.Game.Rings.Count(r => r.IsUnclaimed),
             "countCardsInHand" => ResolveForPlayer(valueRef, context).Hand.Count,
+            "countFacedownProvinces" => ResolveForPlayer(valueRef, context).Provinces.Count(c => c.Facedown),
             _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
         };
 
