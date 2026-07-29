@@ -150,6 +150,20 @@ public static class AbilityDefinitionParser
 
     private static TargetDefinition ParseTarget(JsonElement targetElement)
     {
+        var mode = targetElement.TryGetProperty("mode", out var modeElement) ? modeElement.GetString() : "single";
+
+        if (mode == "select")
+        {
+            var choices = new Dictionary<string, GameActionDefinition>();
+            foreach (var choice in targetElement.GetProperty("choices").EnumerateObject())
+                choices[choice.Name] = ParseGameAction(choice.Value);
+
+            return new TargetDefinition(null, "any", null, Array.Empty<GameActionDefinition>(), choices);
+        }
+
+        if (mode != "single")
+            throw new NotSupportedException($"AbilityDefinitionParser does not yet support target mode '{mode}'.");
+
         string? cardType = targetElement.TryGetProperty("cardType", out var cardTypeElement)
             ? cardTypeElement.GetString()
             : null;

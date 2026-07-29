@@ -19,11 +19,19 @@ public sealed record ActionDefinition(
 
 public sealed record CostDefinition(string Name, JsonElement? Params);
 
+/// <summary>
+/// Choices is non-null only for "mode": "select" targets (card-schema.json target.choices) -
+/// a menu of named alternatives, each its own gameActionEntry, rather than a card to pick.
+/// No selection UI exists, so the caller supplies the chosen label directly (same
+/// ChosenX-parameter convention as ChosenTarget/ChosenCostTarget/ChosenRingElement).
+/// CardType/Controller/CardCondition/GameActions are meaningless when Choices is set.
+/// </summary>
 public sealed record TargetDefinition(
     string? CardType,
     string Controller,
     JsonElement? CardCondition,
-    IReadOnlyList<GameActionDefinition> GameActions);
+    IReadOnlyList<GameActionDefinition> GameActions,
+    IReadOnlyDictionary<string, GameActionDefinition>? Choices = null);
 
 /// <summary>
 /// Target is card-schema.json gameActionEntry's own optional override (a sibling of

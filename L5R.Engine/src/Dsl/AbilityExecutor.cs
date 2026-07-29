@@ -26,7 +26,7 @@ public sealed class AbilityExecutor
     public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
         action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
 
-    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null)
+    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
     {
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
@@ -35,7 +35,7 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
 
-        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget);
+        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public sealed class AbilityExecutor
     /// tranquility). Plain actions (CardAction.js) have no equivalent check, so Execute
     /// deliberately doesn't gate on this - only triggered reactions/interrupts do.
     /// </summary>
-    public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null)
+    public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
     {
         if (context.Game.IsRestrictedFrom(context.Source, "triggerAbilities"))
             throw new InvalidOperationException($"'{context.Source.Id}' cannot trigger abilities right now.");
@@ -59,7 +59,7 @@ public sealed class AbilityExecutor
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 
-        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget);
+        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice);
     }
 
     private void RunCostsTargetAndGameActions(
@@ -69,7 +69,8 @@ public sealed class AbilityExecutor
         IReadOnlyList<GameActionDefinition> gameActions,
         AbilityContext context,
         Card? chosenTarget,
-        Card? chosenCostTarget)
+        Card? chosenCostTarget,
+        string? chosenChoice)
     {
         context.CostTarget = chosenCostTarget;
 
@@ -90,6 +91,22 @@ public sealed class AbilityExecutor
 
         if (target is not null)
         {
+            // "mode": "select" - a menu of named alternatives (kuroi-mori's "switch the
+            // ring or switch the type"), not a card to pick. No selection UI exists, so
+            // the caller supplies the chosen label directly, same convention as chosenTarget.
+            if (target.Choices is not null)
+            {
+                var label = chosenChoice
+                    ?? throw new InvalidOperationException($"Ability '{title}' requires a choice but none was supplied.");
+                var chosenGameAction = target.Choices.TryGetValue(label, out var ga)
+                    ? ga
+                    : throw new InvalidOperationException($"Ability '{title}' has no choice named '{label}'.");
+
+                context.Target = context.Source;
+                _gameActions.Resolve(chosenGameAction.Name).Execute(context, chosenGameAction.Params);
+                return;
+            }
+
             context.Target = chosenTarget
                 ?? throw new InvalidOperationException($"Ability '{title}' requires a target but none was supplied.");
 
