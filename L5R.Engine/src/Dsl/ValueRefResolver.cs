@@ -1,13 +1,15 @@
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.State;
 
 namespace L5R.Engine.Dsl;
 
 /// <summary>
-/// Resolves one card-schema.json valueRef to a literal int. Deliberately covers only
-/// plain number literals so far - contextPath/dynamic/allCardsMatching all throw until a
-/// card in the executable set actually needs one, per the same fail-loud policy as
-/// PredicateEvaluator.
+/// Resolves one card-schema.json valueRef to a literal int. Deliberately covers only plain
+/// number literals, the "conflictParticipantCount" dynamic, and a couple of contextPath
+/// segments so far - anything else throws until a card in the executable set needs it, per
+/// the same fail-loud policy as PredicateEvaluator. No multiplier/offset support yet either
+/// - no ported card in the executable set uses them on a dynamic this resolver understands.
 /// </summary>
 public static class ValueRefResolver
 {
@@ -16,6 +18,63 @@ public static class ValueRefResolver
         if (valueRef.ValueKind == JsonValueKind.Number)
             return valueRef.GetInt32();
 
-        throw new NotSupportedException("ValueRefResolver only supports plain number literals so far.");
+        if (valueRef.TryGetProperty("dynamic", out var dynamicElement))
+            return ResolveDynamic(dynamicElement.GetString()!, valueRef, context);
+
+        if (valueRef.TryGetProperty("contextPath", out var contextPathElement))
+            return ResolveContextPath(contextPathElement.GetString()!, context);
+
+        throw new NotSupportedException("ValueRefResolver only supports plain number literals, 'dynamic', and 'contextPath' so far.");
+    }
+
+    private static int ResolveDynamic(string name, JsonElement valueRef, AbilityContext context) => name switch
+    {
+        "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
+        _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
+    };
+
+    /// <summary>ringteki currentConflict.getNumberOfParticipantsFor(role) - "own" resolves to whichever role context.Source's controller currently holds.</summary>
+    private static int ResolveConflictParticipantCount(JsonElement valueRef, AbilityContext context)
+    {
+        var conflict = context.Game.CurrentConflict;
+        if (conflict is null)
+            return 0;
+
+        var role = valueRef.GetProperty("role").GetString()!;
+        if (role == "own")
+            role = context.Source.Controller == conflict.AttackingPlayer ? "attacker" : "defender";
+
+        return role switch
+        {
+            "attacker" => conflict.Attackers.Count,
+            "defender" => conflict.Defenders.Count,
+            _ => throw new NotSupportedException($"Unknown conflict role '{role}'.")
+        };
+    }
+
+    private static int ResolveContextPath(string path, AbilityContext context)
+    {
+        var segments = path.Split('.');
+
+        object current = segments[0] switch
+        {
+            "player" => context.Player,
+            "source" => context.Source,
+            _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath root '{segments[0]}'.")
+        };
+
+        for (var i = 1; i < segments.Length; i++)
+        {
+            current = (current, segments[i]) switch
+            {
+                (Player p, "honor") => p.Honor,
+                (Player p, "opponent") => context.Game.Opponent(p),
+                _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath segment '{segments[i]}' on {current.GetType().Name}.")
+            };
+        }
+
+        return current is int result
+            ? result
+            : throw new InvalidOperationException($"contextPath '{path}' did not resolve to an int.");
     }
 }

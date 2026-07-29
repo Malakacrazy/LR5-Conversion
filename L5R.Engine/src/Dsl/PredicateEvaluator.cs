@@ -28,6 +28,10 @@ public static class PredicateEvaluator
             "hasFaction" => candidate.Faction == predicate.GetProperty("faction").GetString(),
             "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate, context),
             "compareStat" => EvaluateCompareStat(predicate, candidate, context),
+            "compareValues" => Compare(
+                ValueRefResolver.ResolveInt(predicate.GetProperty("left"), context),
+                predicate.GetProperty("comparator").GetString()!,
+                ValueRefResolver.ResolveInt(predicate.GetProperty("right"), context)),
             "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
