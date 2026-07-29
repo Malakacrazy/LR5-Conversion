@@ -90,3 +90,17 @@ public sealed record PersistentEffectDefinition(
     string TargetController,
     string SourceLocation,
     IReadOnlyList<JsonElement> Effects);
+
+/// <summary>
+/// One entry from a loaded card's abilities.whileAttached[] - active only while the source
+/// (an attachment) is attached to a character, and always applies to the parent it's
+/// attached to (unlike PersistentEffectDefinition's Match/TargetController, there's no
+/// separate scope to choose - "the card this is attached to" is the only recipient). Condition
+/// is evaluated against the attachment itself; Match is an extra, optional condition on the
+/// parent beyond "is the card this is attached to" (card-schema.json) - no ported card in the
+/// executable set uses it yet.
+/// </summary>
+public sealed record WhileAttachedDefinition(
+    JsonElement? Match,
+    JsonElement? Condition,
+    IReadOnlyList<JsonElement> Effects);

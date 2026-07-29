@@ -95,12 +95,59 @@ public sealed class GameState
         if (Restrictions.Any(r => r.Target == card && r.Action == action))
             return true;
 
-        return ActivePersistentEffectsAffecting(card).Any(pair =>
+        bool MatchesAction((Card Source, JsonElement Effect) pair) =>
             EffectVocabulary.TryGetRestrictionAction(
                 pair.Effect.GetProperty("name").GetString(),
                 pair.Effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null,
                 out var restrictedAction)
-            && restrictedAction == action);
+            && restrictedAction == action;
+
+        return ActivePersistentEffectsAffecting(card).Any(MatchesAction)
+            || ActiveWhileAttachedEffectsFor(card).Any(MatchesAction);
+    }
+
+    /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait.</summary>
+    public bool HasEffectiveTrait(Card card, string trait) =>
+        ActiveWhileAttachedEffectsFor(card).Any(pair =>
+            pair.Effect.GetProperty("name").GetString() == "addTrait" && pair.Effect.GetProperty("value").GetString() == trait);
+
+    /// <summary>
+    /// magnificent-kimono/tattooed-wanderer's keywords (pride/covert) while attached. No
+    /// predicate op consumes keywords yet (nothing in the executable set needs to ask "does
+    /// this card have keyword X"), so this is queried directly rather than through hasTrait's
+    /// wiring - still real engine behavior, not a no-op.
+    /// </summary>
+    public bool HasKeyword(Card card, string keyword) =>
+        ActiveWhileAttachedEffectsFor(card).Any(pair =>
+            pair.Effect.GetProperty("name").GetString() == "addKeyword" && pair.Effect.GetProperty("value").GetString() == keyword);
+
+    /// <summary>
+    /// Scans every attachment currently attached to `parent` for applicable whileAttached
+    /// effects - the attachment-scoped counterpart to ActivePersistentEffectsAffecting.
+    /// Always applies to the parent specifically (no separate scope to choose, unlike
+    /// PersistentEffectDefinition's Match/TargetController).
+    /// </summary>
+    private IEnumerable<(Card Source, JsonElement Effect)> ActiveWhileAttachedEffectsFor(Card parent)
+    {
+        foreach (var attachment in AllCards())
+        {
+            if (attachment.AttachedTo != parent)
+                continue;
+
+            var attachmentContext = SourceContextFor(attachment);
+
+            foreach (var definition in attachment.WhileAttachedEffects)
+            {
+                if (definition.Condition is { } condition && !PredicateEvaluator.Evaluate(condition, attachment, attachmentContext))
+                    continue;
+
+                if (definition.Match is { } match && !PredicateEvaluator.Evaluate(match, parent, attachmentContext))
+                    continue;
+
+                foreach (var effect in definition.Effects)
+                    yield return (attachment, effect);
+            }
+        }
     }
 
     /// <summary>

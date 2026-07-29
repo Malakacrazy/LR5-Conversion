@@ -75,6 +75,34 @@ public static class AbilityDefinitionParser
         return new PersistentEffectDefinition(matchElement.Clone(), condition, targetController, sourceLocation, effects);
     }
 
+    public static IReadOnlyList<WhileAttachedDefinition> ParseWhileAttached(JsonElement cardRoot)
+    {
+        if (!cardRoot.TryGetProperty("abilities", out var abilities))
+            return Array.Empty<WhileAttachedDefinition>();
+
+        if (!abilities.TryGetProperty("whileAttached", out var whileAttached))
+            return Array.Empty<WhileAttachedDefinition>();
+
+        var result = new List<WhileAttachedDefinition>();
+        foreach (var entry in whileAttached.EnumerateArray())
+            result.Add(ParseWhileAttachedEntry(entry));
+
+        return result;
+    }
+
+    private static WhileAttachedDefinition ParseWhileAttachedEntry(JsonElement entry)
+    {
+        var match = entry.TryGetProperty("match", out var matchElement) ? matchElement.Clone() : (JsonElement?)null;
+        var condition = entry.TryGetProperty("condition", out var conditionElement) ? conditionElement.Clone() : (JsonElement?)null;
+
+        var effectElement = entry.GetProperty("effect");
+        var effects = effectElement.ValueKind == JsonValueKind.Array
+            ? effectElement.EnumerateArray().Select(e => e.Clone()).ToList()
+            : new List<JsonElement> { effectElement.Clone() };
+
+        return new WhileAttachedDefinition(match, condition, effects);
+    }
+
     private static TriggeredAbilityDefinition ParseTriggeredAbility(JsonElement ability)
     {
         var trigger = ability.GetProperty("trigger").GetString()!;

@@ -35,4 +35,20 @@ public sealed class Card
     /// materialized state anywhere.
     /// </summary>
     public IReadOnlyList<Dsl.PersistentEffectDefinition> PersistentEffects { get; init; } = Array.Empty<Dsl.PersistentEffectDefinition>();
+
+    /// <summary>
+    /// The character this attachment is attached to, null otherwise (and always null for
+    /// non-attachment cards). No "attach" gameAction exists yet - set directly by the
+    /// caller, like every other zone/relationship field. Drives WhileAttachedDefinition
+    /// evaluation (see Card.WhileAttachedEffects and GameState's whileAttached scan) and
+    /// the "source.parent" contextPath.
+    /// </summary>
+    public Card? AttachedTo { get; set; }
+
+    /// <summary>
+    /// Parsed abilities.whileAttached[] (see WhileAttachedDefinition's own doc comment) -
+    /// empty by default, populated only by tests exercising a card's whileAttached effects,
+    /// same convention as PersistentEffects.
+    /// </summary>
+    public IReadOnlyList<Dsl.WhileAttachedDefinition> WhileAttachedEffects { get; init; } = Array.Empty<Dsl.WhileAttachedDefinition>();
 }

@@ -35,10 +35,17 @@ public static class EffectVocabulary
                 action = ParseCannotValue(value!.Value);
                 return true;
             case "cannotParticipateAsAttacker":
+                if (value is not null)
+                    throw new NotSupportedException("cannotParticipateAsAttacker with a qualifying 'value' (e.g. a specific conflict type, per pacifism) isn't supported yet.");
                 action = "declareAsAttacker";
                 return true;
             case "cannotParticipateAsDefender":
+                if (value is not null)
+                    throw new NotSupportedException("cannotParticipateAsDefender with a qualifying 'value' (e.g. a specific conflict type, per pacifism) isn't supported yet.");
                 action = "declareAsDefender";
+                return true;
+            case "doesNotBow":
+                action = "bow";
                 return true;
             default:
                 action = "";

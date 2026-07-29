@@ -24,7 +24,7 @@ public static class PredicateEvaluator
             "not" => !Evaluate(predicate.GetProperty("of"), candidate, context),
             "isSelf" => candidate == context.Source,
             "isType" => candidate.Type == CardTypes.Parse(predicate.GetProperty("type").GetString()!),
-            "hasTrait" => candidate.Traits.Contains(predicate.GetProperty("trait").GetString()!),
+            "hasTrait" => HasTrait(candidate, predicate.GetProperty("trait").GetString()!, context),
             "hasFaction" => candidate.Faction == predicate.GetProperty("faction").GetString(),
             "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate, context),
             "compareStat" => EvaluateCompareStat(predicate, candidate, context),
@@ -34,6 +34,10 @@ public static class PredicateEvaluator
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
     }
+
+    /// <summary>Printed traits plus whatever an attached card's whileAttached "addTrait" effect currently grants (favored-mount's "cavalry" while attached) - see GameState.HasEffectiveTrait.</summary>
+    private static bool HasTrait(Card candidate, string trait, AbilityContext context) =>
+        candidate.Traits.Contains(trait) || context.Game.HasEffectiveTrait(candidate, trait);
 
     /// <summary>An existential check over a card scope - same controller/location/of filters as TargetResolver.ResolveAllCardsMatching, but Any() instead of collecting the list.</summary>
     private static bool EvaluateAnyCardMatches(JsonElement predicate, AbilityContext context)
