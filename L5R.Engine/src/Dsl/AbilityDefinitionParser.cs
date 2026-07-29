@@ -174,7 +174,9 @@ public static class AbilityDefinitionParser
             ? ParseRingTargets(targetsElement)
             : null;
 
-        return new ActionDefinition(title, costs, target, gameActions, condition, phase, targets);
+        var location = action.TryGetProperty("location", out var locationElement) ? locationElement.GetString()! : "play area";
+
+        return new ActionDefinition(title, costs, target, gameActions, condition, phase, targets, location);
     }
 
     /// <summary>

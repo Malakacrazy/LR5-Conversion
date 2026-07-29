@@ -64,4 +64,12 @@ public sealed class AbilityContext
     /// gameAction-ring in the same ability wouldn't collide.
     /// </summary>
     public Ring? CostRingTarget { get; set; }
+
+    /// <summary>
+    /// ringteki PlayAttachmentAction's target prompt: the character an attachment being
+    /// played (playCard gameAction, guidance-of-the-ancestors) attaches to. No attach-target
+    /// selection/legal-target search exists, so (like ChosenRingElement) the caller sets
+    /// this directly; null until then.
+    /// </summary>
+    public Card? PlayAttachTarget { get; set; }
 }

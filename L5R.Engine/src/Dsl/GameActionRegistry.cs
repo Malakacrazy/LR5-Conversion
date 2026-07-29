@@ -41,7 +41,8 @@ public sealed class GameActionRegistry
         // copy-paste artifact), but card-schema.json's name for it - and the JSON key every
         // ported card actually uses (know-the-world) - is "takeRing".
         ["takeRing"] = new TakeRingGameActionHandler(),
-        ["playerLastingEffect"] = new PlayerLastingEffectGameActionHandler()
+        ["playerLastingEffect"] = new PlayerLastingEffectGameActionHandler(),
+        ["playCard"] = new PlayCardGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

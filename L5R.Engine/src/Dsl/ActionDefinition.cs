@@ -8,6 +8,12 @@ namespace L5R.Engine.Dsl;
 /// predicate interpreter exists yet - AbilityExecutor throws loudly if it hits one it
 /// can't evaluate rather than silently ignoring it. Grows as later card groups need
 /// predicate evaluation, targets map, phase/limit checks, etc.
+///
+/// Location defaults to "play area" when the JSON omits it (ringteki CardAction.js:
+/// `this.location = properties.location || 'play area'`) - a real restriction, unlike
+/// Phase's "any" default (unrestricted) - so AbilityExecutor.Prepare always checks it, even
+/// for actions that never specify one (guidance-of-the-ancestors's "conflict discard pile"
+/// is the only ported card that overrides it).
 /// </summary>
 public sealed record ActionDefinition(
     string Title,
@@ -16,7 +22,8 @@ public sealed record ActionDefinition(
     IReadOnlyList<GameActionDefinition> GameActions,
     JsonElement? Condition,
     string? Phase,
-    IReadOnlyDictionary<string, RingTargetEntry>? Targets = null);
+    IReadOnlyDictionary<string, RingTargetEntry>? Targets = null,
+    string Location = "play area");
 
 /// <summary>
 /// One named entry from card-schema.json's "targets" (plural) shape - a menu of

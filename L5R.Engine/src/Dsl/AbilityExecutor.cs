@@ -68,6 +68,10 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
 
+        if (context.Source.Location != action.Location)
+            throw new InvalidOperationException(
+                $"Action '{action.Title}' can only be used while '{context.Source.Id}' is in {action.Location}.");
+
         return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.Targets, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets, chosenRingTargets);
     }
 
