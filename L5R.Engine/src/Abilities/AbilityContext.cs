@@ -19,4 +19,11 @@ public sealed class AbilityContext
     /// slot is enough; would need to key by cost name if that stops being true.
     /// </summary>
     public Card? CostTarget { get; set; }
+
+    /// <summary>
+    /// ringteki selectRingPrompt.js - which ring element the player chose, for gameActions
+    /// like selectRing that need one. No ring-selection UI exists, so (like ChosenTarget)
+    /// the caller supplies the choice directly; null until then.
+    /// </summary>
+    public string? ChosenRingElement { get; set; }
 }
