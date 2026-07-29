@@ -36,4 +36,8 @@ public sealed class Conflict
 
     /// <summary>event.conflict.skillDifference (fallen-in-battle's "won by 5+ skill") - same caller-set-fact convention as Winner/Loser, no skill-comparison pipeline computes this automatically.</summary>
     public int SkillDifference { get; set; }
+
+    /// <summary>this.game.currentConflict.attackerSkill/defenderSkill (kakita-asami's own comparison) - same caller-set-fact convention as Winner/Loser/SkillDifference; no skill-totaling pipeline sums participants' effective skill automatically.</summary>
+    public int AttackerSkill { get; set; }
+    public int DefenderSkill { get; set; }
 }
