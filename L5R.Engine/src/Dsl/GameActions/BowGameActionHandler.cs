@@ -19,7 +19,7 @@ public sealed class BowGameActionHandler : IGameActionHandler
         if (context.Target is null)
             throw new InvalidOperationException("bow requires context.Target to be set.");
 
-        if (context.Game.IsRestrictedFrom(context.Target, "bow"))
+        if (context.Game.IsRestrictedFrom(context.Target, "bow", context.Source))
             throw new InvalidOperationException($"'{context.Target.Id}' cannot be bowed.");
 
         context.Target.Bowed = true;

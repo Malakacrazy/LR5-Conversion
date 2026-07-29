@@ -188,6 +188,10 @@ public sealed class GameState
         return restricts switch
         {
             "opponentsEvents" => consideringCard.Controller == Opponent(restrictionOwner) && consideringCard.Type == CardType.Event,
+            // ringteki Restriction.js's opponentsCardEffects also checks context.source.type
+            // is one of Event/Character/Holding/Attachment/Stronghold/Province/Role - exactly
+            // CardType's full set, so every Card already satisfies it unconditionally here.
+            "opponentsCardEffects" => consideringCard.Controller == Opponent(restrictionOwner),
             _ => throw new NotSupportedException($"Unknown cardCannot 'restricts' qualifier '{restricts}'.")
         };
     }
