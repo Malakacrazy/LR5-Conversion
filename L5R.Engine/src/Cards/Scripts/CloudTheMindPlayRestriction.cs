@@ -1,11 +1,15 @@
+using L5R.Engine.Abilities;
+using L5R.Engine.State;
+
 namespace L5R.Engine.Cards.Scripts;
 
 /// <summary>
-/// scriptOverride for cloud-the-mind: ringteki's DrawCard.canPlay override restricting
-/// play to when the controller has a 'shugenja' character in play. Stubbed until the
-/// state model (task 8) has enough of a play-resolution pipeline for this to hook into -
-/// registering it now proves the scriptOverride loading mechanism end to end.
+/// cloud-the-mind: ringteki DrawCard.canPlay override restricting play to when the
+/// controller has a shugenja character in play. The card's whileAttached blank effect is
+/// expressed generically in its JSON.
 /// </summary>
 public sealed class CloudTheMindPlayRestriction : ICardScript
 {
+    public bool CanPlay(AbilityContext context) =>
+        context.Player.PlayArea.Any(c => c.Type == CardType.Character && c.Traits.Contains("shugenja"));
 }
