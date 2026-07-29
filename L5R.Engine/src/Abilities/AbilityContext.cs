@@ -87,4 +87,13 @@ public sealed class AbilityContext
     /// other ChosenX field) the caller supplies this directly; null until then.
     /// </summary>
     public Card? ChosenCardMenuCard { get; set; }
+
+    /// <summary>
+    /// ringteki ChooseAction / "mode": "select" target's own chosen label (city-of-the-open-
+    /// hand's "Gain 1 honor" vs "Make opponent lose 1 honor") - AbilityExecutor threads that
+    /// same choice through Execute/Prepare/Resolve as a plain parameter for JSON-driven
+    /// abilities, but a Scripts class only receives AbilityContext, so it needs a home here
+    /// too (asako-diplomat's own "Honor this character" vs "Dishonor this character").
+    /// </summary>
+    public string? ChosenChoice { get; set; }
 }
