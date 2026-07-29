@@ -35,7 +35,12 @@ public sealed class GameActionRegistry
         ["gainHonor"] = new GainHonorGameActionHandler(),
         ["loseHonor"] = new LoseHonorGameActionHandler(),
         ["takeFate"] = new TakeFateGameActionHandler(),
-        ["takeHonor"] = new TakeHonorGameActionHandler()
+        ["takeHonor"] = new TakeHonorGameActionHandler(),
+        ["returnRing"] = new ReturnRingGameActionHandler(),
+        // ringteki's own TakeRingAction class is oddly named 'takeFate' internally (a
+        // copy-paste artifact), but card-schema.json's name for it - and the JSON key every
+        // ported card actually uses (know-the-world) - is "takeRing".
+        ["takeRing"] = new TakeRingGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

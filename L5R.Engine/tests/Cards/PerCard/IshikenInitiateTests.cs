@@ -16,9 +16,13 @@ public class IshikenInitiateTests
     [Test]
     public void GetsBothSkillsIncreasedByTheNumberOfRingsItsControllerHasClaimed()
     {
-        var p1 = new Player { Name = "Player1", ClaimedRingsCount = 2 };
+        var p1 = new Player { Name = "Player1" };
         var p2 = new Player { Name = "Player2" };
         var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        game.Rings[0].Claimed = true;
+        game.Rings[0].ClaimedBy = p1;
+        game.Rings[1].Claimed = true;
+        game.Rings[1].ClaimedBy = p1;
         var initiate = new Card
         {
             Id = "ishiken-initiate", Type = CardType.Character, Controller = p1,

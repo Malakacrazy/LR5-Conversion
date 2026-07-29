@@ -49,4 +49,11 @@ public sealed class AbilityContext
     /// convention as ChosenRingElement; null until set.
     /// </summary>
     public IReadOnlyList<Card>? ChosenDiscardCards { get; set; }
+
+    /// <summary>
+    /// ringteki RingAction's target - which ring a ring-scoped gameAction (returnRing,
+    /// takeRing) affects. No ring-target selection/prompt pipeline exists, so (like
+    /// ChosenRingElement) the caller sets this directly; null until then.
+    /// </summary>
+    public Ring? TargetRing { get; set; }
 }

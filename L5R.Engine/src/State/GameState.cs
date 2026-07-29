@@ -23,6 +23,20 @@ public sealed class GameState
     /// <summary>All cards controlled by either player, regardless of zone.</summary>
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
 
+    /// <summary>
+    /// The 5 rings' persistent claimed state - see Ring's own doc comment. Defaults to the
+    /// canonical unclaimed 5 (ringteki game.js's ring construction: air/fire/water=military,
+    /// earth/void=political) so tests only need to override what they're actually exercising.
+    /// </summary>
+    public List<Ring> Rings { get; init; } = new()
+    {
+        new Ring { Element = "air", ConflictType = "military" },
+        new Ring { Element = "earth", ConflictType = "political" },
+        new Ring { Element = "fire", ConflictType = "military" },
+        new Ring { Element = "water", ConflictType = "military" },
+        new Ring { Element = "void", ConflictType = "political" }
+    };
+
     public Player Opponent(Player player) => player == Player1 ? Player2 : Player1;
 
     /// <summary>Null outside of a conflict - see Conflict's own doc comment for what's deliberately not modeled yet.</summary>

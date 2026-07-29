@@ -22,8 +22,6 @@ public sealed class Player
     /// <summary>Which favor this player currently holds: "", "military", or "political". No claiming mechanic exists yet - set directly by the caller, like ShowBid.</summary>
     public string ImperialFavor { get; set; } = "";
 
-    /// <summary>How many rings this player has claimed. No ring-claiming mechanic exists yet - set directly by the caller, like ShowBid.</summary>
-    public int ClaimedRingsCount { get; set; }
     public List<Card> Hand { get; } = new();
     public List<Card> PlayArea { get; } = new();
     public List<Card> Discard { get; } = new();

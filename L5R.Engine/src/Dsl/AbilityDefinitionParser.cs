@@ -105,6 +105,8 @@ public static class AbilityDefinitionParser
 
     private static TriggeredAbilityDefinition ParseTriggeredAbility(JsonElement ability)
     {
+        ThrowIfMultiTarget(ability);
+
         var trigger = ability.GetProperty("trigger").GetString()!;
         var title = ability.GetProperty("title").GetString()!;
 
@@ -127,8 +129,23 @@ public static class AbilityDefinitionParser
         return new TriggeredAbilityDefinition(trigger, title, whenEvent, whenCondition, costs, target, gameActions);
     }
 
+    /// <summary>
+    /// card-schema.json's "targets" (plural, keyed by name - know-the-world's "returnedRing"/
+    /// "takenRing") is a genuinely different shape from "target" (singular) - multi-target
+    /// actions and ring-scoped predicates aren't supported yet. Without this guard,
+    /// TryGetProperty("target", ...) would just miss it and silently parse Target as null,
+    /// quietly dropping the whole ability instead of failing loud.
+    /// </summary>
+    private static void ThrowIfMultiTarget(JsonElement ability)
+    {
+        if (ability.TryGetProperty("targets", out _))
+            throw new NotSupportedException("AbilityDefinitionParser does not yet support multi-target abilities ('targets', plural).");
+    }
+
     private static ActionDefinition ParseAction(JsonElement action)
     {
+        ThrowIfMultiTarget(action);
+
         var title = action.GetProperty("title").GetString()!;
 
         var costs = action.TryGetProperty("cost", out var costElement)

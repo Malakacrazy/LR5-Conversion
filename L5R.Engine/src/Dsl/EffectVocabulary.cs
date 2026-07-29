@@ -15,7 +15,8 @@ public static class EffectVocabulary
 {
     private static readonly HashSet<string> StatEffectNames = new()
     {
-        "modifyGlory", "modifyMilitarySkill", "modifyPoliticalSkill", "modifyBothSkills", "modifyProvinceStrength"
+        "modifyGlory", "modifyMilitarySkill", "modifyPoliticalSkill", "modifyBothSkills", "modifyProvinceStrength",
+        "attachmentMilitarySkillModifier"
     };
 
     /// <summary>
@@ -36,6 +37,9 @@ public static class EffectVocabulary
             "modifyPoliticalSkill" => new[] { ("political", value) },
             "modifyBothSkills" => new[] { ("military", value), ("political", value) },
             "modifyProvinceStrength" => new[] { ("provinceStrength", value) },
+            // Same concept as modifyMilitarySkill, scoped to attachments (born-in-war) -
+            // card-schema.json routes it through the same generic {name, value} effect shape.
+            "attachmentMilitarySkillModifier" => new[] { ("military", value) },
             _ => Array.Empty<(string, int)>()
         };
         return deltas.Count > 0;
