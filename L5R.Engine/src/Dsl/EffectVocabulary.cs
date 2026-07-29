@@ -13,6 +13,20 @@ namespace L5R.Engine.Dsl;
 /// </summary>
 public static class EffectVocabulary
 {
+    private static readonly HashSet<string> StatEffectNames = new()
+    {
+        "modifyGlory", "modifyMilitarySkill", "modifyPoliticalSkill", "modifyBothSkills", "modifyProvinceStrength"
+    };
+
+    /// <summary>
+    /// A name-only check, deliberately separate from TryGetStatDeltas: a passive scan (e.g.
+    /// GameState.EffectiveStat) needs to know whether an effect is stat-shaped *before*
+    /// trying to resolve its "value" as an int - cardCannot's value is an object, addTrait/
+    /// addKeyword's is a string, and blindly calling ValueRefResolver.ResolveInt on those
+    /// throws, even though the effect is simply irrelevant to a stat query, not malformed.
+    /// </summary>
+    public static bool IsStatEffect(string? effectName) => effectName is not null && StatEffectNames.Contains(effectName);
+
     public static bool TryGetStatDeltas(string? effectName, int value, out IReadOnlyList<(string Stat, int Value)> deltas)
     {
         deltas = effectName switch

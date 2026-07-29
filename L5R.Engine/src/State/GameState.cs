@@ -46,10 +46,30 @@ public sealed class GameState
     {
         var total = (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
 
-        foreach (var (source, effect) in ActivePersistentEffectsAffecting(card))
+        total += SumStatDeltas(ActivePersistentEffectsAffecting(card), stat);
+        total += SumStatDeltas(ActiveWhileAttachedEffectsFor(card), stat);
+
+        return total;
+    }
+
+    /// <summary>
+    /// Shared by both the persistentEffects and whileAttached scans. Checks
+    /// EffectVocabulary.IsStatEffect *before* resolving "value" as an int - most scanned
+    /// effects are irrelevant to whichever stat is being summed (cardCannot's value is an
+    /// object, addTrait/addKeyword's is a string), and ValueRefResolver.ResolveInt would
+    /// throw on those rather than just reporting "not a stat delta".
+    /// </summary>
+    private int SumStatDeltas(IEnumerable<(Card Source, JsonElement Effect)> pairs, string stat)
+    {
+        var total = 0;
+        foreach (var (source, effect) in pairs)
         {
+            var effectName = effect.GetProperty("name").GetString();
+            if (!EffectVocabulary.IsStatEffect(effectName))
+                continue;
+
             var value = effect.TryGetProperty("value", out var v) ? ValueRefResolver.ResolveInt(v, SourceContextFor(source)) : 0;
-            if (EffectVocabulary.TryGetStatDeltas(effect.GetProperty("name").GetString(), value, out var deltas))
+            if (EffectVocabulary.TryGetStatDeltas(effectName, value, out var deltas))
                 total += deltas.Where(d => d.Stat == stat).Sum(d => d.Value);
         }
 
@@ -106,20 +126,24 @@ public sealed class GameState
             || ActiveWhileAttachedEffectsFor(card).Any(MatchesAction);
     }
 
-    /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait.</summary>
-    public bool HasEffectiveTrait(Card card, string trait) =>
-        ActiveWhileAttachedEffectsFor(card).Any(pair =>
-            pair.Effect.GetProperty("name").GetString() == "addTrait" && pair.Effect.GetProperty("value").GetString() == trait);
+    /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
+    public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 
     /// <summary>
-    /// magnificent-kimono/tattooed-wanderer's keywords (pride/covert) while attached. No
-    /// predicate op consumes keywords yet (nothing in the executable set needs to ask "does
-    /// this card have keyword X"), so this is queried directly rather than through hasTrait's
-    /// wiring - still real engine behavior, not a no-op.
+    /// asahina-storyteller/magnificent-kimono/tattooed-wanderer's keywords (sincerity/pride/
+    /// covert). No predicate op consumes keywords yet (nothing in the executable set needs
+    /// to ask "does this card have keyword X"), so this is queried directly rather than
+    /// through hasTrait's wiring - still real engine behavior, not a no-op.
     /// </summary>
-    public bool HasKeyword(Card card, string keyword) =>
-        ActiveWhileAttachedEffectsFor(card).Any(pair =>
-            pair.Effect.GetProperty("name").GetString() == "addKeyword" && pair.Effect.GetProperty("value").GetString() == keyword);
+    public bool HasKeyword(Card card, string keyword) => HasAddEffect(card, "addKeyword", keyword);
+
+    private bool HasAddEffect(Card card, string effectName, string value)
+    {
+        bool Matches((Card Source, JsonElement Effect) pair) =>
+            pair.Effect.GetProperty("name").GetString() == effectName && pair.Effect.GetProperty("value").GetString() == value;
+
+        return ActivePersistentEffectsAffecting(card).Any(Matches) || ActiveWhileAttachedEffectsFor(card).Any(Matches);
+    }
 
     /// <summary>
     /// Scans every attachment currently attached to `parent` for applicable whileAttached
