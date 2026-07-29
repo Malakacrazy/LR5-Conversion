@@ -53,3 +53,21 @@ public sealed record TriggeredAbilityDefinition(
     IReadOnlyList<CostDefinition> Costs,
     TargetDefinition? Target,
     IReadOnlyList<GameActionDefinition> GameActions);
+
+/// <summary>
+/// One entry from a loaded card's abilities.persistentEffects[] (ringteki
+/// this.persistentEffect({...}), always Durations.Persistent - unlike cardLastingEffect,
+/// there's no apply-once moment; GameState re-evaluates every entry from every in-play card
+/// on demand each time a stat/restriction is queried, rather than tracking a materialized
+/// list like LastingEffects/Restrictions. Match is the raw JsonElement for either shape the
+/// schema allows: the string "self", or a predicate object evaluated against each
+/// candidate card. Player-scoped effects (schema: "omit match entirely") aren't supported -
+/// AbilityDefinitionParser throws rather than silently treating a missing match as an
+/// always-active card effect.
+/// </summary>
+public sealed record PersistentEffectDefinition(
+    JsonElement Match,
+    JsonElement? Condition,
+    string TargetController,
+    string SourceLocation,
+    IReadOnlyList<JsonElement> Effects);

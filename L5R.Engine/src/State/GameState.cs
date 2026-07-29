@@ -1,3 +1,7 @@
+using System.Text.Json;
+using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
+
 namespace L5R.Engine.State;
 
 public sealed class GameState
@@ -36,8 +40,19 @@ public sealed class GameState
 
     public int EffectivePoliticalSkill(Card card) => EffectiveStat(card, "political", card.PrintedPoliticalSkill);
 
-    private int EffectiveStat(Card card, string stat, int? printedValue) =>
-        (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
+    private int EffectiveStat(Card card, string stat, int? printedValue)
+    {
+        var total = (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
+
+        foreach (var (source, effect) in ActivePersistentEffectsAffecting(card))
+        {
+            var value = effect.TryGetProperty("value", out var v) ? ValueRefResolver.ResolveInt(v, SourceContextFor(source)) : 0;
+            if (EffectVocabulary.TryGetStatDeltas(effect.GetProperty("name").GetString(), value, out var deltas))
+                total += deltas.Where(d => d.Stat == stat).Sum(d => d.Value);
+        }
+
+        return total;
+    }
 
     /// <summary>
     /// Active cardCannot restrictions - see CardRestriction's own doc comment. Same two
@@ -46,8 +61,65 @@ public sealed class GameState
     /// </summary>
     public List<CardRestriction> Restrictions { get; } = new();
 
-    public bool IsRestrictedFrom(Card card, string action) =>
-        Restrictions.Any(r => r.Target == card && r.Action == action);
+    public bool IsRestrictedFrom(Card card, string action)
+    {
+        if (Restrictions.Any(r => r.Target == card && r.Action == action))
+            return true;
+
+        return ActivePersistentEffectsAffecting(card).Any(pair =>
+            EffectVocabulary.TryGetRestrictionAction(
+                pair.Effect.GetProperty("name").GetString(),
+                pair.Effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null,
+                out var restrictedAction)
+            && restrictedAction == action);
+    }
+
+    /// <summary>
+    /// Scans every persistentEffects[] entry on every in-play card and yields (source, effect)
+    /// pairs for the ones currently applicable to `candidate` - the on-demand equivalent of
+    /// LastingEffects/Restrictions for effects that never expire. See
+    /// PersistentEffectDefinition's own doc comment for why this is a live scan rather than a
+    /// materialized list.
+    /// </summary>
+    private IEnumerable<(Card Source, JsonElement Effect)> ActivePersistentEffectsAffecting(Card candidate)
+    {
+        foreach (var source in AllCards())
+        {
+            foreach (var definition in source.PersistentEffects)
+            {
+                if (definition.SourceLocation != "any" && source.Location != definition.SourceLocation)
+                    continue;
+
+                var sourceContext = SourceContextFor(source);
+
+                if (definition.Condition is { } condition && !PredicateEvaluator.Evaluate(condition, source, sourceContext))
+                    continue;
+
+                if (!MatchesTargetController(definition.TargetController, source.Controller, candidate.Controller))
+                    continue;
+
+                var isMatch = definition.Match.ValueKind == JsonValueKind.String
+                    ? candidate == source
+                    : PredicateEvaluator.Evaluate(definition.Match, candidate, sourceContext);
+
+                if (!isMatch)
+                    continue;
+
+                foreach (var effect in definition.Effects)
+                    yield return (source, effect);
+            }
+        }
+    }
+
+    private AbilityContext SourceContextFor(Card source) => new() { Game = this, Player = source.Controller, Source = source };
+
+    private bool MatchesTargetController(string targetController, Player sourceController, Player candidateController) => targetController switch
+    {
+        "self" => candidateController == sourceController,
+        "opponent" => candidateController == Opponent(sourceController),
+        "any" => true,
+        _ => throw new NotSupportedException($"Unknown persistentEffect targetController '{targetController}'.")
+    };
 
     /// <summary>
     /// ringteki game.js beginRound(): queues DynastyPhase, DrawPhase, ConflictPhase,

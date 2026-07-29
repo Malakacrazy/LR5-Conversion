@@ -25,4 +25,13 @@ public sealed class Card
     public bool IsDishonored { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
     public List<Abilities.CardAction> Actions { get; } = new();
+
+    /// <summary>
+    /// Parsed abilities.persistentEffects[] (see PersistentEffectDefinition's own doc
+    /// comment) - empty by default, since only tests that specifically exercise a card's
+    /// persistent effects populate it (via AbilityDefinitionParser.ParsePersistentEffects).
+    /// GameState scans every in-play card's list on demand; it isn't tracked as
+    /// materialized state anywhere.
+    /// </summary>
+    public IReadOnlyList<Dsl.PersistentEffectDefinition> PersistentEffects { get; init; } = Array.Empty<Dsl.PersistentEffectDefinition>();
 }

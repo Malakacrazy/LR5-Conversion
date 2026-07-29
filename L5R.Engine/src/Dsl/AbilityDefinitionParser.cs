@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 
 namespace L5R.Engine.Dsl;
@@ -40,6 +41,38 @@ public static class AbilityDefinitionParser
             result.Add(ParseTriggeredAbility(ability));
 
         return result;
+    }
+
+    public static IReadOnlyList<PersistentEffectDefinition> ParsePersistentEffects(JsonElement cardRoot)
+    {
+        if (!cardRoot.TryGetProperty("abilities", out var abilities))
+            return Array.Empty<PersistentEffectDefinition>();
+
+        if (!abilities.TryGetProperty("persistentEffects", out var persistentEffects))
+            return Array.Empty<PersistentEffectDefinition>();
+
+        var result = new List<PersistentEffectDefinition>();
+        foreach (var entry in persistentEffects.EnumerateArray())
+            result.Add(ParsePersistentEffect(entry));
+
+        return result;
+    }
+
+    private static PersistentEffectDefinition ParsePersistentEffect(JsonElement entry)
+    {
+        if (!entry.TryGetProperty("match", out var matchElement))
+            throw new NotSupportedException("PersistentEffectDefinition requires 'match' - player-scoped effects (schema: omit match entirely) aren't supported yet.");
+
+        var condition = entry.TryGetProperty("condition", out var conditionElement) ? conditionElement.Clone() : (JsonElement?)null;
+        var targetController = entry.TryGetProperty("targetController", out var tc) ? tc.GetString()! : "self";
+        var sourceLocation = entry.TryGetProperty("sourceLocation", out var sl) ? sl.GetString()! : "play area";
+
+        var effectElement = entry.GetProperty("effect");
+        var effects = effectElement.ValueKind == JsonValueKind.Array
+            ? effectElement.EnumerateArray().Select(e => e.Clone()).ToList()
+            : new List<JsonElement> { effectElement.Clone() };
+
+        return new PersistentEffectDefinition(matchElement.Clone(), condition, targetController, sourceLocation, effects);
     }
 
     private static TriggeredAbilityDefinition ParseTriggeredAbility(JsonElement ability)

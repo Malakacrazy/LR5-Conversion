@@ -33,46 +33,25 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
 
         var effect = props.GetProperty("effect");
         var effectName = effect.GetProperty("name").GetString();
+        var effectValue = effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null;
 
         var recipients = props.TryGetProperty("target", out var targetElement)
             ? TargetResolver.ResolveAllCardsMatching(targetElement, context)
             : new[] { context.Target ?? throw new InvalidOperationException("cardLastingEffect requires context.Target to be set.") };
 
-        if (effectName == "cardCannot")
+        if (EffectVocabulary.TryGetRestrictionAction(effectName, effectValue, out var action))
         {
-            // {"cannot": "..."} is the only value shape ported so far - a bare string value
-            // (hiruma-yojimbo) or an object with a "restricts" sibling both exist in
-            // ringteki but no card in the executable set needs them yet.
-            var action = effect.GetProperty("value").GetProperty("cannot").GetString()!;
             foreach (var recipient in recipients)
                 context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration });
             return;
         }
 
-        var value = ValueRefResolver.ResolveInt(effect.GetProperty("value"), context);
-        foreach (var recipient in recipients)
-            AddEffect(context, recipient, effectName, value, duration);
-    }
+        var value = ValueRefResolver.ResolveInt(effectValue!.Value, context);
+        if (!EffectVocabulary.TryGetStatDeltas(effectName, value, out var deltas))
+            throw new NotSupportedException($"CardLastingEffectGameActionHandler does not yet support effect '{effectName}'.");
 
-    private static void AddEffect(AbilityContext context, Card recipient, string? effectName, int value, string duration)
-    {
-        switch (effectName)
-        {
-            case "modifyGlory":
-                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "glory", Value = value, Duration = duration });
-                break;
-            case "modifyMilitarySkill":
-                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "military", Value = value, Duration = duration });
-                break;
-            case "modifyPoliticalSkill":
-                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "political", Value = value, Duration = duration });
-                break;
-            case "modifyBothSkills":
-                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "military", Value = value, Duration = duration });
-                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = "political", Value = value, Duration = duration });
-                break;
-            default:
-                throw new NotSupportedException($"CardLastingEffectGameActionHandler does not yet support effect '{effectName}'.");
-        }
+        foreach (var recipient in recipients)
+            foreach (var (stat, delta) in deltas)
+                context.Game.LastingEffects.Add(new LastingEffect { Target = recipient, Stat = stat, Value = delta, Duration = duration });
     }
 }
