@@ -118,4 +118,14 @@ public sealed class AbilityContext
     /// false until then.
     /// </summary>
     public bool BowCausedBySelf { get; set; }
+
+    /// <summary>
+    /// shameful-display's own two-target selection (choose 2 participating characters,
+    /// honor one and dishonor the other) - a script has only the single Target/CostTarget
+    /// slots to work with otherwise, neither of which fits "two independent, differently-
+    /// treated targets chosen together". The caller supplies the character to honor via
+    /// Target and the character to dishonor via SecondTarget, same trust-the-caller
+    /// convention as every other target field.
+    /// </summary>
+    public Card? SecondTarget { get; set; }
 }
