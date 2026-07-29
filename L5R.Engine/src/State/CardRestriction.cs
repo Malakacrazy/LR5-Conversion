@@ -12,4 +12,12 @@ public sealed class CardRestriction
     public required Card Target { get; init; }
     public required string Action { get; init; }
     public required string Duration { get; init; }
+
+    /// <summary>
+    /// Optional conflict-type/element scoping (pacifism's "cannot participate as attacker/
+    /// defender... in a military conflict" - value: "military"), null for an unconditional
+    /// restriction. Checked against GameState.CurrentConflict the same way isDuringConflict's
+    /// "type" filter is (ConflictType or Elements).
+    /// </summary>
+    public string? Qualifier { get; init; }
 }

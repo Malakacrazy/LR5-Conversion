@@ -112,19 +112,26 @@ public sealed class GameState
 
     public bool IsRestrictedFrom(Card card, string action)
     {
-        if (Restrictions.Any(r => r.Target == card && r.Action == action))
+        if (Restrictions.Any(r => r.Target == card && r.Action == action && MatchesQualifier(r.Qualifier)))
             return true;
 
-        bool MatchesAction((Card Source, JsonElement Effect) pair) =>
-            EffectVocabulary.TryGetRestrictionAction(
+        bool MatchesAction((Card Source, JsonElement Effect) pair)
+        {
+            var isRestriction = EffectVocabulary.TryGetRestrictionAction(
                 pair.Effect.GetProperty("name").GetString(),
                 pair.Effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null,
-                out var restrictedAction)
-            && restrictedAction == action;
+                out var restrictedAction,
+                out var qualifier);
+            return isRestriction && restrictedAction == action && MatchesQualifier(qualifier);
+        }
 
         return ActivePersistentEffectsAffecting(card).Any(MatchesAction)
             || ActiveWhileAttachedEffectsFor(card).Any(MatchesAction);
     }
+
+    /// <summary>A restriction with no qualifier always applies; one with a qualifier (pacifism's "military") only applies during a conflict of that type/element - same check as isDuringConflict's "type" filter.</summary>
+    private bool MatchesQualifier(string? qualifier) =>
+        qualifier is null || (CurrentConflict is { } conflict && (qualifier == conflict.ConflictType || conflict.Elements.Contains(qualifier)));
 
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);

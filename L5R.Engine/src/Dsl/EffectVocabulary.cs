@@ -41,22 +41,26 @@ public static class EffectVocabulary
         return deltas.Count > 0;
     }
 
-    public static bool TryGetRestrictionAction(string? effectName, JsonElement? value, out string action)
+    /// <summary>
+    /// qualifier is non-null only for cannotParticipateAsAttacker/Defender's optional
+    /// conflict-type/element scoping (pacifism's "military") - null means unconditional.
+    /// cardCannot/doesNotBow never carry one (no ported card qualifies them).
+    /// </summary>
+    public static bool TryGetRestrictionAction(string? effectName, JsonElement? value, out string action, out string? qualifier)
     {
+        qualifier = null;
         switch (effectName)
         {
             case "cardCannot":
                 action = ParseCannotValue(value!.Value);
                 return true;
             case "cannotParticipateAsAttacker":
-                if (value is not null)
-                    throw new NotSupportedException("cannotParticipateAsAttacker with a qualifying 'value' (e.g. a specific conflict type, per pacifism) isn't supported yet.");
                 action = "declareAsAttacker";
+                qualifier = value?.GetString();
                 return true;
             case "cannotParticipateAsDefender":
-                if (value is not null)
-                    throw new NotSupportedException("cannotParticipateAsDefender with a qualifying 'value' (e.g. a specific conflict type, per pacifism) isn't supported yet.");
                 action = "declareAsDefender";
+                qualifier = value?.GetString();
                 return true;
             case "doesNotBow":
                 action = "bow";
