@@ -51,7 +51,8 @@ public sealed class GameActionRegistry
             ["lookAt"] = new LookAtGameActionHandler(),
             ["deckSearch"] = new DeckSearchGameActionHandler(),
             ["discardStatusToken"] = new DiscardStatusTokenGameActionHandler(),
-            ["discardCard"] = new DiscardCardGameActionHandler()
+            ["discardCard"] = new DiscardCardGameActionHandler(),
+            ["returnToDeck"] = new ReturnToDeckGameActionHandler()
         };
 
         // cardMenu is the first handler that needs to invoke *another* gameAction by name
