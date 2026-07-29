@@ -212,6 +212,17 @@ public sealed class GameState
         return Math.Max(0, (card.PrintedCost ?? 0) - reduction);
     }
 
+    /// <summary>
+    /// cloud-the-mind's whileAttached "blank" - a character with this attached has no text
+    /// at all. Checked by AbilityExecutor.Prepare/PrepareTriggered against context.Source,
+    /// so a blanked card's own actions/triggered abilities simply can't run. Only gates
+    /// *running* its own abilities - a blanked card's persistentEffects/whileAttached grants
+    /// to other cards aren't separately suppressed (no ported card's executable slice needs
+    /// that half yet).
+    /// </summary>
+    public bool IsBlanked(Card card) =>
+        ActiveWhileAttachedEffectsFor(card).Any(pair => pair.Effect.GetProperty("name").GetString() == "blank");
+
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 

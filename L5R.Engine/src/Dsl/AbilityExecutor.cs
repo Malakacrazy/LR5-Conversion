@@ -58,6 +58,9 @@ public sealed class AbilityExecutor
     /// </summary>
     public PendingAbility Prepare(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null, IReadOnlyDictionary<string, Ring>? chosenRingTargets = null)
     {
+        if (context.Game.IsBlanked(context.Source))
+            throw new InvalidOperationException($"'{context.Source.Id}' has no text (blanked) and cannot use this action.");
+
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
 
@@ -71,6 +74,9 @@ public sealed class AbilityExecutor
     /// <summary>Triggered-ability counterpart to Prepare - see its doc comment.</summary>
     public PendingAbility PrepareTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
     {
+        if (context.Game.IsBlanked(context.Source))
+            throw new InvalidOperationException($"'{context.Source.Id}' has no text (blanked) and cannot use this triggered ability.");
+
         if (context.Game.IsRestrictedFrom(context.Source, "triggerAbilities"))
             throw new InvalidOperationException($"'{context.Source.Id}' cannot trigger abilities right now.");
 
