@@ -26,12 +26,18 @@ public sealed class GameState
 
     /// <summary>
     /// Active cardLastingEffect modifiers - see CardLastingEffectGameActionHandler and
-    /// LastingEffect's own doc comment for why every entry here is always "untilEndOfPhase".
+    /// LastingEffect's own doc comment for the two durations stored here and how each expires.
     /// </summary>
     public List<LastingEffect> LastingEffects { get; } = new();
 
-    public int EffectiveGlory(Card card) =>
-        (card.PrintedGlory ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == "glory").Sum(e => e.Value);
+    public int EffectiveGlory(Card card) => EffectiveStat(card, "glory", card.PrintedGlory);
+
+    public int EffectiveMilitarySkill(Card card) => EffectiveStat(card, "military", card.PrintedMilitarySkill);
+
+    public int EffectivePoliticalSkill(Card card) => EffectiveStat(card, "political", card.PrintedPoliticalSkill);
+
+    private int EffectiveStat(Card card, string stat, int? printedValue) =>
+        (printedValue ?? 0) + LastingEffects.Where(e => e.Target == card && e.Stat == stat).Sum(e => e.Value);
 
     /// <summary>
     /// ringteki game.js beginRound(): queues DynastyPhase, DrawPhase, ConflictPhase,
@@ -58,5 +64,18 @@ public sealed class GameState
             RoundNumber++;
 
         LastingEffects.Clear();
+    }
+
+    /// <summary>
+    /// Clears the current conflict and expires its "untilEndOfConflict" lasting effects -
+    /// "untilEndOfPhase" ones outlive it, since a Conflict phase can (once the engine models
+    /// it) contain several conflicts declared one after another. No caller in this engine
+    /// yet drives repeated conflicts within a single phase, so this is exercised directly by
+    /// tests for now rather than by a phase-step loop.
+    /// </summary>
+    public void EndConflict()
+    {
+        CurrentConflict = null;
+        LastingEffects.RemoveAll(e => e.Duration == "untilEndOfConflict");
     }
 }

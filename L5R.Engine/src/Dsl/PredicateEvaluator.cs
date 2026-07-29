@@ -33,8 +33,28 @@ public static class PredicateEvaluator
                 predicate.GetProperty("comparator").GetString()!,
                 ValueRefResolver.ResolveInt(predicate.GetProperty("right"), context)),
             "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
+            "anyCardMatches" => EvaluateAnyCardMatches(predicate, context),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
+    }
+
+    /// <summary>An existential check over a card scope - same controller/location/of filters as TargetResolver.ResolveAllCardsMatching, but Any() instead of collecting the list.</summary>
+    private static bool EvaluateAnyCardMatches(JsonElement predicate, AbilityContext context)
+    {
+        var controller = predicate.TryGetProperty("controller", out var c) ? c.GetString()! : "any";
+        var location = predicate.TryGetProperty("location", out var l) ? l.GetString()! : "play area";
+
+        IEnumerable<Card> candidates = context.Game.AllCards().Where(card => card.Location == location);
+        candidates = controller switch
+        {
+            "self" => candidates.Where(card => card.Controller == context.Player),
+            "opponent" => candidates.Where(card => card.Controller != context.Player),
+            "any" => candidates,
+            _ => throw new NotSupportedException($"Unknown anyCardMatches controller '{controller}'.")
+        };
+
+        var of = predicate.GetProperty("of");
+        return candidates.Any(card => Evaluate(of, card, context));
     }
 
     /// <summary>

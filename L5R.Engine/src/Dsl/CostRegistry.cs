@@ -15,7 +15,8 @@ public sealed class CostRegistry
         ["bowSelf"] = new BowSelfCostHandler(),
         ["sacrifice"] = new SacrificeCostHandler(),
         ["discardCard"] = new DiscardCardCostHandler(),
-        ["payHonor"] = new PayHonorCostHandler()
+        ["payHonor"] = new PayHonorCostHandler(),
+        ["removeFateFromSelf"] = new RemoveFateFromSelfCostHandler()
     };
 
     public ICostHandler Resolve(string name) =>

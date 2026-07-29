@@ -57,4 +57,19 @@ public class GameStateTests
         // rather than silently picking an arbitrary "next" phase.
         Assert.Throws<NotSupportedException>(() => game.AdvancePhase());
     }
+
+    [Test]
+    public void EndConflict_ExpiresUntilEndOfConflictEffects_ButNotUntilEndOfPhaseOnes()
+    {
+        var game = NewGame(Phase.Conflict);
+        var character = new Card { Id = "character", Type = CardType.Character, Controller = game.Player1, PrintedMilitarySkill = 2 };
+        game.CurrentConflict = new Conflict { AttackingPlayer = game.Player1, DefendingPlayer = game.Player2 };
+        game.LastingEffects.Add(new LastingEffect { Target = character, Stat = "military", Value = 2, Duration = "untilEndOfConflict" });
+        game.LastingEffects.Add(new LastingEffect { Target = character, Stat = "military", Value = 5, Duration = "untilEndOfPhase" });
+
+        game.EndConflict();
+
+        Assert.That(game.CurrentConflict, Is.Null);
+        Assert.That(game.EffectiveMilitarySkill(character), Is.EqualTo(7), "only the untilEndOfConflict effect (2) expired, the untilEndOfPhase one (5) survives the conflict ending");
+    }
 }
