@@ -295,12 +295,24 @@ public sealed class GameState
         };
     }
 
-    /// <summary>city-of-lies' reduceNextPlayedCardCost, floored at 0. No "consume after one use" semantics - see PlayerCostReduction's own doc comment.</summary>
+    /// <summary>
+    /// city-of-lies' reduceNextPlayedCardCost, floored at 0. No "consume after one use"
+    /// semantics - see PlayerCostReduction's own doc comment. Also sums "reduceCost"
+    /// persistentEffects (meishodo-wielder, conditioned on GameState.ActivePlayer) - a
+    /// positive value reduces cost, same sign convention as PlayerCostReduction.Amount.
+    /// Unlike EffectiveGlory/EffectiveMilitarySkill/EffectivePoliticalSkill, cost has no
+    /// multiplier shape yet, so this doesn't go through the shared SumStatDeltas/
+    /// EffectiveStat plumbing.
+    /// </summary>
     public int EffectiveCost(Card card, Player player)
     {
         var reduction = CostReductions
             .Where(r => r.Player == player && (r.AppliesTo is null || PredicateEvaluator.Evaluate(r.AppliesTo.Value, card, SourceContextFor(card))))
             .Sum(r => r.Amount);
+
+        reduction += ActivePersistentEffectsAffecting(card)
+            .Where(pair => pair.Effect.GetProperty("name").GetString() == "reduceCost")
+            .Sum(pair => pair.Effect.TryGetProperty("value", out var v) ? ValueRefResolver.ResolveInt(v, SourceContextFor(pair.Source)) : 1);
 
         return Math.Max(0, (card.PrintedCost ?? 0) - reduction);
     }
@@ -311,10 +323,12 @@ public sealed class GameState
     /// so a blanked card's own actions/triggered abilities simply can't run. Only gates
     /// *running* its own abilities - a blanked card's persistentEffects/whileAttached grants
     /// to other cards aren't separately suppressed (no ported card's executable slice needs
-    /// that half yet).
+    /// that half yet). Also scans ActivePersistentEffectsAffecting - cautious-scout blanks
+    /// the current conflict's province via an ordinary persistentEffect, not whileAttached.
     /// </summary>
     public bool IsBlanked(Card card) =>
-        ActiveWhileAttachedEffectsFor(card).Any(pair => pair.Effect.GetProperty("name").GetString() == "blank");
+        ActiveWhileAttachedEffectsFor(card).Any(pair => pair.Effect.GetProperty("name").GetString() == "blank")
+        || ActivePersistentEffectsAffecting(card).Any(pair => pair.Effect.GetProperty("name").GetString() == "blank");
 
     /// <summary>
     /// ringteki Ring.getElements(): the current conflict's type/elements, plus whatever

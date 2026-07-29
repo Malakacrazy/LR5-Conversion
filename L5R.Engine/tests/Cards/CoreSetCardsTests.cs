@@ -267,7 +267,6 @@ public class CoreSetCardsTests
     [TestCase("shiba-yojimbo", typeof(ShibaYojimboCancelShugenjaTargetedAbility))]
     [TestCase("shiba-tsukune", typeof(ShibaTsukuneResolveUpToTwoRings))]
     [TestCase("niten-master", typeof(NitenMasterReadyOnWeaponAttached))]
-    [TestCase("cautious-scout", typeof(CautiousScoutBlankLoneAttackersProvince))]
     [TestCase("duelist-training", typeof(DuelistTrainingGrantMilitaryDuelAction))]
     [TestCase("tattooed-wanderer", typeof(TattooedWandererPlayAsAttachment))]
     [TestCase("blackmail", typeof(BlackmailCannotPlayUnlessLessHonorable))]
@@ -306,7 +305,6 @@ public class CoreSetCardsTests
     [TestCase("lion-s-pride-brawler", typeof(LionsPrideBrawlerBowLowerMilitarySkill))]
     [TestCase("mantra-of-fire", typeof(MantraOfFireAddFateToMonkAndDraw))]
     [TestCase("meddling-mediator", typeof(MeddlingMediatorTakeFateOrHonorWhenDoublyAttacked))]
-    [TestCase("meishodo-wielder", typeof(MeishodoWielderReduceCostWhileFirstPlayer))]
     [TestCase("mirumoto-raitsugu", typeof(MirumotoRaitsuguDuelAndPunishLoser))]
     [TestCase("mountain-s-anvil-castle", typeof(MountainsAnvilCastleBonusForAttachments))]
     [TestCase("niten-adept", typeof(NitenAdeptBowAttachmentToBowUnattachedParticipant))]
@@ -324,7 +322,6 @@ public class CoreSetCardsTests
     [TestCase("seeker-initiate", typeof(SeekerInitiateSearchTopFiveOnMatchingRingClaim))]
     [TestCase("seeker-of-air", typeof(SeekerOfAirGainFateOnMatchingProvinceReveal))]
     [TestCase("seeker-of-earth", typeof(SeekerOfEarthGainFateOnMatchingProvinceReveal))]
-    [TestCase("seeker-of-enlightenment", typeof(SeekerOfEnlightenmentBonusForFateOnUnclaimedRings))]
     [TestCase("seeker-of-fire", typeof(SeekerOfFireGainFateOnMatchingProvinceReveal))]
     [TestCase("shameful-display", typeof(ShamefulDisplayHonorOneDishonorOther))]
     [TestCase("shinjo-altansarnai", typeof(ShinjoAltansarnaiDiscardOnMilitaryProvinceBreak))]
@@ -373,12 +370,21 @@ public class CoreSetCardsTests
     [TestCase("grasp-of-earth")]
     [TestCase("mirumoto-prodigy")]
     [TestCase("admit-defeat")]
+    [TestCase("cautious-scout")]
+    [TestCase("seeker-of-enlightenment")]
+    [TestCase("meishodo-wielder")]
     public void Card_NoLongerNeedsScriptOverride_AfterTheVocabularyGrewToCoverIt(string cardId)
     {
         // kaiu-shuichi needed a per-player dynamic count (valueRef "for"); grasp-of-earth
         // needed a bulk-collection gameAction target ("allCardsMatching"); mirumoto-prodigy
         // and admit-defeat needed a per-role conflict participant count (valueRef "role").
-        // All were originally scriptOverride; this pins down that they now load generically.
+        // cautious-scout needed a "match" predicate op referencing the current conflict's
+        // declared province (isCurrentConflictProvince) plus IsBlanked scanning
+        // persistentEffects; seeker-of-enlightenment needed a ring-fate-sum dynamic
+        // (fateOnUnclaimedRings); meishodo-wielder needed a "first player" predicate op
+        // (isFirstPlayer) plus GameState.EffectiveCost scanning persistentEffects for a new
+        // "modifyCost" effect. All were originally scriptOverride; this pins down that they
+        // now load generically.
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
         var path = Path.Combine(CardsDir, $"{cardId}.json");
 

@@ -9,8 +9,20 @@
   "military": 2,
   "political": 0,
   "glory": 1,
-  "scriptOverride": {
-    "reason": "Persistent effect's match targets a specific dynamic reference (the current conflict's province, this.game.currentConflict.conflictProvince) rather than a property-based predicate - the closed vocabulary has no 'is the conflict province' primitive. Its condition also needs this.game.currentConflict.getNumberOfParticipantsFor('attacker') === 1, a conflict-state count method beyond compareStat/compareValues/anyCardMatches.",
-    "handler": "L5R.Engine.Cards.Scripts.CautiousScoutBlankLoneAttackersProvince"
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": { "op": "isCurrentConflictProvince" },
+        "targetController": "opponent",
+        "condition": {
+          "op": "and",
+          "of": [
+            { "op": "hasStatus", "status": "isAttacking" },
+            { "op": "compareValues", "left": { "dynamic": "conflictParticipantCount", "role": "attacker" }, "comparator": "eq", "right": 1 }
+          ]
+        },
+        "effect": { "name": "blank" }
+      }
+    ]
   }
 }

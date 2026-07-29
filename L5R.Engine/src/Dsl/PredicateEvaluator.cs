@@ -31,6 +31,13 @@ public static class PredicateEvaluator
             "compareValues" => EvaluateCompareValues(predicate, context),
             "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
             "anyCardMatches" => EvaluateAnyCardMatches(predicate, context),
+            // cautious-scout's persistentEffect "match": the current conflict's declared
+            // province (Conflict.DeclaredProvince, a caller-set fact - see its own doc
+            // comment) rather than a property-based predicate.
+            "isCurrentConflictProvince" => candidate == context.Game.CurrentConflict?.DeclaredProvince,
+            // meishodo-wielder's condition (this.game.getFirstPlayer() === context.player) -
+            // this engine has no separate "first player" concept from GameState.ActivePlayer.
+            "isFirstPlayer" => context.Player == context.Game.ActivePlayer,
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
     }
