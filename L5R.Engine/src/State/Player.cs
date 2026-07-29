@@ -18,6 +18,9 @@ public sealed class Player
 
     /// <summary>Accumulator mutated by the modifyBid gameAction. See ShowBid's doc comment.</summary>
     public int HonorBidModifier { get; set; }
+
+    /// <summary>Which favor this player currently holds: "", "military", or "political". No claiming mechanic exists yet - set directly by the caller, like ShowBid.</summary>
+    public string ImperialFavor { get; set; } = "";
     public List<Card> Hand { get; } = new();
     public List<Card> PlayArea { get; } = new();
     public List<Card> Discard { get; } = new();

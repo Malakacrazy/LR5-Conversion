@@ -5,18 +5,32 @@ using L5R.Engine.State;
 namespace L5R.Engine.Dsl;
 
 /// <summary>
-/// Resolves one card-schema.json valueRef to a literal int. Deliberately covers only plain
-/// number literals, the "conflictParticipantCount" dynamic, and a couple of contextPath
-/// segments so far - anything else throws until a card in the executable set needs it, per
-/// the same fail-loud policy as PredicateEvaluator. No multiplier/offset support yet either
-/// - no ported card in the executable set uses them on a dynamic this resolver understands.
+/// Resolves one card-schema.json valueRef to a literal value. Most valueRefs (numeric
+/// dynamics, compareStat/cardLastingEffect's "value") are ints - ResolveInt is the
+/// long-standing entry point for those and throws if the resolved value isn't one. A few
+/// (contextPath's "imperialFavor" segment, a bare string literal like compareValues'
+/// right: "") resolve to strings instead - Resolve returns the untyped value so
+/// PredicateEvaluator's compareValues can dispatch on whichever type both sides turn out
+/// to be. Deliberately covers only plain literals, the "conflictParticipantCount"/
+/// "countHoldingsInPlay"/"countCardsMatching" dynamics, and a few contextPath segments so
+/// far - anything else throws until a card in the executable set needs it, per the same
+/// fail-loud policy as PredicateEvaluator. No multiplier/offset support yet either - no
+/// ported card in the executable set uses them on a dynamic this resolver understands.
 /// </summary>
 public static class ValueRefResolver
 {
-    public static int ResolveInt(JsonElement valueRef, AbilityContext context)
+    public static int ResolveInt(JsonElement valueRef, AbilityContext context) =>
+        Resolve(valueRef, context) is int result
+            ? result
+            : throw new InvalidOperationException($"Expected valueRef to resolve to an int.");
+
+    public static object Resolve(JsonElement valueRef, AbilityContext context)
     {
         if (valueRef.ValueKind == JsonValueKind.Number)
             return valueRef.GetInt32();
+
+        if (valueRef.ValueKind == JsonValueKind.String)
+            return valueRef.GetString()!;
 
         if (valueRef.TryGetProperty("dynamic", out var dynamicElement))
             return ResolveDynamic(dynamicElement.GetString()!, valueRef, context);
@@ -24,7 +38,7 @@ public static class ValueRefResolver
         if (valueRef.TryGetProperty("contextPath", out var contextPathElement))
             return ResolveContextPath(contextPathElement.GetString()!, context);
 
-        throw new NotSupportedException("ValueRefResolver only supports plain number literals, 'dynamic', and 'contextPath' so far.");
+        throw new NotSupportedException("ValueRefResolver only supports plain literals, 'dynamic', and 'contextPath' so far.");
     }
 
     private static int ResolveDynamic(string name, JsonElement valueRef, AbilityContext context) => name switch
@@ -89,7 +103,7 @@ public static class ValueRefResolver
         };
     }
 
-    private static int ResolveContextPath(string path, AbilityContext context)
+    private static object ResolveContextPath(string path, AbilityContext context)
     {
         var segments = path.Split('.');
 
@@ -106,13 +120,12 @@ public static class ValueRefResolver
             {
                 (Player p, "honor") => p.Honor,
                 (Player p, "showBid") => p.ShowBid,
+                (Player p, "imperialFavor") => p.ImperialFavor,
                 (Player p, "opponent") => context.Game.Opponent(p),
                 _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath segment '{segments[i]}' on {current.GetType().Name}.")
             };
         }
 
-        return current is int result
-            ? result
-            : throw new InvalidOperationException($"contextPath '{path}' did not resolve to an int.");
+        return current;
     }
 }

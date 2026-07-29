@@ -28,10 +28,7 @@ public static class PredicateEvaluator
             "hasFaction" => candidate.Faction == predicate.GetProperty("faction").GetString(),
             "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate, context),
             "compareStat" => EvaluateCompareStat(predicate, candidate, context),
-            "compareValues" => Compare(
-                ValueRefResolver.ResolveInt(predicate.GetProperty("left"), context),
-                predicate.GetProperty("comparator").GetString()!,
-                ValueRefResolver.ResolveInt(predicate.GetProperty("right"), context)),
+            "compareValues" => EvaluateCompareValues(predicate, context),
             "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
             "anyCardMatches" => EvaluateAnyCardMatches(predicate, context),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
@@ -113,6 +110,26 @@ public static class PredicateEvaluator
         return Compare(candidateValue, comparator, value);
     }
 
+    /// <summary>
+    /// compareValues' left/right are usually both ints (dynamics, honor totals), but a
+    /// couple (contextPath's "imperialFavor" segment, compared against a literal like "")
+    /// resolve to strings instead - dispatch on whichever type both sides actually turn out
+    /// to be, rather than forcing everything through ResolveInt.
+    /// </summary>
+    private static bool EvaluateCompareValues(JsonElement predicate, AbilityContext context)
+    {
+        var comparator = predicate.GetProperty("comparator").GetString()!;
+        var left = ValueRefResolver.Resolve(predicate.GetProperty("left"), context);
+        var right = ValueRefResolver.Resolve(predicate.GetProperty("right"), context);
+
+        return (left, right) switch
+        {
+            (int li, int ri) => Compare(li, comparator, ri),
+            (string ls, string rs) => Compare(ls, comparator, rs),
+            _ => throw new NotSupportedException($"compareValues does not support comparing a {left.GetType().Name} to a {right.GetType().Name}.")
+        };
+    }
+
     internal static bool Compare(int left, string comparator, int right) => comparator switch
     {
         "lt" => left < right,
@@ -122,4 +139,18 @@ public static class PredicateEvaluator
         "gt" => left > right,
         _ => throw new NotSupportedException($"Unknown comparator '{comparator}'.")
     };
+
+    private static bool Compare(string left, string comparator, string right)
+    {
+        var ordinal = string.CompareOrdinal(left, right);
+        return comparator switch
+        {
+            "lt" => ordinal < 0,
+            "lte" => ordinal <= 0,
+            "eq" => ordinal == 0,
+            "gte" => ordinal >= 0,
+            "gt" => ordinal > 0,
+            _ => throw new NotSupportedException($"Unknown comparator '{comparator}'.")
+        };
+    }
 }
