@@ -38,17 +38,25 @@ public static class PredicateEvaluator
     }
 
     /// <summary>
-    /// ringteki IsDuringConflict.js: with no "type", just checks game.currentConflict
-    /// exists - here, that we're in the conflict phase. A "type" filter (military/
-    /// political) needs an actual Conflict object we don't model yet, so it throws
-    /// rather than silently ignoring the type restriction.
+    /// ringteki isDuringConflict(types): with no "type", just checks game.currentConflict
+    /// exists - here, that we're in the conflict phase. With a "type" (military/political,
+    /// or an air/earth/fire/water/void ring element - card-schema.json's single enum,
+    /// since ringteki checks conflictType.concat(elements) against the same list), it also
+    /// requires an actual Conflict and matches against its ConflictType or Elements. No
+    /// conflict yet declared is a real (false) answer, matching the no-conflict-is-false
+    /// convention used by hasStatus's isParticipating/isAttacking/isDefending.
     /// </summary>
     private static bool EvaluateIsDuringConflict(JsonElement predicate, AbilityContext context)
     {
-        if (predicate.TryGetProperty("type", out _))
-            throw new NotSupportedException("PredicateEvaluator does not yet support isDuringConflict's 'type' filter (needs conflict state).");
+        if (context.Game.CurrentPhase != Phase.Conflict)
+            return false;
 
-        return context.Game.CurrentPhase == Phase.Conflict;
+        if (!predicate.TryGetProperty("type", out var typeElement))
+            return true;
+
+        var type = typeElement.GetString()!;
+        return context.Game.CurrentConflict is { } conflict
+            && (type == conflict.ConflictType || conflict.Elements.Contains(type));
     }
 
     /// <summary>
