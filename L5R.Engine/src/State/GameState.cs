@@ -223,6 +223,20 @@ public sealed class GameState
     public bool IsBlanked(Card card) =>
         ActiveWhileAttachedEffectsFor(card).Any(pair => pair.Effect.GetProperty("name").GetString() == "blank");
 
+    /// <summary>
+    /// ringteki Ring.getElements(): the current conflict's type/elements, plus whatever
+    /// "addElementAsAttacker" persistentEffects the attacking characters (seeker-of-
+    /// knowledge) contribute - checked here rather than inline in PredicateEvaluator's
+    /// isDuringConflict so it can reuse HasAddEffect the same way HasKeyword/
+    /// HasEffectiveTrait do. False (not an error) with no active conflict, matching the
+    /// no-conflict-is-false convention used throughout.
+    /// </summary>
+    public bool ConflictHasType(string type) =>
+        CurrentConflict is { } conflict
+        && (type == conflict.ConflictType
+            || conflict.Elements.Contains(type)
+            || conflict.Attackers.Any(attacker => HasAddEffect(attacker, "addElementAsAttacker", type)));
+
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 

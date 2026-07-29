@@ -19,7 +19,8 @@ public sealed class CostRegistry
         ["removeFateFromSelf"] = new RemoveFateFromSelfCostHandler(),
         ["dishonor"] = new DishonorCostHandler(),
         ["payFate"] = new PayFateCostHandler(),
-        ["giveFateToOpponent"] = new GiveFateToOpponentCostHandler()
+        ["giveFateToOpponent"] = new GiveFateToOpponentCostHandler(),
+        ["payFateToRing"] = new PayFateToRingCostHandler()
     };
 
     public ICostHandler Resolve(string name) =>

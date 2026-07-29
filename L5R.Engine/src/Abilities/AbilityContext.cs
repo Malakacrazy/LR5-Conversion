@@ -56,4 +56,12 @@ public sealed class AbilityContext
     /// ChosenRingElement) the caller sets this directly; null until then.
     /// </summary>
     public Ring? TargetRing { get; set; }
+
+    /// <summary>
+    /// ringteki costs.js payFateToRing: which unclaimed ring the player chose to place fate
+    /// on - a parameterized cost's selection, like CostTarget but for a ring instead of a
+    /// card. Kept separate from TargetRing so a future card needing both a cost-ring and a
+    /// gameAction-ring in the same ability wouldn't collide.
+    /// </summary>
+    public Ring? CostRingTarget { get; set; }
 }
