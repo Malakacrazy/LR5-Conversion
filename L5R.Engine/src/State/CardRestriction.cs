@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace L5R.Engine.State;
 
 /// <summary>
@@ -20,4 +22,13 @@ public sealed class CardRestriction
     /// "type" filter is (ConflictType or Elements).
     /// </summary>
     public string? Qualifier { get; init; }
+
+    /// <summary>
+    /// the-mountain-does-not-fall's cardLastingEffect "condition" param (distinct from the
+    /// action-level Condition on ActionDefinition/PersistentEffectDefinition): "doesNotBow"
+    /// only while defending, re-checked live rather than only at the moment the effect was
+    /// applied - the target could stop defending before the effect expires. Null for every
+    /// restriction that doesn't scope itself this way (the common case).
+    /// </summary>
+    public JsonElement? Condition { get; init; }
 }

@@ -137,7 +137,10 @@ public sealed class GameState
 
     public bool IsRestrictedFrom(Card card, string action)
     {
-        if (Restrictions.Any(r => r.Target == card && r.Action == action && MatchesQualifier(r.Qualifier)))
+        bool MatchesCondition(CardRestriction r) =>
+            r.Condition is not { } condition || PredicateEvaluator.Evaluate(condition, card, SourceContextFor(card));
+
+        if (Restrictions.Any(r => r.Target == card && r.Action == action && MatchesQualifier(r.Qualifier) && MatchesCondition(r)))
             return true;
 
         bool MatchesAction((Card Source, JsonElement Effect) pair)

@@ -35,6 +35,12 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         var effectName = effect.GetProperty("name").GetString();
         var effectValue = effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null;
 
+        // the-mountain-does-not-fall: "doesNotBow" only while the target is defending -
+        // scopes when the restriction applies, distinct from Duration (when it expires).
+        var restrictionCondition = props.TryGetProperty("condition", out var conditionElement)
+            ? conditionElement.Clone()
+            : (JsonElement?)null;
+
         var recipients = props.TryGetProperty("target", out var targetElement)
             ? TargetResolver.ResolveAllCardsMatching(targetElement, context)
             : new[] { context.Target ?? throw new InvalidOperationException("cardLastingEffect requires context.Target to be set.") };
@@ -42,7 +48,7 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         if (EffectVocabulary.TryGetRestrictionAction(effectName, effectValue, out var action, out var qualifier))
         {
             foreach (var recipient in recipients)
-                context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration, Qualifier = qualifier });
+                context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration, Qualifier = qualifier, Condition = restrictionCondition });
             return;
         }
 
