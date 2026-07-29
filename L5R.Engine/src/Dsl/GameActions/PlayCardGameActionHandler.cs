@@ -35,6 +35,9 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
             var attachTarget = context.PlayAttachTarget
                 ?? throw new InvalidOperationException($"Playing attachment '{card.Id}' requires context.PlayAttachTarget to be set.");
 
+            if (context.Game.IsAttachRestricted(card, attachTarget, context.Player))
+                throw new InvalidOperationException($"'{card.Id}' cannot be attached to '{attachTarget.Id}' (attachmentMyControlOnly).");
+
             ZoneMover.MoveTo(card, card.Controller.PlayArea, "play area");
             card.AttachedTo = attachTarget;
         }

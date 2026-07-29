@@ -311,6 +311,42 @@ public sealed class GameState
             .DefaultIfEmpty(int.MaxValue)
             .Min();
 
+    /// <summary>
+    /// way-of-the-dragon's "attachmentLimit": 1 ("only one copy of this attachment per
+    /// character") - ringteki's checkForIllegalAttachments matches copies by card.name
+    /// (this engine's Card.Id, shared across separate instances of the same printed card)
+    /// and runs as a continuous "discard the excess" cleanup pass; no equivalent
+    /// always-running effect loop exists here, so this is a pure query a test asserts
+    /// directly (same convention as MaxDefendersFor) rather than an automatic discard.
+    /// </summary>
+    public bool ExceedsAttachmentLimit(Card attachment)
+    {
+        var limit = ActivePersistentEffectsAffecting(attachment)
+            .Where(pair => pair.Effect.GetProperty("name").GetString() == "attachmentLimit")
+            .Select(pair => (int?)pair.Effect.GetProperty("value").GetInt32())
+            .FirstOrDefault();
+
+        if (limit is not { } value || attachment.AttachedTo is not { } parent)
+            return false;
+
+        var sameCardCount = AllCards().Count(c => c.AttachedTo == parent && c.Id == attachment.Id);
+        return sameCardCount > value;
+    }
+
+    /// <summary>
+    /// way-of-the-dragon/court-mask/favored-mount's "attachmentMyControlOnly" - ringteki
+    /// basecard.ts.canAttach: legal only if the acting player controls the target character,
+    /// or the attachment's own controller does. Wired into PlayCardGameActionHandler, the
+    /// one real attach execution path in this engine.
+    /// </summary>
+    public bool IsAttachRestricted(Card attachment, Card parent, Player actingPlayer)
+    {
+        var hasRestriction = ActivePersistentEffectsAffecting(attachment)
+            .Any(pair => pair.Effect.GetProperty("name").GetString() == "attachmentMyControlOnly");
+
+        return hasRestriction && actingPlayer != parent.Controller && attachment.Controller != parent.Controller;
+    }
+
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 
