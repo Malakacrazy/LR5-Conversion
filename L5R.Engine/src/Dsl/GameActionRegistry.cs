@@ -44,7 +44,8 @@ public sealed class GameActionRegistry
         ["playerLastingEffect"] = new PlayerLastingEffectGameActionHandler(),
         ["playCard"] = new PlayCardGameActionHandler(),
         ["flipDynasty"] = new FlipDynastyGameActionHandler(),
-        ["lookAt"] = new LookAtGameActionHandler()
+        ["lookAt"] = new LookAtGameActionHandler(),
+        ["deckSearch"] = new DeckSearchGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

@@ -72,4 +72,12 @@ public sealed class AbilityContext
     /// this directly; null until then.
     /// </summary>
     public Card? PlayAttachTarget { get; set; }
+
+    /// <summary>
+    /// ringteki DeckSearchAction: which card (among the top "amount" cards of the deck) the
+    /// player took, or null for ringteki's own "Take nothing" - a legal choice, not a
+    /// missing one. No search/selection-menu UI exists, so (like every other ChosenX field)
+    /// the caller sets this directly; null until then.
+    /// </summary>
+    public Card? ChosenDeckSearchCard { get; set; }
 }
