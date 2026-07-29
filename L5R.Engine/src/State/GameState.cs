@@ -63,6 +63,33 @@ public sealed class GameState
     /// </summary>
     public List<CardRestriction> Restrictions { get; } = new();
 
+    /// <summary>Active takeControl effects - see ControlChange's own doc comment for why this is a direct-mutation-plus-explicit-revert mechanism rather than an on-demand sum like LastingEffects/Restrictions.</summary>
+    public List<ControlChange> ControlChanges { get; } = new();
+
+    /// <summary>ringteki effects.js takeControl: moves the card to newController's play area and records the original controller so EndConflict()/AdvancePhase() can revert it.</summary>
+    public void TakeControl(Card card, Player newController, string duration)
+    {
+        var original = card.Controller;
+        original.PlayArea.Remove(card);
+        newController.PlayArea.Add(card);
+        card.Controller = newController;
+
+        ControlChanges.Add(new ControlChange { Target = card, OriginalController = original, Duration = duration });
+    }
+
+    private void RevertControlChanges(Func<ControlChange, bool> shouldRevert)
+    {
+        var toRevert = ControlChanges.Where(shouldRevert).ToList();
+        foreach (var change in toRevert)
+        {
+            change.Target.Controller.PlayArea.Remove(change.Target);
+            change.OriginalController.PlayArea.Add(change.Target);
+            change.Target.Controller = change.OriginalController;
+        }
+
+        ControlChanges.RemoveAll(c => toRevert.Contains(c));
+    }
+
     public bool IsRestrictedFrom(Card card, string action)
     {
         if (Restrictions.Any(r => r.Target == card && r.Action == action))
@@ -149,6 +176,7 @@ public sealed class GameState
 
         LastingEffects.Clear();
         Restrictions.Clear();
+        RevertControlChanges(_ => true);
     }
 
     /// <summary>
@@ -163,5 +191,6 @@ public sealed class GameState
         CurrentConflict = null;
         LastingEffects.RemoveAll(e => e.Duration == "untilEndOfConflict");
         Restrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
+        RevertControlChanges(c => c.Duration == "untilEndOfConflict");
     }
 }

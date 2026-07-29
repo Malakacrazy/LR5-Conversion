@@ -46,6 +46,13 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
             return;
         }
 
+        if (effectName == "takeControl")
+        {
+            foreach (var recipient in recipients)
+                context.Game.TakeControl(recipient, context.Player, duration);
+            return;
+        }
+
         var value = ValueRefResolver.ResolveInt(effectValue!.Value, context);
         if (!EffectVocabulary.TryGetStatDeltas(effectName, value, out var deltas))
             throw new NotSupportedException($"CardLastingEffectGameActionHandler does not yet support effect '{effectName}'.");
