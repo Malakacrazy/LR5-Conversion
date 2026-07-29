@@ -48,6 +48,9 @@ public sealed class GameState
     /// </summary>
     public List<LastingEffect> LastingEffects { get; } = new();
 
+    /// <summary>Active cardLastingEffect "addKeyword" grants - see LastingKeywordGrant's own doc comment for why this is a separate list from LastingEffects.</summary>
+    public List<LastingKeywordGrant> LastingKeywordGrants { get; } = new();
+
     public int EffectiveGlory(Card card) => EffectiveStat(card, "glory", card.PrintedGlory);
 
     public int EffectiveMilitarySkill(Card card) => EffectiveStat(card, "military", card.PrintedMilitarySkill);
@@ -312,7 +315,10 @@ public sealed class GameState
     /// to ask "does this card have keyword X"), so this is queried directly rather than
     /// through hasTrait's wiring - still real engine behavior, not a no-op.
     /// </summary>
-    public bool HasKeyword(Card card, string keyword) => HasAddEffect(card, "addKeyword", keyword);
+    public bool HasKeyword(Card card, string keyword) =>
+        HasAddEffect(card, "addKeyword", keyword)
+        || LastingKeywordGrants.Any(g => g.Target == card && g.Keyword == keyword
+            && (g.Condition is not { } condition || PredicateEvaluator.Evaluate(condition, card, SourceContextFor(card))));
 
     private bool HasAddEffect(Card card, string effectName, string value)
     {
@@ -467,6 +473,7 @@ public sealed class GameState
             RoundNumber++;
 
         LastingEffects.Clear();
+        LastingKeywordGrants.Clear();
         Restrictions.Clear();
         PlayerRestrictions.Clear();
         CostReductions.Clear();
@@ -484,6 +491,7 @@ public sealed class GameState
     {
         CurrentConflict = null;
         LastingEffects.RemoveAll(e => e.Duration == "untilEndOfConflict");
+        LastingKeywordGrants.RemoveAll(g => g.Duration == "untilEndOfConflict");
         Restrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         PlayerRestrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         CostReductions.RemoveAll(r => r.Duration == "untilEndOfConflict");

@@ -35,9 +35,10 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         var effectName = effect.GetProperty("name").GetString();
         var effectValue = effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null;
 
-        // the-mountain-does-not-fall: "doesNotBow" only while the target is defending -
-        // scopes when the restriction applies, distinct from Duration (when it expires).
-        var restrictionCondition = props.TryGetProperty("condition", out var conditionElement)
+        // the-mountain-does-not-fall/adept-of-the-waves: scopes when the effect applies
+        // (e.g. "only while defending", "only during a water conflict"), distinct from
+        // Duration (when it expires) - re-checked live by every consumer below.
+        var condition = props.TryGetProperty("condition", out var conditionElement)
             ? conditionElement.Clone()
             : (JsonElement?)null;
 
@@ -48,7 +49,7 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         if (EffectVocabulary.TryGetRestrictionAction(effectName, effectValue, out var action, out var qualifier, out _))
         {
             foreach (var recipient in recipients)
-                context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration, Qualifier = qualifier, Condition = restrictionCondition });
+                context.Game.Restrictions.Add(new CardRestriction { Target = recipient, Action = action, Duration = duration, Qualifier = qualifier, Condition = condition });
             return;
         }
 
@@ -56,6 +57,16 @@ public sealed class CardLastingEffectGameActionHandler : IGameActionHandler
         {
             foreach (var recipient in recipients)
                 context.Game.TakeControl(recipient, context.Player, duration);
+            return;
+        }
+
+        // adept-of-the-waves' addKeyword - a string value, so it's dispatched before the
+        // int-only stat-effect branches below rather than falling through to ResolveInt.
+        if (effectName == "addKeyword")
+        {
+            var keyword = effectValue!.Value.GetString()!;
+            foreach (var recipient in recipients)
+                context.Game.LastingKeywordGrants.Add(new LastingKeywordGrant { Target = recipient, Keyword = keyword, Duration = duration, Condition = condition });
             return;
         }
 
