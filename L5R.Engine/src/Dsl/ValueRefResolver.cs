@@ -46,6 +46,7 @@ public static class ValueRefResolver
         "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
         "countHoldingsInPlay" => ResolveForPlayer(valueRef, context).PlayArea.Count(c => c.Type == CardType.Holding),
         "countCardsMatching" => ResolveCountCardsMatching(valueRef, context),
+        "countClaimedRings" => ResolveForPlayer(valueRef, context).ClaimedRingsCount,
         _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
     };
 
