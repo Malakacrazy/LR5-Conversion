@@ -25,7 +25,14 @@ public sealed record TargetDefinition(
     JsonElement? CardCondition,
     IReadOnlyList<GameActionDefinition> GameActions);
 
-public sealed record GameActionDefinition(string Name, JsonElement? Params);
+/// <summary>
+/// Target is card-schema.json gameActionEntry's own optional override (a sibling of
+/// "name", not nested in "params") - "Overrides the default target (source card for card
+/// actions, ...)". Only the "allCardsMatching" valueRef shape is understood so far (a bulk
+/// target applied to every matching card independently, e.g. the-art-of-peace's "honor all
+/// defenders"); other valueRef shapes (contextPath, a single dynamic, ...) throw.
+/// </summary>
+public sealed record GameActionDefinition(string Name, JsonElement? Params, JsonElement? Target = null);
 
 /// <summary>
 /// One entry from a loaded card's abilities.triggeredAbilities[] (reactions/interrupts).

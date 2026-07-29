@@ -153,6 +153,7 @@ public static class AbilityDefinitionParser
     {
         var name = entry.GetProperty("name").GetString()!;
         JsonElement? paramsElement = entry.TryGetProperty("params", out var p) ? p.Clone() : null;
-        return new GameActionDefinition(name, paramsElement);
+        JsonElement? targetElement = entry.TryGetProperty("target", out var t) ? t.Clone() : null;
+        return new GameActionDefinition(name, paramsElement, targetElement);
     }
 }

@@ -16,11 +16,11 @@
         "gameAction": [
           {
             "name": "dishonor",
-            "params": { "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isAttacking" } } } }
+            "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isAttacking" } } }
           },
           {
             "name": "honor",
-            "params": { "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isDefending" } } } }
+            "target": { "allCardsMatching": { "controller": "any", "of": { "op": "hasStatus", "status": "isDefending" } } }
           }
         ]
       }

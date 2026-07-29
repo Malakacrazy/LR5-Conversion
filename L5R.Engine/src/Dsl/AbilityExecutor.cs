@@ -94,12 +94,28 @@ public sealed class AbilityExecutor
     /// every entry against the *pre-execution* state before any of them run - otherwise
     /// bow flipping Bowed to true would make ready's CanAffect see a now-bowed card and
     /// fire right after it, undoing the bow.
+    ///
+    /// An entry with its own Target override (e.g. the-art-of-peace's "honor all
+    /// defenders") targets a completely different card set than the ambient context.Target,
+    /// so it's run independently against every resolved candidate rather than joining the
+    /// shared CanAffect race the other entries run against each other.
     /// </summary>
     private void RunGameActions(IReadOnlyList<GameActionDefinition> gameActions, AbilityContext context)
     {
-        var toRun = gameActions
+        foreach (var gameAction in gameActions.Where(ga => ga.Target is not null))
+        {
+            var handler = _gameActions.Resolve(gameAction.Name);
+            foreach (var candidate in TargetResolver.ResolveAllCardsMatching(gameAction.Target!.Value, context))
+            {
+                context.Target = candidate;
+                handler.Execute(context, gameAction.Params);
+            }
+        }
+
+        var sharedTarget = gameActions.Where(ga => ga.Target is null).ToList();
+        var toRun = sharedTarget
             .Select(gameAction => (gameAction, handler: _gameActions.Resolve(gameAction.Name)))
-            .Where(entry => gameActions.Count == 1 || entry.handler.CanAffect(context, entry.gameAction.Params))
+            .Where(entry => sharedTarget.Count == 1 || entry.handler.CanAffect(context, entry.gameAction.Params))
             .ToList();
 
         foreach (var (gameAction, handler) in toRun)
