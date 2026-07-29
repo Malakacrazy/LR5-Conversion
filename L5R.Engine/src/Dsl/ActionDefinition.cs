@@ -79,13 +79,13 @@ public sealed record TriggeredAbilityDefinition(
 /// there's no apply-once moment; GameState re-evaluates every entry from every in-play card
 /// on demand each time a stat/restriction is queried, rather than tracking a materialized
 /// list like LastingEffects/Restrictions. Match is the raw JsonElement for either shape the
-/// schema allows: the string "self", or a predicate object evaluated against each
-/// candidate card. Player-scoped effects (schema: "omit match entirely") aren't supported -
-/// AbilityDefinitionParser throws rather than silently treating a missing match as an
-/// always-active card effect.
+/// schema allows: the string "self", or a predicate object evaluated against each candidate
+/// card - or null for a player-scoped effect (schema: "omit match entirely" - guest-of-honor/
+/// doomed-shugenja), which GameState.ActivePersistentEffectsAffectingPlayer resolves via
+/// TargetController directly instead of filtering candidate cards by it.
 /// </summary>
 public sealed record PersistentEffectDefinition(
-    JsonElement Match,
+    JsonElement? Match,
     JsonElement? Condition,
     string TargetController,
     string SourceLocation,

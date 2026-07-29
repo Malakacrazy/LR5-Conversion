@@ -86,4 +86,43 @@ public static class EffectVocabulary
 
         return value.GetProperty("cannot").GetString()!;
     }
+
+    /// <summary>
+    /// playerCannot's "restricts" is a genuinely different qualifier than cardCannot's (per
+    /// ringteki Restriction.js's checkRestrictions table): it names what *kind of card* is
+    /// restricted ("events", "characters") or "source" (the restriction's own source card),
+    /// not who the restriction applies against - captured here, not rejected. Deliberately
+    /// separate from TryGetRestrictionAction rather than one throws-vs-captures method for
+    /// the same field name with two different meanings.
+    /// </summary>
+    public static bool TryGetPlayerRestrictionAction(string? effectName, JsonElement? value, out string action, out string? qualifier)
+    {
+        if (effectName != "playerCannot")
+        {
+            action = "";
+            qualifier = null;
+            return false;
+        }
+
+        var v = value!.Value;
+        action = v.GetProperty("cannot").GetString()!;
+        qualifier = v.TryGetProperty("restricts", out var r) ? r.GetString() : null;
+        return true;
+    }
+
+    /// <summary>city-of-lies' reduceNextPlayedCardCost: {amount, appliesTo (a predicate evaluated against the card under consideration, e.g. isType event)}.</summary>
+    public static bool TryGetCostReduction(string? effectName, JsonElement? value, out int amount, out JsonElement? appliesTo)
+    {
+        if (effectName != "reduceNextPlayedCardCost")
+        {
+            amount = 0;
+            appliesTo = null;
+            return false;
+        }
+
+        var v = value!.Value;
+        amount = v.GetProperty("amount").GetInt32();
+        appliesTo = v.TryGetProperty("appliesTo", out var a) ? a.Clone() : (JsonElement?)null;
+        return true;
+    }
 }

@@ -60,8 +60,10 @@ public static class AbilityDefinitionParser
 
     private static PersistentEffectDefinition ParsePersistentEffect(JsonElement entry)
     {
-        if (!entry.TryGetProperty("match", out var matchElement))
-            throw new NotSupportedException("PersistentEffectDefinition requires 'match' - player-scoped effects (schema: omit match entirely) aren't supported yet.");
+        // "match" is "self", a predicate, or omitted entirely - card-schema.json's own
+        // documented convention for a player-scoped effect. A null Match here is that third
+        // case, resolved via TargetController alone by ActivePersistentEffectsAffectingPlayer.
+        JsonElement? match = entry.TryGetProperty("match", out var matchElement) ? matchElement.Clone() : null;
 
         var condition = entry.TryGetProperty("condition", out var conditionElement) ? conditionElement.Clone() : (JsonElement?)null;
         var targetController = entry.TryGetProperty("targetController", out var tc) ? tc.GetString()! : "self";
@@ -72,7 +74,7 @@ public static class AbilityDefinitionParser
             ? effectElement.EnumerateArray().Select(e => e.Clone()).ToList()
             : new List<JsonElement> { effectElement.Clone() };
 
-        return new PersistentEffectDefinition(matchElement.Clone(), condition, targetController, sourceLocation, effects);
+        return new PersistentEffectDefinition(match, condition, targetController, sourceLocation, effects);
     }
 
     public static IReadOnlyList<WhileAttachedDefinition> ParseWhileAttached(JsonElement cardRoot)

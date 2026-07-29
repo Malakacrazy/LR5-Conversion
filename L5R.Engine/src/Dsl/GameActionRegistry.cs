@@ -40,7 +40,8 @@ public sealed class GameActionRegistry
         // ringteki's own TakeRingAction class is oddly named 'takeFate' internally (a
         // copy-paste artifact), but card-schema.json's name for it - and the JSON key every
         // ported card actually uses (know-the-world) - is "takeRing".
-        ["takeRing"] = new TakeRingGameActionHandler()
+        ["takeRing"] = new TakeRingGameActionHandler(),
+        ["playerLastingEffect"] = new PlayerLastingEffectGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

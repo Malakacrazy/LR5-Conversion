@@ -147,6 +147,71 @@ public sealed class GameState
     private bool MatchesQualifier(string? qualifier) =>
         qualifier is null || (CurrentConflict is { } conflict && (qualifier == conflict.ConflictType || conflict.Elements.Contains(qualifier)));
 
+    /// <summary>
+    /// Active playerCannot restrictions - see PlayerRestriction's own doc comment. Same two
+    /// durations and expiry rules as Restrictions.
+    /// </summary>
+    public List<PlayerRestriction> PlayerRestrictions { get; } = new();
+
+    /// <summary>Active reduceNextPlayedCardCost effects - see PlayerCostReduction's own doc comment.</summary>
+    public List<PlayerCostReduction> CostReductions { get; } = new();
+
+    /// <summary>
+    /// guest-of-honor ("opponent cannot play events"), doomed-shugenja ("cannot place fate
+    /// when playing [a copy of] this character"), grasp-of-earth ("opponent cannot play
+    /// characters from hand"). consideredCard is the card being considered for whatever
+    /// `action` describes (e.g. the card someone is trying to play) - needed to check a
+    /// restriction's Qualifier (ringteki Restriction.js's "events"/"characters"/"source",
+    /// the only three any ported card uses). A qualified restriction with no consideredCard
+    /// to check against is "not restricted from this specific one", not an error - there's
+    /// simply nothing to compare.
+    /// </summary>
+    public bool IsPlayerRestrictedFrom(Player player, string action, Card? consideredCard = null)
+    {
+        bool MatchesQualifiedRestriction(string action2, string? qualifier, Card source) =>
+            action2 == action && MatchesPlayerQualifier(qualifier, source, consideredCard);
+
+        if (PlayerRestrictions.Any(r => r.Target == player && MatchesQualifiedRestriction(r.Action, r.Qualifier, r.Source)))
+            return true;
+
+        return ActivePersistentEffectsAffectingPlayer(player).Any(pair =>
+        {
+            var isRestriction = EffectVocabulary.TryGetPlayerRestrictionAction(
+                pair.Effect.GetProperty("name").GetString(),
+                pair.Effect.TryGetProperty("value", out var v) ? v : (JsonElement?)null,
+                out var restrictedAction,
+                out var qualifier);
+            return isRestriction && MatchesQualifiedRestriction(restrictedAction, qualifier, pair.Source);
+        });
+    }
+
+    private static bool MatchesPlayerQualifier(string? qualifier, Card restrictionSource, Card? consideredCard)
+    {
+        if (qualifier is null)
+            return true;
+
+        if (consideredCard is null)
+            return false;
+
+        return qualifier switch
+        {
+            "events" => consideredCard.Type == CardType.Event,
+            "characters" => consideredCard.Type == CardType.Character,
+            "source" => consideredCard == restrictionSource,
+            _ => throw new NotSupportedException($"Unknown playerCannot 'restricts' qualifier '{qualifier}'.")
+        };
+    }
+
+    /// <summary>city-of-lies' reduceNextPlayedCardCost, floored at 0. No "consume after one use" semantics - see PlayerCostReduction's own doc comment.</summary>
+    public int EffectiveCost(Card card, Player player)
+    {
+        var reduction = CostReductions
+            .Where(r => r.Player == player && (r.AppliesTo is null || PredicateEvaluator.Evaluate(r.AppliesTo.Value, card, SourceContextFor(card))))
+            .Sum(r => r.Amount);
+
+        return Math.Max(0, (card.PrintedCost ?? 0) - reduction);
+    }
+
     /// <summary>favored-mount's "cavalry" while attached - see PredicateEvaluator.HasTrait. Checks both scans (like IsRestrictedFrom) since a grant can come from either a persistentEffect or a whileAttached effect.</summary>
     public bool HasEffectiveTrait(Card card, string trait) => HasAddEffect(card, "addTrait", trait);
 
@@ -208,6 +273,11 @@ public sealed class GameState
         {
             foreach (var definition in source.PersistentEffects)
             {
+                // A null Match is a player-scoped effect (guest-of-honor/doomed-shugenja) -
+                // only ActivePersistentEffectsAffectingPlayer considers those.
+                if (definition.Match is not { } match)
+                    continue;
+
                 if (definition.SourceLocation != "any" && source.Location != definition.SourceLocation)
                     continue;
 
@@ -219,11 +289,50 @@ public sealed class GameState
                 if (!MatchesTargetController(definition.TargetController, source.Controller, candidate.Controller))
                     continue;
 
-                var isMatch = definition.Match.ValueKind == JsonValueKind.String
+                var isMatch = match.ValueKind == JsonValueKind.String
                     ? candidate == source
-                    : PredicateEvaluator.Evaluate(definition.Match, candidate, sourceContext);
+                    : PredicateEvaluator.Evaluate(match, candidate, sourceContext);
 
                 if (!isMatch)
+                    continue;
+
+                foreach (var effect in definition.Effects)
+                    yield return (source, effect);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The player-scoped counterpart to ActivePersistentEffectsAffecting - only considers
+    /// entries with a null Match (guest-of-honor/doomed-shugenja), resolving the target
+    /// directly from TargetController rather than filtering candidate cards by it (there's
+    /// no candidate card here; a player-scoped effect targets a player outright).
+    /// </summary>
+    private IEnumerable<(Card Source, JsonElement Effect)> ActivePersistentEffectsAffectingPlayer(Player player)
+    {
+        foreach (var source in AllCards())
+        {
+            foreach (var definition in source.PersistentEffects)
+            {
+                if (definition.Match is not null)
+                    continue;
+
+                if (definition.SourceLocation != "any" && source.Location != definition.SourceLocation)
+                    continue;
+
+                var sourceContext = SourceContextFor(source);
+
+                if (definition.Condition is { } condition && !PredicateEvaluator.Evaluate(condition, source, sourceContext))
+                    continue;
+
+                var targetPlayer = definition.TargetController switch
+                {
+                    "self" => source.Controller,
+                    "opponent" => Opponent(source.Controller),
+                    _ => throw new NotSupportedException($"Unknown persistentEffect targetController '{definition.TargetController}'.")
+                };
+
+                if (targetPlayer != player)
                     continue;
 
                 foreach (var effect in definition.Effects)
@@ -268,6 +377,8 @@ public sealed class GameState
 
         LastingEffects.Clear();
         Restrictions.Clear();
+        PlayerRestrictions.Clear();
+        CostReductions.Clear();
         RevertControlChanges(_ => true);
     }
 
@@ -283,6 +394,8 @@ public sealed class GameState
         CurrentConflict = null;
         LastingEffects.RemoveAll(e => e.Duration == "untilEndOfConflict");
         Restrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
+        PlayerRestrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
+        CostReductions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         RevertControlChanges(c => c.Duration == "untilEndOfConflict");
     }
 }
