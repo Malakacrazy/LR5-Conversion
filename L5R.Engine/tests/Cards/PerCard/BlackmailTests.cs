@@ -1,6 +1,8 @@
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards.Scripts;
 using L5R.Engine.Dsl;
+using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Tests.Cards.PerCard;
@@ -58,5 +60,43 @@ public class BlackmailTests
             new AbilityContext { Game = game, Player = p1, Source = new Card { Id = "blackmail", Type = CardType.Event, Controller = p1 } });
 
         Assert.That(legalTargets, Does.Not.Contain(expensive));
+    }
+
+    [Test]
+    public void WhenLessHonorableThanTheOpponent_CanBePlayed()
+    {
+        var p1 = new Player { Name = "Player1", Fate = 5, Honor = 3 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var blackmail = new Card
+        {
+            Id = "blackmail", Type = CardType.Event, Controller = p1,
+            PrintedCost = 3, PlayScript = new BlackmailCannotPlayUnlessLessHonorable()
+        };
+        p1.Hand.Add(blackmail);
+
+        var context = new AbilityContext { Game = game, Player = p1, Source = blackmail, Target = blackmail };
+
+        new PlayCardGameActionHandler().Execute(context, null);
+
+        Assert.That(p1.PlayArea, Does.Contain(blackmail));
+    }
+
+    [Test]
+    public void WhenNotLessHonorableThanTheOpponent_CannotBePlayed()
+    {
+        var p1 = new Player { Name = "Player1", Fate = 5, Honor = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var blackmail = new Card
+        {
+            Id = "blackmail", Type = CardType.Event, Controller = p1,
+            PrintedCost = 3, PlayScript = new BlackmailCannotPlayUnlessLessHonorable()
+        };
+        p1.Hand.Add(blackmail);
+
+        var context = new AbilityContext { Game = game, Player = p1, Source = blackmail, Target = blackmail };
+
+        Assert.Throws<InvalidOperationException>(() => new PlayCardGameActionHandler().Execute(context, null));
     }
 }
