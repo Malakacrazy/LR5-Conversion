@@ -12,6 +12,12 @@ public sealed class Player
     public required string Name { get; init; }
     public int Fate { get; set; }
     public int Honor { get; set; }
+
+    /// <summary>The raw honor dial value revealed for the current conflict (ringteki player.js's showBid). Distinct from HonorBidModifier - honorBid itself (max(0, showBid + honorBidModifier)) isn't modeled since no ported card needs it yet, only the two raw parts.</summary>
+    public int ShowBid { get; set; }
+
+    /// <summary>Accumulator mutated by the modifyBid gameAction. See ShowBid's doc comment.</summary>
+    public int HonorBidModifier { get; set; }
     public List<Card> Hand { get; } = new();
     public List<Card> PlayArea { get; } = new();
     public List<Card> Discard { get; } = new();

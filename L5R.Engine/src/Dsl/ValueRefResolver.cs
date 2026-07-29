@@ -105,6 +105,7 @@ public static class ValueRefResolver
             current = (current, segments[i]) switch
             {
                 (Player p, "honor") => p.Honor,
+                (Player p, "showBid") => p.ShowBid,
                 (Player p, "opponent") => context.Game.Opponent(p),
                 _ => throw new NotSupportedException($"ValueRefResolver does not yet support contextPath segment '{segments[i]}' on {current.GetType().Name}.")
             };
