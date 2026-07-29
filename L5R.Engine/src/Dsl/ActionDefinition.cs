@@ -23,7 +23,8 @@ public sealed record ActionDefinition(
     JsonElement? Condition,
     string? Phase,
     IReadOnlyDictionary<string, RingTargetEntry>? Targets = null,
-    string Location = "play area");
+    string Location = "play area",
+    SelectDependsOnTargetsDefinition? SelectDependsOnTargets = null);
 
 /// <summary>
 /// One named entry from card-schema.json's "targets" (plural) shape - a menu of
@@ -35,6 +36,22 @@ public sealed record ActionDefinition(
 /// chosenRingTargets), same convention as ChosenTarget.
 /// </summary>
 public sealed record RingTargetEntry(JsonElement RingCondition, GameActionDefinition GameAction);
+
+/// <summary>
+/// for-shame's "targets" (plural) shape - genuinely different from RingTargetEntry's ring
+/// slots, so it's a separate, parallel structure rather than folded into one: a plain card-
+/// matching descriptor (DependencyTarget, no gameAction of its own - "character") plus a
+/// "mode": "select" entry naming it via DependsOn, whose Choices' own gameActions target
+/// whichever card filled the dependency slot. Only this exact two-slot pattern is supported
+/// (see AbilityDefinitionParser.ParseSelectDependsOnTargets); no selection UI exists, so the
+/// caller supplies both the dependency card and the chosen choice label directly - the same
+/// ChosenTarget/ChosenChoice parameters every other target shape already uses.
+/// </summary>
+public sealed record SelectDependsOnTargetsDefinition(
+    string DependencyName,
+    TargetDefinition DependencyTarget,
+    string Player,
+    IReadOnlyDictionary<string, GameActionDefinition> Choices);
 
 public sealed record CostDefinition(string Name, JsonElement? Params);
 

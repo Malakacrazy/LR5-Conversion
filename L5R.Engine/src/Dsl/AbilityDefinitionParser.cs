@@ -170,13 +170,70 @@ public static class AbilityDefinitionParser
             ? phaseElement.GetString()
             : null;
 
-        IReadOnlyDictionary<string, RingTargetEntry>? targets = action.TryGetProperty("targets", out var targetsElement)
-            ? ParseRingTargets(targetsElement)
-            : null;
+        IReadOnlyDictionary<string, RingTargetEntry>? targets = null;
+        SelectDependsOnTargetsDefinition? selectDependsOnTargets = null;
+        if (action.TryGetProperty("targets", out var targetsElement))
+        {
+            var hasSelectEntry = targetsElement.EnumerateObject()
+                .Any(entry => entry.Value.TryGetProperty("mode", out var m) && m.GetString() == "select");
+
+            if (hasSelectEntry)
+                selectDependsOnTargets = ParseSelectDependsOnTargets(targetsElement);
+            else
+                targets = ParseRingTargets(targetsElement);
+        }
 
         var location = action.TryGetProperty("location", out var locationElement) ? locationElement.GetString()! : "play area";
 
-        return new ActionDefinition(title, costs, target, gameActions, condition, phase, targets, location);
+        return new ActionDefinition(title, costs, target, gameActions, condition, phase, targets, location, selectDependsOnTargets);
+    }
+
+    /// <summary>
+    /// for-shame's "targets" (plural) shape - exactly one plain card-matching entry (no
+    /// "mode", parsed via the same ParseTarget every singular "target" uses) plus one
+    /// "mode": "select" entry whose "dependsOn" names it. See SelectDependsOnTargetsDefinition's
+    /// own doc comment for why this is a separate structure from RingTargetEntry rather than
+    /// a shared, more general one. Anything else under "targets" throws.
+    /// </summary>
+    private static SelectDependsOnTargetsDefinition ParseSelectDependsOnTargets(JsonElement targetsElement)
+    {
+        string? dependencyName = null;
+        TargetDefinition? dependencyTarget = null;
+        string? dependsOn = null;
+        var player = "self";
+        IReadOnlyDictionary<string, GameActionDefinition>? choices = null;
+
+        foreach (var entry in targetsElement.EnumerateObject())
+        {
+            var mode = entry.Value.TryGetProperty("mode", out var modeElement) ? modeElement.GetString() : null;
+            if (mode is null)
+            {
+                dependencyName = entry.Name;
+                dependencyTarget = ParseTarget(entry.Value);
+            }
+            else if (mode == "select")
+            {
+                dependsOn = entry.Value.GetProperty("dependsOn").GetString()!;
+                player = entry.Value.TryGetProperty("player", out var p) ? p.GetString()! : "self";
+
+                var choicesDict = new Dictionary<string, GameActionDefinition>();
+                foreach (var choice in entry.Value.GetProperty("choices").EnumerateObject())
+                    choicesDict[choice.Name] = ParseGameAction(choice.Value);
+                choices = choicesDict;
+            }
+            else
+            {
+                throw new NotSupportedException($"AbilityDefinitionParser does not yet support 'mode': '{mode}' within a select-depends-on 'targets' block, got it for '{entry.Name}'.");
+            }
+        }
+
+        if (dependencyName is null || dependencyTarget is null || choices is null)
+            throw new NotSupportedException("AbilityDefinitionParser only supports a single plain target slot plus one 'mode': 'select' slot depending on it.");
+
+        if (dependsOn != dependencyName)
+            throw new NotSupportedException($"'select' target's dependsOn '{dependsOn}' does not match the only other target slot '{dependencyName}'.");
+
+        return new SelectDependsOnTargetsDefinition(dependencyName, dependencyTarget, player, choices);
     }
 
     /// <summary>

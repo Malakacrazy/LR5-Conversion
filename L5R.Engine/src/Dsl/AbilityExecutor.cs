@@ -72,7 +72,7 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used while '{context.Source.Id}' is in {action.Location}.");
 
-        return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.Targets, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets, chosenRingTargets);
+        return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.Targets, action.SelectDependsOnTargets, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets, chosenRingTargets);
     }
 
     /// <summary>Triggered-ability counterpart to Prepare - see its doc comment.</summary>
@@ -87,7 +87,7 @@ public sealed class AbilityExecutor
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 
-        return PayCostsAndPrepare(ability.Title, ability.Costs, ability.Target, null, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null, null);
+        return PayCostsAndPrepare(ability.Title, ability.Costs, ability.Target, null, null, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null, null);
     }
 
     private PendingAbility PayCostsAndPrepare(
@@ -95,6 +95,7 @@ public sealed class AbilityExecutor
         IReadOnlyList<CostDefinition> costs,
         TargetDefinition? target,
         IReadOnlyDictionary<string, RingTargetEntry>? targets,
+        SelectDependsOnTargetsDefinition? selectDependsOnTargets,
         IReadOnlyList<GameActionDefinition> gameActions,
         AbilityContext context,
         Card? chosenTarget,
@@ -120,6 +121,7 @@ public sealed class AbilityExecutor
             Title = title,
             Target = target,
             Targets = targets,
+            SelectDependsOnTargets = selectDependsOnTargets,
             GameActions = gameActions,
             Context = context,
             ChosenTarget = chosenTarget,
@@ -164,6 +166,32 @@ public sealed class AbilityExecutor
                 _gameActions.Resolve(entry.GameAction.Name).Execute(context, entry.GameAction.Params);
             }
 
+            return;
+        }
+
+        // for-shame's "targets" shape: one plain card-pick slot plus one "mode": "select"
+        // slot depending on it. chosenTarget fills the dependency slot (validated only
+        // against its own CardCondition, same scope as the maxStat branch below - trust the
+        // caller for cardType/controller, same as everywhere else); chosenChoice picks which
+        // named choice's gameAction to run, targeting the dependency card directly rather
+        // than resolving the JSON's own (redundant, given dependsOn) contextPath.
+        if (pending.SelectDependsOnTargets is { } selectTargets)
+        {
+            var dependencyCard = chosenTarget
+                ?? throw new InvalidOperationException($"Ability '{title}' requires a chosen target for '{selectTargets.DependencyName}'.");
+
+            if (selectTargets.DependencyTarget.CardCondition is { } dependencyCondition
+                && !PredicateEvaluator.Evaluate(dependencyCondition, dependencyCard, context))
+                throw new InvalidOperationException($"'{dependencyCard.Id}' does not satisfy ability '{title}''s '{selectTargets.DependencyName}' target condition.");
+
+            var label = chosenChoice
+                ?? throw new InvalidOperationException($"Ability '{title}' requires a choice but none was supplied.");
+            var chosenGameAction = selectTargets.Choices.TryGetValue(label, out var selectedGameAction)
+                ? selectedGameAction
+                : throw new InvalidOperationException($"Ability '{title}' has no choice named '{label}'.");
+
+            context.Target = dependencyCard;
+            _gameActions.Resolve(chosenGameAction.Name).Execute(context, chosenGameAction.Params);
             return;
         }
 

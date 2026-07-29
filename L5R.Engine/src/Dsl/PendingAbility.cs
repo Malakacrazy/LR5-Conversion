@@ -32,6 +32,9 @@ public sealed class PendingAbility
     /// <summary>Which Ring fills each named slot in Targets - no ring-selection UI exists, so the caller supplies these directly, same convention as ChosenTarget.</summary>
     public IReadOnlyDictionary<string, Ring>? ChosenRingTargets { get; init; }
 
+    /// <summary>ActionDefinition.SelectDependsOnTargets (for-shame's "targets" shape) - null for every other card. Resolved using ChosenTarget (the dependency slot's card) and ChosenChoice (which named choice), same fields every other target shape already reuses.</summary>
+    public SelectDependsOnTargetsDefinition? SelectDependsOnTargets { get; init; }
+
     public bool Cancelled { get; private set; }
 
     public void Cancel() => Cancelled = true;
