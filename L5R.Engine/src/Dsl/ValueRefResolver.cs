@@ -31,8 +31,32 @@ public static class ValueRefResolver
     {
         "conflictParticipantCount" => ResolveConflictParticipantCount(valueRef, context),
         "countHoldingsInPlay" => ResolveForPlayer(valueRef, context).PlayArea.Count(c => c.Type == CardType.Holding),
+        "countCardsMatching" => ResolveCountCardsMatching(valueRef, context),
         _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")
     };
+
+    /// <summary>
+    /// The counting equivalent of allCardsMatching/target's controller+of filter - schema
+    /// defaults controller to "self" here (unlike target/allCardsMatching's "any"), since a
+    /// bare count with no explicit subject reads naturally as "how many of my own cards".
+    /// </summary>
+    private static int ResolveCountCardsMatching(JsonElement valueRef, AbilityContext context)
+    {
+        var controller = valueRef.TryGetProperty("controller", out var c) ? c.GetString()! : "self";
+        IEnumerable<Card> candidates = context.Game.AllCards();
+        candidates = controller switch
+        {
+            "self" => candidates.Where(card => card.Controller == context.Player),
+            "opponent" => candidates.Where(card => card.Controller != context.Player),
+            "any" => candidates,
+            _ => throw new NotSupportedException($"Unknown controller '{controller}'.")
+        };
+
+        if (valueRef.TryGetProperty("of", out var ofElement))
+            candidates = candidates.Where(card => PredicateEvaluator.Evaluate(ofElement, card, context));
+
+        return candidates.Count();
+    }
 
     /// <summary>valueRef's "for" (self/opponent, default self) - resolved relative to context.Player.</summary>
     private static Player ResolveForPlayer(JsonElement valueRef, AbilityContext context)
