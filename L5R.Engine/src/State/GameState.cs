@@ -19,6 +19,9 @@ public sealed class GameState
     /// <summary>All cards controlled by either player, regardless of zone.</summary>
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
 
+    /// <summary>Null outside of a conflict - see Conflict's own doc comment for what's deliberately not modeled yet.</summary>
+    public Conflict? CurrentConflict { get; set; }
+
     /// <summary>
     /// Active cardLastingEffect modifiers - see CardLastingEffectGameActionHandler and
     /// LastingEffect's own doc comment for why every entry here is always "untilEndOfPhase".

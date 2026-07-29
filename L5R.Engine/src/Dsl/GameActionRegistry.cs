@@ -22,7 +22,10 @@ public sealed class GameActionRegistry
         ["honor"] = new HonorGameActionHandler(),
         ["dishonor"] = new DishonorGameActionHandler(),
         ["bow"] = new BowGameActionHandler(),
-        ["ready"] = new ReadyGameActionHandler()
+        ["ready"] = new ReadyGameActionHandler(),
+        ["moveToConflict"] = new MoveToConflictGameActionHandler(),
+        ["sendHome"] = new SendHomeGameActionHandler(),
+        ["removeFate"] = new RemoveFateGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

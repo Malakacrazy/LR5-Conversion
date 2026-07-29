@@ -26,7 +26,7 @@ public static class PredicateEvaluator
             "isType" => candidate.Type == CardTypes.Parse(predicate.GetProperty("type").GetString()!),
             "hasTrait" => candidate.Traits.Contains(predicate.GetProperty("trait").GetString()!),
             "hasFaction" => candidate.Faction == predicate.GetProperty("faction").GetString(),
-            "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate),
+            "hasStatus" => EvaluateHasStatus(predicate.GetProperty("status").GetString()!, candidate, context),
             "compareStat" => EvaluateCompareStat(predicate, candidate, context),
             "isDuringConflict" => EvaluateIsDuringConflict(predicate, context),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
@@ -47,13 +47,22 @@ public static class PredicateEvaluator
         return context.Game.CurrentPhase == Phase.Conflict;
     }
 
-    private static bool EvaluateHasStatus(string status, Card candidate) => status switch
+    /// <summary>
+    /// ringteki BaseCard.isParticipating()/isAttacking()/isDefending() all start with
+    /// `this.game.currentConflict &&` - outside a conflict they're simply false, not an
+    /// unsupported case, so no-conflict is a real (false) answer rather than a throw.
+    /// </summary>
+    private static bool EvaluateHasStatus(string status, Card candidate, AbilityContext context) => status switch
     {
         "isBowed" => candidate.Bowed,
         "isUnique" => candidate.Unique,
         "isHonored" => candidate.IsHonored,
         "isDishonored" => candidate.IsDishonored,
-        _ => throw new NotSupportedException($"PredicateEvaluator does not yet support hasStatus '{status}' (needs conflict state).")
+        "isParticipating" => context.Game.CurrentConflict is { } conflict
+            && (conflict.Attackers.Contains(candidate) || conflict.Defenders.Contains(candidate)),
+        "isAttacking" => context.Game.CurrentConflict?.Attackers.Contains(candidate) == true,
+        "isDefending" => context.Game.CurrentConflict?.Defenders.Contains(candidate) == true,
+        _ => throw new NotSupportedException($"PredicateEvaluator does not yet support hasStatus '{status}'.")
     };
 
     private static bool EvaluateCompareStat(JsonElement predicate, Card candidate, AbilityContext context)
