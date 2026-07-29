@@ -49,6 +49,9 @@ public static class ValueRefResolver
             "countCardsMatching" => ResolveCountCardsMatching(valueRef, context),
             "countClaimedRings" => context.Game.Rings.Count(r => r.ClaimedBy == ResolveForPlayer(valueRef, context)),
             "countUnclaimedRings" => context.Game.Rings.Count(r => r.IsUnclaimed),
+            // seeker-of-enlightenment's modifyBothSkills value - a sum aggregate over rings
+            // (not cards), beyond countCardsMatching's card-count shape.
+            "fateOnUnclaimedRings" => context.Game.Rings.Where(r => r.IsUnclaimed).Sum(r => r.Fate),
             "countCardsInHand" => ResolveForPlayer(valueRef, context).Hand.Count,
             "countFacedownProvinces" => ResolveForPlayer(valueRef, context).Provinces.Count(c => c.Facedown),
             _ => throw new NotSupportedException($"ValueRefResolver does not yet support dynamic '{name}'.")

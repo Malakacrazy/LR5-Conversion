@@ -9,8 +9,12 @@
   "military": 1,
   "political": 1,
   "glory": 0,
-  "scriptOverride": {
-    "reason": "Persistent effect's value sums fate across all unclaimed rings - a sum aggregate over rings, not cards, beyond countCardsMatching's card-count shape. Not generalizing a ring-sum concept from a single card.",
-    "handler": "L5R.Engine.Cards.Scripts.SeekerOfEnlightenmentBonusForFateOnUnclaimedRings"
+  "abilities": {
+    "persistentEffects": [
+      {
+        "match": "self",
+        "effect": { "name": "modifyBothSkills", "value": { "dynamic": "fateOnUnclaimedRings" } }
+      }
+    ]
   }
 }
