@@ -29,7 +29,8 @@ public sealed class GameActionRegistry
         ["switchConflictType"] = new SwitchConflictTypeGameActionHandler(),
         ["putIntoConflict"] = new PutIntoConflictGameActionHandler(),
         ["modifyBid"] = new ModifyBidGameActionHandler(),
-        ["selectRing"] = new SelectRingGameActionHandler()
+        ["selectRing"] = new SelectRingGameActionHandler(),
+        ["cancel"] = new CancelGameActionHandler()
     };
 
     public IGameActionHandler Resolve(string name) =>

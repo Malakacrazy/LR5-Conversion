@@ -33,4 +33,12 @@ public sealed class AbilityContext
     /// ChosenRingElement) the caller supplies the choice directly; null until then.
     /// </summary>
     public string? ChosenBidDirection { get; set; }
+
+    /// <summary>
+    /// ringteki TriggeredAbilityContext.event - which PendingAbility a "cancel" gameAction
+    /// (forged-edict, voice-of-honor) should cancel. No interrupt-window scheduler exists to
+    /// wire this automatically, so (like ChosenRingElement) the caller sets it directly on
+    /// the cancelling ability's own context before running it.
+    /// </summary>
+    public Dsl.PendingAbility? InterruptedAbility { get; set; }
 }

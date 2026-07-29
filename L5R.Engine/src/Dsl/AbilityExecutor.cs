@@ -11,6 +11,9 @@ namespace L5R.Engine.Dsl;
 /// build a full prompt pipeline). An action-level condition's implicit candidate is
 /// context.Source, matching the convention established throughout card-porting (e.g.
 /// kaiu-shuichi/mirumoto-prodigy).
+///
+/// Execute/ExecuteTriggered are Resolve(Prepare(...)) - see Prepare's doc comment for why
+/// the split exists (cancel gameActions).
 /// </summary>
 public sealed class AbilityExecutor
 {
@@ -26,17 +29,8 @@ public sealed class AbilityExecutor
     public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
         action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
 
-    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null)
-    {
-        if (!IsConditionMet(action, context))
-            throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
-
-        if (action.Phase is not null && Phases.Parse(action.Phase) != context.Game.CurrentPhase)
-            throw new InvalidOperationException(
-                $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
-
-        RunCostsTargetAndGameActions(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets);
-    }
+    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null) =>
+        Resolve(Prepare(action, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets));
 
     /// <summary>
     /// Runs a triggeredAbilities[] entry. No event bus exists to know an event actually
@@ -51,7 +45,31 @@ public sealed class AbilityExecutor
     /// tranquility). Plain actions (CardAction.js) have no equivalent check, so Execute
     /// deliberately doesn't gate on this - only triggered reactions/interrupts do.
     /// </summary>
-    public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
+    public void ExecuteTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null) =>
+        Resolve(PrepareTriggered(ability, context, eventCard, chosenTarget, chosenCostTarget, chosenChoice));
+
+    /// <summary>
+    /// Checks the action's condition/phase and pays its costs, but stops short of running
+    /// its effects - the ringteki Event/EventWindow split (Event.js's `cancelled` flag),
+    /// scoped down so a "cancel" gameAction (forged-edict, voice-of-honor) fired between
+    /// Prepare and Resolve can actually prevent this ability's effects from ever applying.
+    /// Execute is just Resolve(Prepare(...)) - existing callers that never interleave a
+    /// cancel see no behavior change.
+    /// </summary>
+    public PendingAbility Prepare(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null)
+    {
+        if (!IsConditionMet(action, context))
+            throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
+
+        if (action.Phase is not null && Phases.Parse(action.Phase) != context.Game.CurrentPhase)
+            throw new InvalidOperationException(
+                $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
+
+        return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets);
+    }
+
+    /// <summary>Triggered-ability counterpart to Prepare - see its doc comment.</summary>
+    public PendingAbility PrepareTriggered(TriggeredAbilityDefinition ability, AbilityContext context, Card eventCard, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null)
     {
         if (context.Game.IsRestrictedFrom(context.Source, "triggerAbilities"))
             throw new InvalidOperationException($"'{context.Source.Id}' cannot trigger abilities right now.");
@@ -59,10 +77,10 @@ public sealed class AbilityExecutor
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 
-        RunCostsTargetAndGameActions(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null);
+        return PayCostsAndPrepare(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null);
     }
 
-    private void RunCostsTargetAndGameActions(
+    private PendingAbility PayCostsAndPrepare(
         string title,
         IReadOnlyList<CostDefinition> costs,
         TargetDefinition? target,
@@ -85,10 +103,35 @@ public sealed class AbilityExecutor
         foreach (var cost in costs)
             _costs.Resolve(cost.Name).Pay(context, cost.Params);
 
+        return new PendingAbility
+        {
+            Title = title,
+            Target = target,
+            GameActions = gameActions,
+            Context = context,
+            ChosenTarget = chosenTarget,
+            ChosenChoice = chosenChoice,
+            ChosenTargets = chosenTargets
+        };
+    }
+
+    /// <summary>Runs a PendingAbility's effects - a no-op if it was cancelled in the meantime (see CancelGameActionHandler).</summary>
+    public void Resolve(PendingAbility pending)
+    {
+        if (pending.Cancelled)
+            return;
+
+        var title = pending.Title;
+        var target = pending.Target;
+        var context = pending.Context;
+        var chosenTarget = pending.ChosenTarget;
+        var chosenChoice = pending.ChosenChoice;
+        var chosenTargets = pending.ChosenTargets;
+
         // ringteki CardGameAction.defaultTargets: a gameAction with no explicit target
         // defaults to context.source, e.g. adept-of-shadows' returnToHand.
         context.Target = context.Source;
-        RunGameActions(gameActions, context);
+        RunGameActions(pending.GameActions, context);
 
         if (target is not null)
         {
