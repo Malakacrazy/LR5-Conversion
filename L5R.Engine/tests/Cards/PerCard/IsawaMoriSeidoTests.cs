@@ -54,4 +54,20 @@ public class IsawaMoriSeidoTests
 
         Assert.Throws<InvalidOperationException>(() => executor.Execute(action, context, chosenTarget: target));
     }
+
+    [Test]
+    public void Provisions_StartingHonorAndFateIncomeAndStrengthBonus()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var stronghold = new Card { Id = "isawa-mori-seido", Type = CardType.Stronghold, Controller = p1, PrintedHonor = 11, PrintedFateIncome = 7, PrintedStrengthBonus = 2 };
+        p1.Stronghold = stronghold;
+
+        game.SetHonorFromStronghold(p1);
+
+        Assert.That(p1.Honor, Is.EqualTo(11));
+        Assert.That(game.FateIncomeFor(p1), Is.EqualTo(7));
+        Assert.That(game.StrongholdStrengthBonusFor(p1), Is.EqualTo(2));
+    }
 }

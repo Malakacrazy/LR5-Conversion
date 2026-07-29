@@ -40,4 +40,12 @@ public sealed class Player
     /// gameAction moves a card into or out of this zone (flipDynasty only flips the flag).
     /// </summary>
     public List<Card> Provinces { get; } = new();
+
+    /// <summary>
+    /// This player's stronghold card, null until set - see GameState.SetHonorFromStronghold/
+    /// FateIncomeFor/StrongholdStrengthBonusFor for what it provisions. Not moved into
+    /// Provinces (ringteki keeps it in its own distinct "stronghold province" zone, not one
+    /// of the 4 regular province slots).
+    /// </summary>
+    public Card? Stronghold { get; set; }
 }

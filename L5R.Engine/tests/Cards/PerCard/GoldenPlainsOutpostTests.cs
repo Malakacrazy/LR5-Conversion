@@ -54,4 +54,20 @@ public class GoldenPlainsOutpostTests
 
         Assert.That(executor.IsConditionMet(action, context), Is.False);
     }
+
+    [Test]
+    public void Provisions_StartingHonorAndFateIncomeAndZeroStrengthBonus()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var outpost = new Card { Id = "golden-plains-outpost", Type = CardType.Stronghold, Controller = p1, PrintedHonor = 10, PrintedFateIncome = 7, PrintedStrengthBonus = 0 };
+        p1.Stronghold = outpost;
+
+        game.SetHonorFromStronghold(p1);
+
+        Assert.That(p1.Honor, Is.EqualTo(10));
+        Assert.That(game.FateIncomeFor(p1), Is.EqualTo(7));
+        Assert.That(game.StrongholdStrengthBonusFor(p1), Is.EqualTo(0), "an explicit strengthBonus of 0");
+    }
 }

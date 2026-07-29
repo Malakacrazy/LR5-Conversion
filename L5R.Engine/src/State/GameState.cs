@@ -64,6 +64,42 @@ public sealed class GameState
 
     public int EffectiveProvinceStrength(Card card) => EffectiveStat(card, "provinceStrength", card.PrintedProvinceStrength);
 
+    /// <summary>ringteki SetupPhase.startGame: player.honor = player.stronghold.cardData.honor - a one-time setup assignment, not a continuous effect (calling this again later would just re-stamp the starting value over whatever honor has since become).</summary>
+    public void SetHonorFromStronghold(Player player)
+    {
+        var stronghold = player.Stronghold
+            ?? throw new InvalidOperationException($"'{player.Name}' has no stronghold set.");
+
+        player.Honor = stronghold.PrintedHonor
+            ?? throw new InvalidOperationException($"'{stronghold.Id}' has no printed honor.");
+    }
+
+    /// <summary>
+    /// ringteki player.getTotalIncome(): "the amount of fate this player gets from their
+    /// stronghold a turn". No fate-phase/income-collection step exists yet to call this
+    /// automatically (matches this engine's general lack of one, e.g. MaxDefendersFor's own
+    /// "no defender-declaration flow exists to enforce this automatically") - a pure query.
+    /// </summary>
+    public int FateIncomeFor(Player player)
+    {
+        var stronghold = player.Stronghold
+            ?? throw new InvalidOperationException($"'{player.Name}' has no stronghold set.");
+
+        return stronghold.PrintedFateIncome
+            ?? throw new InvalidOperationException($"'{stronghold.Id}' has no printed fate income.");
+    }
+
+    /// <summary>
+    /// ringteki provincecard.js.getDynastyOrStrongholdCardModifier: a stronghold's own
+    /// contribution to a province's strength. This engine's Conflict has no province
+    /// reference at all yet (no "attack targets this specific province" concept exists), so
+    /// there is nothing to wire this into automatically - a pure query, defaulting to 0 for
+    /// a missing stronghold or an unset field (city-of-the-open-hand has no "strengthBonus"
+    /// key at all; golden-plains-outpost sets it to 0 explicitly - both mean "no bonus",
+    /// matching EffectiveStat's own "?? 0" convention).
+    /// </summary>
+    public int StrongholdStrengthBonusFor(Player player) => player.Stronghold?.PrintedStrengthBonus ?? 0;
+
     private int EffectiveStat(Card card, string stat, int? printedValue)
     {
         // way-of-the-lion's modifyBaseMilitarySkillMultiplier multiplies the printed base

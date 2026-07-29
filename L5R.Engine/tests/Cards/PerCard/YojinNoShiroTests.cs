@@ -42,4 +42,20 @@ public class YojinNoShiroTests
         Assert.That(game.EffectivePoliticalSkill(attacker), Is.EqualTo(2), "only military skill is modified");
         Assert.That(game.EffectiveMilitarySkill(defender), Is.EqualTo(2), "the defender is not an attacker");
     }
+
+    [Test]
+    public void Provisions_StartingHonorAndFateIncomeAndStrengthBonus()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var stronghold = new Card { Id = "yojin-no-shiro", Type = CardType.Stronghold, Controller = p1, PrintedHonor = 12, PrintedFateIncome = 7, PrintedStrengthBonus = 2 };
+        p1.Stronghold = stronghold;
+
+        game.SetHonorFromStronghold(p1);
+
+        Assert.That(p1.Honor, Is.EqualTo(12));
+        Assert.That(game.FateIncomeFor(p1), Is.EqualTo(7));
+        Assert.That(game.StrongholdStrengthBonusFor(p1), Is.EqualTo(2));
+    }
 }

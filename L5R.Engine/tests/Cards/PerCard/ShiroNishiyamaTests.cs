@@ -42,4 +42,20 @@ public class ShiroNishiyamaTests
         Assert.That(game.EffectivePoliticalSkill(defender), Is.EqualTo(3));
         Assert.That(game.EffectiveMilitarySkill(attacker), Is.EqualTo(2), "the attacker is not a defender");
     }
+
+    [Test]
+    public void Provisions_StartingHonorAndFateIncomeAndStrengthBonus()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var stronghold = new Card { Id = "shiro-nishiyama", Type = CardType.Stronghold, Controller = p1, PrintedHonor = 10, PrintedFateIncome = 7, PrintedStrengthBonus = 3 };
+        p1.Stronghold = stronghold;
+
+        game.SetHonorFromStronghold(p1);
+
+        Assert.That(p1.Honor, Is.EqualTo(10));
+        Assert.That(game.FateIncomeFor(p1), Is.EqualTo(7));
+        Assert.That(game.StrongholdStrengthBonusFor(p1), Is.EqualTo(3));
+    }
 }

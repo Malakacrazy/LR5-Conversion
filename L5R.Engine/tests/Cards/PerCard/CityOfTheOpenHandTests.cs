@@ -65,4 +65,20 @@ public class CityOfTheOpenHandTests
 
         Assert.That(executor.IsConditionMet(action, context), Is.False);
     }
+
+    [Test]
+    public void Provisions_StartingHonorAndFateIncomeAndNoStrengthBonus()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var stronghold = new Card { Id = "city-of-the-open-hand", Type = CardType.Stronghold, Controller = p1, PrintedHonor = 10, PrintedFateIncome = 7 };
+        p1.Stronghold = stronghold;
+
+        game.SetHonorFromStronghold(p1);
+
+        Assert.That(p1.Honor, Is.EqualTo(10));
+        Assert.That(game.FateIncomeFor(p1), Is.EqualTo(7));
+        Assert.That(game.StrongholdStrengthBonusFor(p1), Is.EqualTo(0), "no printed strengthBonus at all");
+    }
 }

@@ -119,6 +119,10 @@ public static class PredicateEvaluator
         // mirumoto-s-fury's cardCondition ("card.getGlory()") - ringteki's getGlory() applies
         // modifiers, unlike getBaseMilitarySkill() above, so this is the *effective* stat.
         "glory" => context.Game.EffectiveGlory(card),
+        // shizuka-toshi's cardCondition ("card.politicalSkill <= 2") - ringteki's
+        // politicalSkill getter is getPoliticalSkill(), the effective stat (modifiers
+        // applied), same as glory above.
+        "politicalSkill" => context.Game.EffectivePoliticalSkill(card),
         _ => throw new NotSupportedException($"PredicateEvaluator does not yet support card stat '{stat}'.")
     };
 

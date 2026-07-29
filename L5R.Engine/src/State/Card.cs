@@ -22,6 +22,18 @@ public sealed class Card
     public int? PrintedMilitarySkill { get; init; }
     public int? PrintedPoliticalSkill { get; init; }
     public int? PrintedProvinceStrength { get; init; }
+
+    /// <summary>
+    /// A stronghold's own printed honor/fate-income/province-strength-bonus (card-schema.json
+    /// "honor"/"fate"/"strengthBonus") - see GameState.SetHonorFromStronghold/FateIncomeFor/
+    /// StrongholdStrengthBonusFor for what each drives. PrintedFateIncome is named distinctly
+    /// from the existing Fate field, which tracks fate counters currently placed *on* a card -
+    /// a different concept from a stronghold's own per-turn income value.
+    /// </summary>
+    public int? PrintedHonor { get; init; }
+    public int? PrintedFateIncome { get; init; }
+    public int? PrintedStrengthBonus { get; init; }
+
     public bool IsHonored { get; set; }
     public bool IsDishonored { get; set; }
 
