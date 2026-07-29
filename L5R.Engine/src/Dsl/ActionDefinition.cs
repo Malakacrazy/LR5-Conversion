@@ -15,7 +15,19 @@ public sealed record ActionDefinition(
     TargetDefinition? Target,
     IReadOnlyList<GameActionDefinition> GameActions,
     JsonElement? Condition,
-    string? Phase);
+    string? Phase,
+    IReadOnlyDictionary<string, RingTargetEntry>? Targets = null);
+
+/// <summary>
+/// One named entry from card-schema.json's "targets" (plural) shape - a menu of
+/// simultaneous, independently-targeted ring slots (know-the-world's "returnedRing"/
+/// "takenRing"), each "mode": "ring" with its own RingCondition and GameAction. Only this
+/// one shape is supported; anything else under "targets" throws (see
+/// AbilityDefinitionParser.ParseRingTargets). No ring-selection UI exists, so the caller
+/// supplies which Ring fills each named slot directly (AbilityExecutor's
+/// chosenRingTargets), same convention as ChosenTarget.
+/// </summary>
+public sealed record RingTargetEntry(JsonElement RingCondition, GameActionDefinition GameAction);
 
 public sealed record CostDefinition(string Name, JsonElement? Params);
 

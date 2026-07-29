@@ -29,8 +29,8 @@ public sealed class AbilityExecutor
     public bool IsConditionMet(ActionDefinition action, AbilityContext context) =>
         action.Condition is null || PredicateEvaluator.Evaluate(action.Condition.Value, context.Source, context);
 
-    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null) =>
-        Resolve(Prepare(action, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets));
+    public void Execute(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null, IReadOnlyDictionary<string, Ring>? chosenRingTargets = null) =>
+        Resolve(Prepare(action, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets, chosenRingTargets));
 
     /// <summary>
     /// Runs a triggeredAbilities[] entry. No event bus exists to know an event actually
@@ -56,7 +56,7 @@ public sealed class AbilityExecutor
     /// Execute is just Resolve(Prepare(...)) - existing callers that never interleave a
     /// cancel see no behavior change.
     /// </summary>
-    public PendingAbility Prepare(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null)
+    public PendingAbility Prepare(ActionDefinition action, AbilityContext context, Card? chosenTarget = null, Card? chosenCostTarget = null, string? chosenChoice = null, IReadOnlyList<Card>? chosenTargets = null, IReadOnlyDictionary<string, Ring>? chosenRingTargets = null)
     {
         if (!IsConditionMet(action, context))
             throw new InvalidOperationException($"Action '{action.Title}' condition is not currently met.");
@@ -65,7 +65,7 @@ public sealed class AbilityExecutor
             throw new InvalidOperationException(
                 $"Action '{action.Title}' can only be used during the {action.Phase} phase.");
 
-        return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets);
+        return PayCostsAndPrepare(action.Title, action.Costs, action.Target, action.Targets, action.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, chosenTargets, chosenRingTargets);
     }
 
     /// <summary>Triggered-ability counterpart to Prepare - see its doc comment.</summary>
@@ -77,19 +77,21 @@ public sealed class AbilityExecutor
         if (!PredicateEvaluator.Evaluate(ability.WhenCondition, eventCard, context))
             throw new InvalidOperationException($"Triggered ability '{ability.Title}' when-condition is not met for event card '{eventCard.Id}'.");
 
-        return PayCostsAndPrepare(ability.Title, ability.Costs, ability.Target, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null);
+        return PayCostsAndPrepare(ability.Title, ability.Costs, ability.Target, null, ability.GameActions, context, chosenTarget, chosenCostTarget, chosenChoice, null, null);
     }
 
     private PendingAbility PayCostsAndPrepare(
         string title,
         IReadOnlyList<CostDefinition> costs,
         TargetDefinition? target,
+        IReadOnlyDictionary<string, RingTargetEntry>? targets,
         IReadOnlyList<GameActionDefinition> gameActions,
         AbilityContext context,
         Card? chosenTarget,
         Card? chosenCostTarget,
         string? chosenChoice,
-        IReadOnlyList<Card>? chosenTargets)
+        IReadOnlyList<Card>? chosenTargets,
+        IReadOnlyDictionary<string, Ring>? chosenRingTargets)
     {
         context.CostTarget = chosenCostTarget;
 
@@ -107,11 +109,13 @@ public sealed class AbilityExecutor
         {
             Title = title,
             Target = target,
+            Targets = targets,
             GameActions = gameActions,
             Context = context,
             ChosenTarget = chosenTarget,
             ChosenChoice = chosenChoice,
-            ChosenTargets = chosenTargets
+            ChosenTargets = chosenTargets,
+            ChosenRingTargets = chosenRingTargets
         };
     }
 
@@ -127,6 +131,31 @@ public sealed class AbilityExecutor
         var chosenTarget = pending.ChosenTarget;
         var chosenChoice = pending.ChosenChoice;
         var chosenTargets = pending.ChosenTargets;
+
+        // card-schema.json's "targets" (plural) - a menu of simultaneous, independently-
+        // targeted ring slots (know-the-world), mutually exclusive with the singular Target
+        // below. No ring-selection UI exists, so the caller supplies which Ring fills each
+        // named slot; each slot's own RingCondition is checked before running its GameAction.
+        if (pending.Targets is { } targets)
+        {
+            var chosenRings = pending.ChosenRingTargets
+                ?? throw new InvalidOperationException($"Ability '{title}' requires chosen ring targets but none were supplied.");
+
+            foreach (var (name, entry) in targets)
+            {
+                var ring = chosenRings.TryGetValue(name, out var r)
+                    ? r
+                    : throw new InvalidOperationException($"Ability '{title}' requires a ring target named '{name}'.");
+
+                if (!RingPredicateEvaluator.Evaluate(entry.RingCondition, ring, context))
+                    throw new InvalidOperationException($"The chosen '{name}' ring does not satisfy ability '{title}''s ring condition.");
+
+                context.TargetRing = ring;
+                _gameActions.Resolve(entry.GameAction.Name).Execute(context, entry.GameAction.Params);
+            }
+
+            return;
+        }
 
         // ringteki CardGameAction.defaultTargets: a gameAction with no explicit target
         // defaults to context.source, e.g. adept-of-shadows' returnToHand.

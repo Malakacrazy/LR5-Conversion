@@ -146,8 +146,6 @@ public static class AbilityDefinitionParser
 
     private static ActionDefinition ParseAction(JsonElement action)
     {
-        ThrowIfMultiTarget(action);
-
         var title = action.GetProperty("title").GetString()!;
 
         var costs = action.TryGetProperty("cost", out var costElement)
@@ -172,7 +170,33 @@ public static class AbilityDefinitionParser
             ? phaseElement.GetString()
             : null;
 
-        return new ActionDefinition(title, costs, target, gameActions, condition, phase);
+        IReadOnlyDictionary<string, RingTargetEntry>? targets = action.TryGetProperty("targets", out var targetsElement)
+            ? ParseRingTargets(targetsElement)
+            : null;
+
+        return new ActionDefinition(title, costs, target, gameActions, condition, phase, targets);
+    }
+
+    /// <summary>
+    /// card-schema.json's "targets" (plural, keyed by name - know-the-world's "returnedRing"/
+    /// "takenRing") - only the "mode": "ring" shape is understood; anything else throws
+    /// rather than silently dropping the ability's effect (see RingTargetEntry's doc comment).
+    /// </summary>
+    private static IReadOnlyDictionary<string, RingTargetEntry> ParseRingTargets(JsonElement targetsElement)
+    {
+        var result = new Dictionary<string, RingTargetEntry>();
+        foreach (var entry in targetsElement.EnumerateObject())
+        {
+            var mode = entry.Value.TryGetProperty("mode", out var modeElement) ? modeElement.GetString() : null;
+            if (mode != "ring")
+                throw new NotSupportedException($"AbilityDefinitionParser only supports 'mode': 'ring' entries within a multi-target 'targets' block, got '{mode}' for '{entry.Name}'.");
+
+            var ringCondition = entry.Value.GetProperty("ringCondition").Clone();
+            var gameAction = ParseGameAction(entry.Value.GetProperty("gameAction"));
+            result[entry.Name] = new RingTargetEntry(ringCondition, gameAction);
+        }
+
+        return result;
     }
 
     private static IReadOnlyList<CostDefinition> ParseCosts(JsonElement costElement)
