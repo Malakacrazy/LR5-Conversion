@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.Logging;
 using L5R.Engine.State;
@@ -30,6 +31,11 @@ namespace L5R.Engine.GameSteps;
 /// stable, currently-queryable fact once this window runs, whereas it was never true during
 /// the earlier mid-conflict window. Same "defender first" convention as the mid-conflict
 /// window, for consistency - not a modeled real-game priority rule for this specific moment.
+///
+/// Also fires the declared province's own "onCardRevealed" triggeredAbilities[] entry right
+/// after it's revealed, and (in TryBreakProvince) its "onBreakProvince" entry right before
+/// it breaks - see TriggeredReactionFirer's own doc comment for why these live at the exact
+/// moment of each mutation rather than a general poll.
 ///
 /// Deliberately out of scope for v1 (none of it is needed to play a real, complete game
 /// with the generic-DSL card set): the covert keyword, ring-switching mid-declaration, and
@@ -80,6 +86,7 @@ public static class ConflictResolver
         }
 
         declaration.Province.Facedown = false;
+        TriggeredReactionFirer.FireIfLegal(game, declaration.Province, "onCardRevealed");
 
         var defenders = defenderPolicy.DeclareDefenders(game, conflict, defender);
         foreach (var card in defenders)
@@ -151,6 +158,8 @@ public static class ConflictResolver
         var breaks = isStronghold || conflict.SkillDifference >= game.EffectiveProvinceStrength(province);
         if (!breaks || province.Broken)
             return;
+
+        TriggeredReactionFirer.FireIfLegal(game, province, "onBreakProvince");
 
         province.Broken = true;
 

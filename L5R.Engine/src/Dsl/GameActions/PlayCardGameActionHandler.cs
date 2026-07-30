@@ -1,5 +1,6 @@
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Dsl.GameActions;
@@ -16,6 +17,9 @@ namespace L5R.Engine.Dsl.GameActions;
 /// one-line ZoneMover call, not separately exercised by any ported card yet. Also checks
 /// Card.PlayScript?.CanPlay (height-of-fashion/pacifism/cloud-the-mind/blackmail/good-omen's
 /// canPlay overrides) - the one narrow wiring point between ICardScript and this handler.
+/// Also fires the played character's own "onCharacterEntersPlay" triggeredAbilities[] entry,
+/// if any - see TriggeredReactionFirer's own doc comment for why this lives at the exact
+/// moment of the mutation rather than a general poll.
 /// </summary>
 public sealed class PlayCardGameActionHandler : IGameActionHandler
 {
@@ -50,5 +54,8 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
         {
             ZoneMover.MoveTo(card, card.Controller.PlayArea, "play area");
         }
+
+        if (card.Type == CardType.Character)
+            TriggeredReactionFirer.FireIfLegal(context.Game, card, "onCharacterEntersPlay");
     }
 }
