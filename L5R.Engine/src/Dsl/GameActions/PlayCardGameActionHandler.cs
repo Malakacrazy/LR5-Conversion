@@ -19,7 +19,9 @@ namespace L5R.Engine.Dsl.GameActions;
 /// canPlay overrides) - the one narrow wiring point between ICardScript and this handler.
 /// Also fires the played character's own "onCharacterEntersPlay" triggeredAbilities[] entry,
 /// if any - see TriggeredReactionFirer's own doc comment for why this lives at the exact
-/// moment of the mutation rather than a general poll.
+/// moment of the mutation rather than a general poll. Also fires any eligible watch-commander
+/// reactions the playing player's opponent controls - see WatchCommanderFirer's own doc
+/// comment.
 /// </summary>
 public sealed class PlayCardGameActionHandler : IGameActionHandler
 {
@@ -57,5 +59,7 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
 
         if (card.Type == CardType.Character)
             TriggeredReactionFirer.FireIfLegal(context.Game, card, "onCharacterEntersPlay");
+
+        WatchCommanderFirer.FireEligibleReactions(context.Game, context.Player);
     }
 }
