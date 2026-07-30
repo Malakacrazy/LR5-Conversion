@@ -1,12 +1,31 @@
+using L5R.Engine.Abilities;
+using L5R.Engine.Dsl.GameActions;
+
 namespace L5R.Engine.Cards.Scripts;
 
 /// <summary>
-/// scriptOverride for stand-your-ground: when an honored character you control would
-/// leave play, instead discard that character's honored status token. Needs event.card
-/// field inspection and a cancel-with-replacement gameAction shape, the same gap as
-/// ReprieveDiscardInsteadOfParentLeavingPlay. Stubbed until the state model has honor
-/// tokens.
+/// stand-your-ground: when an honored character its controller controls would leave play,
+/// discard that character's honored status token instead. Same "no new mechanism needed"
+/// reasoning as reprieve - the caller calls this script instead of whatever would have
+/// removed the character. This engine flattens ringteki's personalHonor status-token
+/// object onto Card.IsHonored/IsDishonored directly, so DiscardStatusTokenGameActionHandler
+/// (already built for that flattening) is reused completely untouched.
 /// </summary>
 public sealed class StandYourGroundDiscardTokenInsteadOfLeavingPlay : ICardScript
 {
+    public void Execute(AbilityContext context)
+    {
+        var standYourGround = context.Source;
+
+        var target = context.Target
+            ?? throw new InvalidOperationException($"'{standYourGround.Id}' requires context.Target (the character that would leave play) to be set.");
+
+        if (target.Controller != context.Player)
+            throw new InvalidOperationException($"'{target.Id}' must be controlled by '{standYourGround.Id}''s controller.");
+
+        if (!target.IsHonored)
+            throw new InvalidOperationException($"'{target.Id}' must be honored.");
+
+        new DiscardStatusTokenGameActionHandler().Execute(context, null);
+    }
 }
