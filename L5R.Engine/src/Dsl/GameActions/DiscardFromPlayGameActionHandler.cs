@@ -18,7 +18,8 @@ namespace L5R.Engine.Dsl.GameActions;
 /// ringteki's own isContingent gate: ancestral only saves a card from leaving alongside its
 /// parent, not from being discarded on its own. Also fires any eligible vengeful-berserker
 /// reactions the discarded character's own controller controls - see
-/// VengefulBerserkerFirer's own doc comment.
+/// VengefulBerserkerFirer's own doc comment. Checks StandYourGroundOfferer first - if it
+/// intercepts, the card never actually leaves play at all.
 /// </summary>
 public sealed class DiscardFromPlayGameActionHandler : IGameActionHandler
 {
@@ -29,6 +30,9 @@ public sealed class DiscardFromPlayGameActionHandler : IGameActionHandler
 
         if (context.Game.IsRestrictedFrom(context.Target, "discardFromPlay", context.Source))
             throw new InvalidOperationException($"'{context.Target.Id}' cannot be discarded.");
+
+        if (StandYourGroundOfferer.TryInterrupt(context.Game, context.Target))
+            return;
 
         var card = context.Target;
         ZoneMover.MoveTo(card, card.Controller.Discard, "discard");
