@@ -32,6 +32,12 @@ namespace L5R.Engine.GameSteps;
 /// scriptOverride'd events (outwit, rout, ...) have no bridged Card.Actions entry at all -
 /// their whole effect lives in the script, not in JSON - so scriptedFallback (the caller's
 /// IBotPolicy.ResolveEventScript(eventCard.Id) result) is checked when Card.Actions is empty.
+///
+/// Prepares (rather than fuses Prepare+Resolve) so WouldInterruptOfferer gets a gap to offer
+/// the opponent forged-edict/voice-of-honor before the event's effect actually applies - see
+/// its own doc comment. Every existing caller that predates this still behaves identically
+/// when neither interrupting card is in the opponent's hand, since Resolve(Prepare(...)) is
+/// exactly what Execute already did.
 /// </summary>
 public static class EventResolver
 {
@@ -43,17 +49,19 @@ public static class EventResolver
             if (action.MeetsRequirements(context))
             {
                 var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
-                switch (definition.Target)
+                PendingAbility? pending = definition.Target switch
                 {
-                    case null:
-                        executor.Execute(definition, context);
-                        break;
-                    case { Choices: null, MaxStat: null } target:
-                        var chosenTarget = TargetResolver.ResolveLegalTargets(target, context).FirstOrDefault();
-                        executor.Execute(definition, context, chosenTarget: chosenTarget);
-                        break;
+                    null => executor.Prepare(definition, context),
+                    { Choices: null, MaxStat: null } target => executor.Prepare(definition, context, chosenTarget: TargetResolver.ResolveLegalTargets(target, context).FirstOrDefault()),
                     // "select"/"maxStat" target shapes: not handled by a trivial bot yet - the
                     // event is still discarded below, its effect just doesn't fire.
+                    _ => null
+                };
+
+                if (pending is not null)
+                {
+                    WouldInterruptOfferer.OfferInterrupts(game, eventCard, player, pending);
+                    executor.Resolve(pending);
                 }
             }
         }

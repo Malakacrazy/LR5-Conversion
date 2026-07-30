@@ -29,7 +29,8 @@ public sealed class DishonorCostHandler : ICostHandler
         new DishonorGameActionHandler().Execute(context, parameters: null);
     }
 
-    private static IReadOnlyList<Card> ResolveLegalCandidates(AbilityContext context, JsonElement? parameters)
+    /// <summary>Internal (not private) so WouldInterruptOfferer can pick a cost target for forged-edict's own "dishonor" cost before offering the interrupt, without duplicating this resolution logic.</summary>
+    internal static IReadOnlyList<Card> ResolveLegalCandidates(AbilityContext context, JsonElement? parameters)
     {
         if (parameters is null)
             throw new InvalidOperationException("dishonor cost requires params (at least cardCondition or cardType).");
