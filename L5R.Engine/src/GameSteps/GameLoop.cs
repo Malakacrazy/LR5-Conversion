@@ -275,17 +275,29 @@ public sealed class GameLoop
     /// real priority rule. AbilityExecutor is constructed fresh here rather than shared/
     /// injected - it's stateless (CostRegistry/GameActionRegistry are plain lookup
     /// dictionaries), same convention as CardFactory building its own per BuildCard call.
+    ///
+    /// usedThisWindow guards against an infinite loop: several Phase B scripted actions
+    /// (e.g. fearsome-mystic) have no bow-self cost or other self-invalidating side effect,
+    /// so IsLegal/ChooseScriptedAction would keep saying "yes, legal" for the same card
+    /// forever, and consecutivePasses would never reach 2. Each physical Card can act at
+    /// most once per window (reference equality - two copies of the same printed card are
+    /// each their own entry). Known limitation: if a bot controls two eligible copies of the
+    /// same scripted-action card, only the first one ChooseScriptedAction returns is ever
+    /// tried, even after it's used up - a shortcoming of "always pick the first candidate"
+    /// policies, not of the dedup itself; not worth a stateful policy redesign for a trivial
+    /// bot and a deck-construction edge case no fixed harness deck currently hits.
     /// </summary>
     private void RunActionWindow()
     {
         var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
         var current = _game.ActivePlayer;
         var consecutivePasses = 0;
+        var usedThisWindow = new HashSet<Card>();
 
         while (consecutivePasses < 2)
         {
             var scripted = _policies[current].ChooseScriptedAction(_game, current);
-            if (scripted is { } chosen)
+            if (scripted is { } chosen && usedThisWindow.Add(chosen.Source))
             {
                 consecutivePasses = 0;
                 chosen.Action.Invoke(_game, chosen.Source, current);
@@ -294,16 +306,16 @@ public sealed class GameLoop
             else
             {
                 var action = _policies[current].ChooseAction(_game, current);
-                if (action is null)
-                {
-                    consecutivePasses++;
-                }
-                else
+                if (action is not null && usedThisWindow.Add(action.Card))
                 {
                     consecutivePasses = 0;
                     var context = new AbilityContext { Game = _game, Player = current, Source = action.Card };
                     executor.Execute(action.Definition!, context);
                     _eventLog?.Record("actionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = action.Card.Id, ["action"] = action.Title });
+                }
+                else
+                {
+                    consecutivePasses++;
                 }
             }
 
