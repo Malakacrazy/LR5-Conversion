@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using L5R.Engine.Abilities;
 using L5R.Engine.Dsl.GameActions;
+using L5R.Engine.Logging;
 using L5R.Engine.State;
 
 namespace L5R.Engine.GameSteps;
@@ -8,18 +10,21 @@ namespace L5R.Engine.GameSteps;
 /// <summary>
 /// The minimal-but-real conflict declaration/resolution sequence ringteki's ConflictFlow
 /// (gamesteps/conflict/conflictflow.js) implements in 19 sub-steps: declare ring+province+
-/// attackers -> declare defenders -> sum skill -> ties favor the attacker -> break the
-/// province if the attacker wins by enough (or unconditionally for the stronghold, once
-/// eligible - conquest) -> resolve the ring's element -> claim the ring -> an unopposed
-/// loser loses 1 honor -> bow and return participants home (already done at declaration/
-/// defense time here, matching this engine's "commit = bow immediately" convention rather
-/// than a separate return-home step).
+/// attackers -> declare defenders -> a mid-conflict action window (ringteki's
+/// ConflictActionWindow, defender first - see ActionWindowRunner) -> sum skill -> ties favor
+/// the attacker -> break the province if the attacker wins by enough (or unconditionally for
+/// the stronghold, once eligible - conquest) -> resolve the ring's element -> claim the ring
+/// -> an unopposed loser loses 1 honor -> bow and return participants home (already done at
+/// declaration/defense time here, matching this engine's "commit = bow immediately"
+/// convention rather than a separate return-home step).
+///
+/// attackerPolicy/eventLog are optional (default null) - when attackerPolicy is omitted, the
+/// mid-conflict window is skipped entirely (its own ConflictResolverTests predate the window
+/// and don't supply one, so they keep exercising exactly what they did before, unchanged).
 ///
 /// Deliberately out of scope for v1 (none of it is needed to play a real, complete game
-/// with the generic-DSL card set): the covert keyword, ring-switching mid-declaration, the
-/// mid-conflict action-ability window (ConflictActionWindow's alternating-actions loop -
-/// nothing here has an in-conflict action to trigger), and duels (a separate,
-/// card-triggered subsystem, not part of the base conflict flow).
+/// with the generic-DSL card set): the covert keyword, ring-switching mid-declaration, and
+/// duels (a separate, card-triggered subsystem, not part of the base conflict flow).
 /// </summary>
 public static class ConflictResolver
 {
@@ -43,7 +48,7 @@ public static class ConflictResolver
             .Where(c => c.Type == CardType.Character && !c.Bowed && !game.IsRestrictedFrom(c, "declareAsDefender"))
             .ToList();
 
-    public static void Resolve(GameState game, Player attacker, ConflictDeclaration declaration, IBotPolicy defenderPolicy)
+    public static void Resolve(GameState game, Player attacker, ConflictDeclaration declaration, IBotPolicy defenderPolicy, IBotPolicy? attackerPolicy = null, EventLog? eventLog = null)
     {
         var defender = game.Opponent(attacker);
         var ring = game.Rings.First(r => r.Element == declaration.Ring);
@@ -73,7 +78,17 @@ public static class ConflictResolver
             conflict.Defenders.Add(card);
             card.Bowed = true;
         }
-        conflict.Unopposed = defenders.Count == 0;
+
+        if (attackerPolicy is not null)
+        {
+            var policies = new Dictionary<Player, IBotPolicy> { [attacker] = attackerPolicy, [defender] = defenderPolicy };
+            ActionWindowRunner.Run(game, defender, policies, eventLog);
+        }
+
+        // Recomputed after the mid-conflict window, not at declaration time - a participant
+        // sent home there (outwit, rout) can turn an opposed conflict unopposed, matching
+        // ringteki's own afterConflict() timing.
+        conflict.Unopposed = conflict.Defenders.Count == 0;
 
         conflict.AttackerSkill = SumSkill(game, conflict.Attackers, conflict.ConflictType!);
         conflict.DefenderSkill = SumSkill(game, conflict.Defenders, conflict.ConflictType!);

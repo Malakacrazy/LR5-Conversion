@@ -17,4 +17,6 @@ public sealed class AlwaysPassBotPolicy : IBotPolicy
     public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Array.Empty<Card>();
 
     public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => null;
+
+    public IBotScriptAction? ResolveEventScript(string cardId) => null;
 }

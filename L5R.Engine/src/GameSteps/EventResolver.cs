@@ -28,10 +28,14 @@ namespace L5R.Engine.GameSteps;
 /// FirstLegalActionBotPolicy's own "first legal option" philosophy). "select"/"maxStat"/
 /// ring-target shapes are out of scope for v1 - the event still gets discarded (it was still
 /// played), but its effect simply doesn't fire if it needs one of those richer shapes.
+///
+/// scriptOverride'd events (outwit, rout, ...) have no bridged Card.Actions entry at all -
+/// their whole effect lives in the script, not in JSON - so scriptedFallback (the caller's
+/// IBotPolicy.ResolveEventScript(eventCard.Id) result) is checked when Card.Actions is empty.
 /// </summary>
 public static class EventResolver
 {
-    public static void ResolveAndDiscard(GameState game, Card eventCard, Player player)
+    public static void ResolveAndDiscard(GameState game, Card eventCard, Player player, IBotScriptAction? scriptedFallback = null)
     {
         if (eventCard.Actions.FirstOrDefault() is { Definition: { } definition } action)
         {
@@ -52,6 +56,10 @@ public static class EventResolver
                     // event is still discarded below, its effect just doesn't fire.
                 }
             }
+        }
+        else if (scriptedFallback is not null && scriptedFallback.IsLegal(game, eventCard, player))
+        {
+            scriptedFallback.Invoke(game, eventCard, player);
         }
 
         ZoneMover.MoveTo(eventCard, player.Discard, "discard");

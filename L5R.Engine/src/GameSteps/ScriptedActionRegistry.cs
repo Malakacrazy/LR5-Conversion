@@ -17,7 +17,9 @@ public sealed class ScriptedActionRegistry
         ["lion-s-pride-brawler"] = new LionsPrideBrawlerBotAction(),
         ["solemn-scholar"] = new SolemnScholarBotAction(),
         ["borderlands-fortifications"] = new BorderlandsFortificationsBotAction(),
-        ["bayushi-shoju"] = new BayushiShojuBotAction()
+        ["bayushi-shoju"] = new BayushiShojuBotAction(),
+        ["outwit"] = new OutwitBotAction(),
+        ["rout"] = new RoutBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>

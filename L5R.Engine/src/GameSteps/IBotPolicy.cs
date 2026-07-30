@@ -34,4 +34,13 @@ public interface IBotPolicy
     /// policies, like AlwaysPassBotPolicy, that never consult a registry at all).
     /// </summary>
     (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player);
+
+    /// <summary>
+    /// Phase B: this specific card's adopted scripted action, if any - used by EventResolver
+    /// for a scriptOverride'd event (outwit, rout, ...), which has no bridged Card.Actions
+    /// entry to check instead (its whole effect lives in the script, not in JSON). Null if
+    /// not adopted (including for policies, like AlwaysPassBotPolicy, that never consult a
+    /// registry at all).
+    /// </summary>
+    IBotScriptAction? ResolveEventScript(string cardId);
 }

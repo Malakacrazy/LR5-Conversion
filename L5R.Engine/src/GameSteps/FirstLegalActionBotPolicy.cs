@@ -55,7 +55,11 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
         if (_scriptedActions is null)
             return null;
 
-        foreach (var card in game.AllCards().Where(c => c.Controller == player))
+        // Event-typed scripted actions (outwit, rout, ...) only ever fire as part of playing
+        // the card (EventResolver.ResolveAndDiscard, via ResolveEventScript) - never as a
+        // free-standing "activate this card sitting in hand/play" choice the way a
+        // character/holding's own repeatable scripted ability works.
+        foreach (var card in game.AllCards().Where(c => c.Controller == player && c.Type != CardType.Event))
         {
             var action = _scriptedActions.Resolve(card.Id);
             if (action is not null && action.IsLegal(game, card, player))
@@ -64,4 +68,6 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
 
         return null;
     }
+
+    public IBotScriptAction? ResolveEventScript(string cardId) => _scriptedActions?.Resolve(cardId);
 }

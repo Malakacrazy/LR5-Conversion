@@ -22,6 +22,7 @@ public sealed class FixedBidBotPolicy : IBotPolicy
     public ConflictDeclaration? DeclareConflict(GameState game, Player player) => null;
     public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Array.Empty<Card>();
     public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => null;
+    public IBotScriptAction? ResolveEventScript(string cardId) => null;
 }
 
 public class GameLoopTests

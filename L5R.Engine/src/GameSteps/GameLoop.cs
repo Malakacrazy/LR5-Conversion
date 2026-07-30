@@ -180,7 +180,7 @@ public sealed class GameLoop
                 consecutivePasses = 0;
                 LogConflictDeclared(current, declaration);
 
-                ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)]);
+                ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
                 LogConflictResolved(declaration);
 
                 _game.CheckWinCondition();
@@ -263,7 +263,7 @@ public sealed class GameLoop
 
                 if (card.Type == CardType.Event)
                 {
-                    EventResolver.ResolveAndDiscard(_game, card, current);
+                    EventResolver.ResolveAndDiscard(_game, card, current, _policies[current].ResolveEventScript(card.Id));
                     _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id });
                 }
             }
@@ -273,84 +273,11 @@ public sealed class GameLoop
     }
 
     /// <summary>
-    /// A generic action window (ringteki's "preConflict" ActionWindow): alternating priority,
-    /// either player may activate any currently-legal CardAction (plain JSON abilities.actions[])
-    /// or - once adopted, Phase B - a scripted action, play a card from hand, or pass; two
-    /// consecutive passes ends it. Checked in that order each turn - scripted, then plain
-    /// CardAction, then a hand play - a minor, arbitrary priority choice (a card is unlikely
-    /// to offer more than one at once in practice), not a real rule. Playing a card from hand
-    /// was a real, separate gap from the event-resolution one it was found alongside:
-    /// RunPlayWindow only ever ran for Dynasty's "province" location, so hand cards (every
-    /// conflict-deck character/holding/attachment/event) could never be played by a bot at
-    /// all - unlike Dynasty's dedicated province window, hand plays share this same window
-    /// with actions, matching how ringteki's own conflict-phase action windows work.
-    /// AbilityExecutor is constructed fresh here rather than shared/injected - it's stateless
-    /// (CostRegistry/GameActionRegistry are plain lookup dictionaries), same convention as
-    /// CardFactory building its own per BuildCard call.
-    ///
-    /// usedThisWindow guards against an infinite loop: several Phase B scripted actions
-    /// (e.g. fearsome-mystic) have no bow-self cost or other self-invalidating side effect,
-    /// so IsLegal/ChooseScriptedAction would keep saying "yes, legal" for the same card
-    /// forever, and consecutivePasses would never reach 2. Each physical Card can act at
-    /// most once per window (reference equality - two copies of the same printed card are
-    /// each their own entry). Known limitation: if a bot controls two eligible copies of the
-    /// same scripted-action card, only the first one ChooseScriptedAction returns is ever
-    /// tried, even after it's used up - a shortcoming of "always pick the first candidate"
-    /// policies, not of the dedup itself; not worth a stateful policy redesign for a trivial
-    /// bot and a deck-construction edge case no fixed harness deck currently hits.
+    /// The pre-conflict action window (ringteki's own "preConflict" ActionWindow placement),
+    /// starting with the current first player - see ActionWindowRunner for the actual shared
+    /// loop, also used mid-conflict by ConflictResolver.
     /// </summary>
-    private void RunActionWindow()
-    {
-        var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
-        var current = _game.ActivePlayer;
-        var consecutivePasses = 0;
-        var usedThisWindow = new HashSet<Card>();
-
-        while (consecutivePasses < 2)
-        {
-            var scripted = _policies[current].ChooseScriptedAction(_game, current);
-            if (scripted is { } chosen && usedThisWindow.Add(chosen.Source))
-            {
-                consecutivePasses = 0;
-                chosen.Action.Invoke(_game, chosen.Source, current);
-                _eventLog?.Record("scriptedActionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = chosen.Source.Id });
-            }
-            else
-            {
-                var action = _policies[current].ChooseAction(_game, current);
-                if (action is not null && usedThisWindow.Add(action.Card))
-                {
-                    consecutivePasses = 0;
-                    var context = new AbilityContext { Game = _game, Player = current, Source = action.Card };
-                    executor.Execute(action.Definition!, context);
-                    _eventLog?.Record("actionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = action.Card.Id, ["action"] = action.Title });
-                }
-                else
-                {
-                    var handCard = _policies[current].ChoosePlay(_game, current, "hand");
-                    if (handCard is not null)
-                    {
-                        consecutivePasses = 0;
-                        var context = new AbilityContext { Game = _game, Player = current, Source = handCard };
-                        new PlayCardGameActionHandler().Execute(context, null);
-                        _eventLog?.Record("cardPlayed", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = handCard.Id, ["from"] = "hand" });
-
-                        if (handCard.Type == CardType.Event)
-                        {
-                            EventResolver.ResolveAndDiscard(_game, handCard, current);
-                            _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = handCard.Id });
-                        }
-                    }
-                    else
-                    {
-                        consecutivePasses++;
-                    }
-                }
-            }
-
-            current = _game.Opponent(current);
-        }
-    }
+    private void RunActionWindow() => ActionWindowRunner.Run(_game, _game.ActivePlayer, _policies, _eventLog);
 
     private void LogPhaseChanged() =>
         _eventLog?.Record("phaseChanged", new Dictionary<string, string> { ["phase"] = _game.CurrentPhase.ToString(), ["round"] = _game.RoundNumber.ToString() });

@@ -17,6 +17,7 @@ public sealed class FixedDefendersBotPolicy : IBotPolicy
     public ConflictDeclaration? DeclareConflict(GameState game, Player player) => throw new NotSupportedException();
     public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => _defenders;
     public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => throw new NotSupportedException();
+    public IBotScriptAction? ResolveEventScript(string cardId) => throw new NotSupportedException();
 }
 
 public class ConflictResolverTests
@@ -158,5 +159,41 @@ public class ConflictResolverTests
         p2.Provinces.Add(new Card { Id = "broken-1", Type = CardType.Province, Controller = p2, Broken = true });
 
         Assert.That(ConflictResolver.AttackableProvinces(p2), Does.Not.Contain(p2.Stronghold));
+    }
+
+    [Test]
+    public void WithAnAttackerPolicySupplied_RunsAMidConflictActionWindow_LettingTheAttackerPlayOutwit()
+    {
+        // Proves the mid-conflict window itself, not just OutwitBotAction in isolation: the
+        // event is played from hand *during conflict resolution*, sending home the defender
+        // it outclasses, before skill is ever summed.
+        var p1 = new Player { Name = "Player1", Fate = 5 };
+        var p2 = new Player { Name = "Player2" };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+
+        var myCourtier = new Card { Id = "my-courtier", Type = CardType.Character, Controller = p1, Traits = new[] { "courtier" }, PrintedPoliticalSkill = 5 };
+        p1.PlayArea.Add(myCourtier);
+
+        var outwit = new Card { Id = "outwit", Type = CardType.Event, Controller = p1, PrintedCost = 0 };
+        p1.Hand.Add(outwit);
+
+        var weakDefender = new Card { Id = "weak-defender", Type = CardType.Character, Controller = p2, PrintedPoliticalSkill = 2 };
+        p2.PlayArea.Add(weakDefender);
+
+        var province = new Card { Id = "province", Type = CardType.Province, Controller = p2, PrintedProvinceStrength = 10 };
+        p2.Provinces.Add(province);
+
+        var registry = new ScriptedActionRegistry();
+        var attackerPolicy = new FirstLegalActionBotPolicy(registry);
+        var defenderPolicy = new FirstLegalActionBotPolicy(registry);
+
+        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
+
+        var conflict = game.ConflictRecord.Single();
+        Assert.That(conflict.Defenders, Does.Not.Contain(weakDefender), "outwit sent it home before skill was summed");
+        Assert.That(conflict.Unopposed, Is.True, "the only defender was sent home, recomputed after the window");
+        Assert.That(p1.Discard, Contains.Item(outwit));
     }
 }
