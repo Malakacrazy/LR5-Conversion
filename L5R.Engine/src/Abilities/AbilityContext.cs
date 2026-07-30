@@ -146,4 +146,16 @@ public sealed class AbilityContext
     /// in play). Caller-set, same convention as every other event-shaped fact.
     /// </summary>
     public string? ProvinceSlot { get; set; }
+
+    /// <summary>
+    /// young-rumormonger's own redirect guard: Honor/DishonorGameActionHandler check for a
+    /// legal redirect (a replacement effect, not a reaction - it changes which character
+    /// receives the honor/dishonor, not something that runs after) and, if found, recurse
+    /// into themselves against the new target. YoungRumormongerRedirectHonorOrDishonor sets
+    /// this true on its own context before calling back into the handler - without it, that
+    /// call would see the same redirect condition still hold for the new target's controller
+    /// and redirect right back to the original target (or ping-pong between exactly two
+    /// characters) forever. Starts false; nothing else sets it.
+    /// </summary>
+    public bool RedirectApplied { get; set; }
 }
