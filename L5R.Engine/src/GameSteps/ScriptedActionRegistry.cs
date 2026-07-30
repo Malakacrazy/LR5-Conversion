@@ -19,7 +19,8 @@ public sealed class ScriptedActionRegistry
         ["borderlands-fortifications"] = new BorderlandsFortificationsBotAction(),
         ["bayushi-shoju"] = new BayushiShojuBotAction(),
         ["outwit"] = new OutwitBotAction(),
-        ["rout"] = new RoutBotAction()
+        ["rout"] = new RoutBotAction(),
+        ["strength-in-numbers"] = new StrengthInNumbersBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
