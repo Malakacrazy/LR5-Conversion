@@ -13,9 +13,19 @@ namespace L5R.Engine.Cards.Scripts;
 /// doc comment). "initiateConflict" needs no legality pipeline to declare - it's just a
 /// fresh Conflict set as CurrentConflict, same trust-the-caller convention as every other
 /// conflict fact this session.
+///
+/// CanPlay is unconditionally false - same reasoning as ready-for-battle's own doc comment:
+/// without it, the generic hand-play window (offered during the very conflict this reacts
+/// to, via ActionWindowRunner's mid-conflict/post-resolution steps) would happily discard
+/// this with no effect before the conflict it reacts to has even finished resolving.
+/// BreakthroughOfferer (GameLoop.ConflictPhaseStep's own hook, the card's real trigger)
+/// bypasses PlayCardGameActionHandler entirely, so this restriction only blocks the generic
+/// path.
 /// </summary>
 public sealed class BreakthroughDeclareSecondConflict : ICardScript
 {
+    public bool CanPlay(AbilityContext context) => false;
+
     public void Execute(AbilityContext context)
     {
         var breakthrough = context.Source;

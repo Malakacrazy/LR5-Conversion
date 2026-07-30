@@ -260,4 +260,47 @@ public class GameLoopTests
         Assert.That(game.ActivePlayer, Is.EqualTo(p1));
         Assert.That(p1.Discard, Contains.Item(card));
     }
+
+    [Test]
+    public void ConflictPhaseStep_WithBreakthroughInHand_DeclaresABonusConflictAfterBreakingAProvince()
+    {
+        // ConflictOpportunitiesPerPlayer is 2, but p1 only ever gets ONE normal declaration
+        // here (p2 has nothing to attack with, so it never contests p1's turn) - proves
+        // breakthrough's own bonus declaration is what lets p1 break a *second* province in
+        // the same phase, wired through GameLoop.ConflictPhaseStep itself.
+        var p1 = new Player { Name = "Player1", Honor = 5, Fate = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        // Both skills set on each: the bonus conflict claims whichever ring is next
+        // unclaimed after the first conflict's own ring, which may be a different
+        // conflict type (military vs political) - not something this test controls.
+        var attacker1 = new Card { Id = "attacker-1", Type = CardType.Character, Controller = p1, PrintedMilitarySkill = 10, PrintedPoliticalSkill = 10 };
+        var attacker2 = new Card { Id = "attacker-2", Type = CardType.Character, Controller = p1, PrintedMilitarySkill = 10, PrintedPoliticalSkill = 10 };
+        p1.PlayArea.Add(attacker1);
+        p1.PlayArea.Add(attacker2);
+
+        // Built via CardFactory (not hand-built) so its scriptOverride's CanPlay override is
+        // actually wired - without it, the generic pre-conflict/mid-conflict hand-play
+        // windows would discard it with no effect before it ever gets a chance to fire.
+        var breakthrough = CardFactory.BuildCard(LoadJson("breakthrough"), p1);
+        breakthrough.Location = "hand";
+        p1.Hand.Add(breakthrough);
+
+        var province1 = new Card { Id = "province-1", Type = CardType.Province, Controller = p2, PrintedProvinceStrength = 1 };
+        var province2 = new Card { Id = "province-2", Type = CardType.Province, Controller = p2, PrintedProvinceStrength = 1 };
+        p2.Provinces.Add(province1);
+        p2.Provinces.Add(province2);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(province1.Broken, Is.True);
+        Assert.That(province2.Broken, Is.True, "only possible via breakthrough's own bonus conflict");
+        Assert.That(p1.Discard, Contains.Item(breakthrough));
+    }
 }

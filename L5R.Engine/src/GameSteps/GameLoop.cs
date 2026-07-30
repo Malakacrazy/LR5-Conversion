@@ -211,6 +211,21 @@ public sealed class GameLoop
                     LogGameWon();
                     yield break;
                 }
+
+                var bonusDeclaration = BreakthroughOfferer.TryDeclareBonusConflict(_game, current, _policies[current]);
+                if (bonusDeclaration is not null)
+                {
+                    LogConflictDeclared(current, bonusDeclaration);
+                    ConflictResolver.Resolve(_game, current, bonusDeclaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
+                    LogConflictResolved(bonusDeclaration);
+
+                    _game.CheckWinCondition();
+                    if (_game.Winner is not null)
+                    {
+                        LogGameWon();
+                        yield break;
+                    }
+                }
             }
 
             current = _game.Opponent(current);
