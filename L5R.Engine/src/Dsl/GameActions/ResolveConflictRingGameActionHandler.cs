@@ -10,7 +10,8 @@ namespace L5R.Engine.Dsl.GameActions;
 /// resolve" option is a legal choice, not a missing input - modeled the same way
 /// DeckSearchGameActionHandler treats "take nothing": a null ChosenChoice/Target means
 /// don't resolve, not an error. Reuses existing handlers for every element's own effect
-/// rather than re-implementing honor/fate/bow/draw/discard mutation.
+/// rather than re-implementing honor/fate/bow/draw/discard mutation. Also checks
+/// Conflict.RingEffectsCancelled (pilgrimage's own passive block) before resolving anything.
 /// </summary>
 public sealed class ResolveConflictRingGameActionHandler : IGameActionHandler
 {
@@ -21,6 +22,9 @@ public sealed class ResolveConflictRingGameActionHandler : IGameActionHandler
     {
         var conflict = context.Game.CurrentConflict
             ?? throw new InvalidOperationException("resolveConflictRing requires an active conflict.");
+
+        if (conflict.RingEffectsCancelled)
+            throw new InvalidOperationException("resolveConflictRing cannot resolve - ring effects have been cancelled for this conflict (see pilgrimage).");
 
         var element = conflict.Elements.FirstOrDefault()
             ?? throw new InvalidOperationException("resolveConflictRing requires the conflict to have a declared ring element.");

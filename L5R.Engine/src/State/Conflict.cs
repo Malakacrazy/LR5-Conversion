@@ -43,4 +43,16 @@ public sealed class Conflict
 
     /// <summary>event.conflict.conflictProvince (secret-cache's own "declared at this province" check) - which province card this conflict was declared against. No conflict-declaration pipeline picks a province automatically (matches this engine's general lack of one), so it's a caller-set fact, same convention as every other Conflict field above.</summary>
     public Card? DeclaredProvince { get; set; }
+
+    /// <summary>
+    /// pilgrimage's own passive block on ring-effect resolution at its province - ringteki
+    /// registers this as a raw event-listener cancel on any onResolveConflictRing/
+    /// onResolveRingElement event for this conflict, not a targeted card restriction (no
+    /// "target card" makes sense for "the ring's own effect can't resolve"), so it doesn't
+    /// fit CardRestriction's shape. Set by PilgrimageCancelRingEffectsAtThisProvince (the
+    /// caller invokes it once, exactly like every other passive/reactive script this
+    /// session, to represent "pilgrimage successfully suppressed this"), checked by
+    /// ResolveConflictRingGameActionHandler before resolving anything.
+    /// </summary>
+    public bool RingEffectsCancelled { get; set; }
 }
