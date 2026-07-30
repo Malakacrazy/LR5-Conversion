@@ -18,9 +18,18 @@ namespace L5R.Engine.GameSteps;
 /// declaration/defense time here, matching this engine's "commit = bow immediately"
 /// convention rather than a separate return-home step).
 ///
-/// attackerPolicy/eventLog are optional (default null) - when attackerPolicy is omitted, the
-/// mid-conflict window is skipped entirely (its own ConflictResolverTests predate the window
-/// and don't supply one, so they keep exercising exactly what they did before, unchanged).
+/// attackerPolicy/eventLog are optional (default null) - when attackerPolicy is omitted, both
+/// the mid-conflict and post-resolution windows are skipped entirely (ConflictResolverTests
+/// predate the windows and don't supply a policy, so they keep exercising exactly what they
+/// did before, unchanged).
+///
+/// A second action window runs after Winner/Loser/SkillDifference/ring-claim are all settled
+/// but before EndConflict() clears CurrentConflict - this is what makes "conflict-outcome-
+/// gated" reactions (akodo-toturi, kakita-asami, honored-blade, ...) safe to bot-drive:
+/// their precondition (Conflict.Winner, ring.ClaimedBy, a skill comparison) is finally a
+/// stable, currently-queryable fact once this window runs, whereas it was never true during
+/// the earlier mid-conflict window. Same "defender first" convention as the mid-conflict
+/// window, for consistency - not a modeled real-game priority rule for this specific moment.
 ///
 /// Deliberately out of scope for v1 (none of it is needed to play a real, complete game
 /// with the generic-DSL card set): the covert keyword, ring-switching mid-declaration, and
@@ -79,11 +88,12 @@ public static class ConflictResolver
             card.Bowed = true;
         }
 
-        if (attackerPolicy is not null)
-        {
-            var policies = new Dictionary<Player, IBotPolicy> { [attacker] = attackerPolicy, [defender] = defenderPolicy };
+        var policies = attackerPolicy is not null
+            ? new Dictionary<Player, IBotPolicy> { [attacker] = attackerPolicy, [defender] = defenderPolicy }
+            : null;
+
+        if (policies is not null)
             ActionWindowRunner.Run(game, defender, policies, eventLog);
-        }
 
         // Recomputed after the mid-conflict window, not at declaration time - a participant
         // sent home there (outwit, rout) can turn an opposed conflict unopposed, matching
@@ -122,8 +132,12 @@ public static class ConflictResolver
             {
                 ring.Claimed = true;
                 ring.ClaimedBy = attacker;
+                conflict.RingClaimedThisConflict = true;
             }
         }
+
+        if (policies is not null)
+            ActionWindowRunner.Run(game, defender, policies, eventLog);
 
         ring.Contested = false;
         game.ConflictRecord.Add(conflict);

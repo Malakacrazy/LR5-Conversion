@@ -58,4 +58,13 @@ public sealed class Conflict
 
     /// <summary>event.conflict.conflictUnopposed (display-of-power's own trigger condition) - true when the defending player declared no defenders. No conflict-declaration pipeline computes participation automatically (matches this engine's general lack of one), so it's a caller-set fact, same convention as every other Conflict field above.</summary>
     public bool Unopposed { get; set; }
+
+    /// <summary>
+    /// True only when THIS conflict is what newly set ring.Claimed from false to true
+    /// (akodo-toturi/doji-hotaru's "after claiming a ring" trigger). ring.ClaimedBy itself
+    /// isn't enough to test this - it's a Ring field that persists across conflicts once set,
+    /// so it would still read as "claimed by me" in a later, unrelated conflict on the same
+    /// ring even though nothing was claimed this time. Set by ConflictResolver.Resolve.
+    /// </summary>
+    public bool RingClaimedThisConflict { get; set; }
 }

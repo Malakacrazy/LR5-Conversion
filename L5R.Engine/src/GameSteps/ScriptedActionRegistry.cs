@@ -43,7 +43,17 @@ public sealed class ScriptedActionRegistry
         ["niten-master"] = new NitenMasterBotAction(),
         ["hida-kisada"] = new HidaKisadaBotAction(),
         ["tattooed-wanderer"] = new TattooedWandererBotAction(),
-        ["yogo-hiroue"] = new YogoHiroueBotAction()
+        ["yogo-hiroue"] = new YogoHiroueBotAction(),
+        ["akodo-toturi"] = new AkodoToturiBotAction(),
+        ["doji-hotaru"] = new DojiHotaruBotAction(),
+        ["asako-diplomat"] = new AsakoDiplomatBotAction(),
+        ["blackmail-artist"] = new BlackmailArtistBotAction(),
+        ["deathseeker"] = new DeathseekerBotAction(),
+        ["hida-tomonatsu"] = new HidaTomonatsuBotAction(),
+        ["honored-blade"] = new HonoredBladeBotAction(),
+        ["ikoma-eiji"] = new IkomaEijiBotAction(),
+        ["vengeful-oathkeeper"] = new VengefulOathkeeperBotAction(),
+        ["kakita-asami"] = new KakitaAsamiBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>

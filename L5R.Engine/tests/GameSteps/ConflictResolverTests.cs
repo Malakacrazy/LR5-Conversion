@@ -196,4 +196,34 @@ public class ConflictResolverTests
         Assert.That(conflict.Unopposed, Is.True, "the only defender was sent home, recomputed after the window");
         Assert.That(p1.Discard, Contains.Item(outwit));
     }
+
+    [Test]
+    public void WithAnAttackerPolicySupplied_RunsAPostResolutionActionWindow_LettingBlackmailArtistTakeHonor()
+    {
+        // Proves the post-resolution window itself (not just BlackmailArtistBotAction in
+        // isolation): Conflict.Winner/ConflictType are only settled *after* the mid-conflict
+        // window runs, so this can only fire in the second, later window.
+        var p1 = new Player { Name = "Player1", Honor = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+
+        var blackmailArtist = new Card { Id = "blackmail-artist", Type = CardType.Character, Controller = p1, PrintedPoliticalSkill = 3 };
+        p1.PlayArea.Add(blackmailArtist);
+
+        var province = new Card { Id = "province", Type = CardType.Province, Controller = p2, PrintedProvinceStrength = 10 };
+        p2.Provinces.Add(province);
+
+        var registry = new ScriptedActionRegistry();
+        var attackerPolicy = new FirstLegalActionBotPolicy(registry);
+        var defenderPolicy = new FirstLegalActionBotPolicy(registry);
+
+        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("earth", province, new[] { blackmailArtist }), defenderPolicy, attackerPolicy);
+
+        var conflict = game.ConflictRecord.Single();
+        Assert.That(conflict.Winner, Is.EqualTo(p1));
+        Assert.That(p1.Honor, Is.EqualTo(6));
+        Assert.That(p2.Honor, Is.EqualTo(3), "unopposed loses 1 honor, then blackmail-artist takes 1 more");
+    }
 }
