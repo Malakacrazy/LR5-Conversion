@@ -25,4 +25,13 @@ public interface IBotPolicy
 
     /// <summary>Which of the defender's eligible characters (see ConflictResolver.EligibleDefenders) commit to defend - may be empty (an unopposed conflict).</summary>
     IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender);
+
+    /// <summary>
+    /// Phase B: a scripted (scriptOverride) action this bot wants to use this decision point,
+    /// if any card it controls has one adopted into a ScriptedActionRegistry and currently
+    /// legal - a parallel surface to ChooseAction for cards with bespoke script behavior
+    /// instead of a plain abilities.actions[] entry. Null if none apply (including for
+    /// policies, like AlwaysPassBotPolicy, that never consult a registry at all).
+    /// </summary>
+    (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player);
 }

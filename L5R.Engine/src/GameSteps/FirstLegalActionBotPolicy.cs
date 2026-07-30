@@ -9,9 +9,16 @@ namespace L5R.Engine.GameSteps;
 /// point - the first legal CardAction, the first unclaimed/uncontested ring paired with the
 /// first attackable province and a single attacker, and the first eligible defender (if
 /// any). Bids 1 (the honor dial's minimum meaningful value) every Draw phase.
+///
+/// scriptedActions is optional (default null, meaning "no Phase B scripted actions
+/// available") so every existing caller that predates Phase B keeps working unchanged.
 /// </summary>
 public sealed class FirstLegalActionBotPolicy : IBotPolicy
 {
+    private readonly ScriptedActionRegistry? _scriptedActions;
+
+    public FirstLegalActionBotPolicy(ScriptedActionRegistry? scriptedActions = null) => _scriptedActions = scriptedActions;
+
     public CardAction? ChooseAction(GameState game, Player player) =>
         LegalActions.GetLegalActions(game, player).FirstOrDefault();
 
@@ -41,5 +48,20 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
     {
         var eligible = ConflictResolver.EligibleDefenders(game, defender);
         return eligible.Count > 0 ? new[] { eligible[0] } : Array.Empty<Card>();
+    }
+
+    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player)
+    {
+        if (_scriptedActions is null)
+            return null;
+
+        foreach (var card in game.AllCards().Where(c => c.Controller == player))
+        {
+            var action = _scriptedActions.Resolve(card.Id);
+            if (action is not null && action.IsLegal(game, card, player))
+                return (card, action);
+        }
+
+        return null;
     }
 }

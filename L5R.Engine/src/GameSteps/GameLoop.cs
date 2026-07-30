@@ -268,10 +268,13 @@ public sealed class GameLoop
 
     /// <summary>
     /// A generic action window (ringteki's "preConflict" ActionWindow): alternating priority,
-    /// either player may activate any currently-legal CardAction or pass; two consecutive
-    /// passes ends it. AbilityExecutor is constructed fresh here rather than shared/injected -
-    /// it's stateless (CostRegistry/GameActionRegistry are plain lookup dictionaries), same
-    /// convention as CardFactory building its own per BuildCard call.
+    /// either player may activate any currently-legal CardAction (plain JSON abilities.actions[])
+    /// or - once adopted, Phase B - a scripted action, or pass; two consecutive passes ends it.
+    /// Scripted actions are checked first each turn, plain CardActions second - a minor,
+    /// arbitrary ordering choice (a card is unlikely to offer both at once in practice), not a
+    /// real priority rule. AbilityExecutor is constructed fresh here rather than shared/
+    /// injected - it's stateless (CostRegistry/GameActionRegistry are plain lookup
+    /// dictionaries), same convention as CardFactory building its own per BuildCard call.
     /// </summary>
     private void RunActionWindow()
     {
@@ -281,17 +284,27 @@ public sealed class GameLoop
 
         while (consecutivePasses < 2)
         {
-            var action = _policies[current].ChooseAction(_game, current);
-            if (action is null)
+            var scripted = _policies[current].ChooseScriptedAction(_game, current);
+            if (scripted is { } chosen)
             {
-                consecutivePasses++;
+                consecutivePasses = 0;
+                chosen.Action.Invoke(_game, chosen.Source, current);
+                _eventLog?.Record("scriptedActionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = chosen.Source.Id });
             }
             else
             {
-                consecutivePasses = 0;
-                var context = new AbilityContext { Game = _game, Player = current, Source = action.Card };
-                executor.Execute(action.Definition!, context);
-                _eventLog?.Record("actionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = action.Card.Id, ["action"] = action.Title });
+                var action = _policies[current].ChooseAction(_game, current);
+                if (action is null)
+                {
+                    consecutivePasses++;
+                }
+                else
+                {
+                    consecutivePasses = 0;
+                    var context = new AbilityContext { Game = _game, Player = current, Source = action.Card };
+                    executor.Execute(action.Definition!, context);
+                    _eventLog?.Record("actionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = action.Card.Id, ["action"] = action.Title });
+                }
             }
 
             current = _game.Opponent(current);

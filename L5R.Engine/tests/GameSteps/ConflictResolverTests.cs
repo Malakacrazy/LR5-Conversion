@@ -16,6 +16,7 @@ public sealed class FixedDefendersBotPolicy : IBotPolicy
     public int ChooseHonorBid(GameState game, Player player) => throw new NotSupportedException();
     public ConflictDeclaration? DeclareConflict(GameState game, Player player) => throw new NotSupportedException();
     public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => _defenders;
+    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => throw new NotSupportedException();
 }
 
 public class ConflictResolverTests
