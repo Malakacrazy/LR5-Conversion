@@ -29,7 +29,9 @@ public sealed class ScriptedActionRegistry
         ["artisan-academy"] = new ArtisanAcademyBotAction(),
         ["i-am-ready"] = new IAmReadyBotAction(),
         ["giver-of-gifts"] = new GiverOfGiftsBotAction(),
-        ["rebuild"] = new RebuildBotAction()
+        ["rebuild"] = new RebuildBotAction(),
+        ["niten-adept"] = new NitenAdeptBotAction(),
+        ["shrewd-yasuki"] = new ShrewdYasukiBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
