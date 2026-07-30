@@ -96,6 +96,17 @@ public sealed class Card
     public IReadOnlyList<Dsl.PersistentEffectDefinition> PersistentEffects { get; init; } = Array.Empty<Dsl.PersistentEffectDefinition>();
 
     /// <summary>
+    /// Parsed abilities.triggeredAbilities[] (see TriggeredAbilityDefinition's own doc
+    /// comment). Not bridged into Card.Actions like plain actions are (CardFactory) - a
+    /// reaction/interrupt can't be offered as something a bot "just decides" to do the way an
+    /// action can, since it's only legal in response to a specific event, and no event bus
+    /// exists yet to know one happened. Parsed and stored here, dormant, for whatever future
+    /// event-window step (conflict declaration, a character entering play, etc.) checks it
+    /// against the event it's asserting occurred, same as PersistentEffects/WhileAttachedEffects.
+    /// </summary>
+    public IReadOnlyList<Dsl.TriggeredAbilityDefinition> TriggeredAbilities { get; init; } = Array.Empty<Dsl.TriggeredAbilityDefinition>();
+
+    /// <summary>
     /// The character this attachment is attached to, null otherwise (and always null for
     /// non-attachment cards). No "attach" gameAction exists yet - set directly by the
     /// caller, like every other zone/relationship field. Drives WhileAttachedDefinition

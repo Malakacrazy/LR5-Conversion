@@ -1,3 +1,4 @@
+using L5R.Engine.Dsl;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Abilities;
@@ -11,6 +12,15 @@ public sealed class CardAction
 {
     public required string Title { get; init; }
     public required Card Card { get; init; }
+
+    /// <summary>
+    /// The parsed abilities.actions[] entry this CardAction bridges from JSON
+    /// (CardFactory), null for hand-built CardActions like LegalActionsTests' own. Once
+    /// MeetsRequirements passes, the caller resolves the action by calling
+    /// AbilityExecutor.Execute(Definition, context, ...) directly - this field exists purely
+    /// so the game loop doesn't have to re-parse or re-locate the JSON it came from.
+    /// </summary>
+    public ActionDefinition? Definition { get; init; }
 
     /// <summary>ringteki CardAction.buildLocation; defaults to 'play area'.</summary>
     public IReadOnlyList<string> ValidLocations { get; init; } = new[] { "play area" };
