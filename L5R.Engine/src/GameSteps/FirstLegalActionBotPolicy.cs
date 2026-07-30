@@ -66,6 +66,17 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
                 return (card, action);
         }
 
+        // GameState.AllCards() deliberately excludes Player.Stronghold (Hand+PlayArea only) -
+        // mountain-s-anvil-castle is the one ported card with an activatable scripted ability
+        // on the stronghold itself, so it needs one extra, explicit check here rather than
+        // widening AllCards() and risking exposing strongholds to unrelated board-wide scans.
+        if (player.Stronghold is { } stronghold)
+        {
+            var strongholdAction = _scriptedActions.Resolve(stronghold.Id);
+            if (strongholdAction is not null && strongholdAction.IsLegal(game, stronghold, player))
+                return (stronghold, strongholdAction);
+        }
+
         return null;
     }
 

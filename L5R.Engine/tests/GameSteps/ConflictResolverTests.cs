@@ -198,6 +198,39 @@ public class ConflictResolverTests
     }
 
     [Test]
+    public void WithAnAttackerPolicySupplied_DiscoversAndActivatesAStrongholdsOwnScriptedAction()
+    {
+        // Proves FirstLegalActionBotPolicy.ChooseScriptedAction's own stronghold check, not
+        // just MountainsAnvilCastleBotAction in isolation - GameState.AllCards() never
+        // includes Player.Stronghold, so without that explicit check this would never be
+        // discovered at all.
+        var p1 = new Player { Name = "Player1", Fate = 5 };
+        var p2 = new Player { Name = "Player2" };
+        p1.Stronghold = new Card { Id = "mountain-s-anvil-castle", Type = CardType.Stronghold, Controller = p1 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+
+        var myCourtier = new Card { Id = "my-courtier", Type = CardType.Character, Controller = p1, PrintedMilitarySkill = 2 };
+        var myAttachment = new Card { Id = "my-attachment", Type = CardType.Attachment, Controller = p1, AttachedTo = myCourtier };
+        p1.PlayArea.Add(myCourtier);
+        p1.PlayArea.Add(myAttachment);
+
+        var province = new Card { Id = "province", Type = CardType.Province, Controller = p2, PrintedProvinceStrength = 10 };
+        p2.Provinces.Add(province);
+
+        var registry = new ScriptedActionRegistry();
+        var attackerPolicy = new FirstLegalActionBotPolicy(registry);
+        var defenderPolicy = new FirstLegalActionBotPolicy(registry);
+
+        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
+
+        // The skill bonus itself is an untilEndOfConflict LastingEffect, already wiped by
+        // Resolve's own EndConflict() cleanup by the time this test can observe it - bowing
+        // the stronghold is the one effect that persists past the conflict's own end.
+        Assert.That(p1.Stronghold!.Bowed, Is.True);
+    }
+
+    [Test]
     public void WithAnAttackerPolicySupplied_RunsAPostResolutionActionWindow_LettingBlackmailArtistTakeHonor()
     {
         // Proves the post-resolution window itself (not just BlackmailArtistBotAction in

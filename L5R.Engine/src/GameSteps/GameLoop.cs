@@ -247,8 +247,13 @@ public sealed class GameLoop
             ring.Fate++;
 
         foreach (var player in Players())
+        {
             foreach (var card in player.PlayArea)
                 card.Bowed = false;
+
+            if (player.Stronghold is not null)
+                player.Stronghold.Bowed = false;
+        }
 
         foreach (var ring in _game.Rings.Where(r => r.Claimed))
         {

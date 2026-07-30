@@ -66,7 +66,8 @@ public sealed class ScriptedActionRegistry
         ["the-perfect-gift"] = new ThePerfectGiftBotAction(),
         ["calling-in-favors"] = new CallingInFavorsBotAction(),
         ["display-of-power"] = new DisplayOfPowerBotAction(),
-        ["court-games"] = new CourtGamesBotAction()
+        ["court-games"] = new CourtGamesBotAction(),
+        ["mountain-s-anvil-castle"] = new MountainsAnvilCastleBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>

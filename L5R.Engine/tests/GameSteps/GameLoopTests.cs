@@ -215,4 +215,24 @@ public class GameLoopTests
         Assert.That(refill.ProvinceSlot, Is.EqualTo("0"), "refilled the same slot gunso vacated");
         Assert.That(p1.Deck, Does.Not.Contain(refill));
     }
+
+    [Test]
+    public void FatePhaseStep_ReadiesBowedStrongholds()
+    {
+        // Nothing ever bowed a stronghold before mountain-s-anvil-castle's own activatable
+        // ability - proves the Fate phase now readies them the same way it already readies
+        // every PlayArea card, so the ability isn't a permanent one-per-game use.
+        var p1 = new Player { Name = "Player1", Honor = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5, Bowed = true };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new AlwaysPassBotPolicy(), new AlwaysPassBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.Stronghold!.Bowed, Is.False);
+    }
 }
