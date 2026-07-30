@@ -1,11 +1,26 @@
 using System.Linq;
 using System.Text.Json;
+using L5R.Engine.Abilities;
 using L5R.Engine.GameSteps;
 using L5R.Engine.Randomness;
 using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Tests.GameSteps;
+
+/// <summary>Only ChooseHonorBid matters - passes on everything else so the Draw-phase bid is the only thing that moves state.</summary>
+public sealed class FixedBidBotPolicy : IBotPolicy
+{
+    private readonly int _bid;
+
+    public FixedBidBotPolicy(int bid) => _bid = bid;
+
+    public CardAction? ChooseAction(GameState game, Player player) => null;
+    public Card? ChoosePlay(GameState game, Player player, string location) => null;
+    public int ChooseHonorBid(GameState game, Player player) => _bid;
+    public ConflictDeclaration? DeclareConflict(GameState game, Player player) => null;
+    public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Array.Empty<Card>();
+}
 
 public class GameLoopTests
 {
@@ -72,5 +87,23 @@ public class GameLoopTests
         // timing-independent signal that the loop actually executed real rounds rather than
         // just proving it didn't throw.
         Assert.That(game.Player1.Deck.Count < 6 || game.Player2.Deck.Count < 6, Is.True, "at least one full Draw phase should have run");
+    }
+
+    [Test]
+    public void HonorThresholdReachedDuringTheDrawPhaseBid_EndsTheGameImmediately()
+    {
+        var game = NewGame();
+        var deck = BuildDeckList();
+        GameSetup.SetUpGame(game, deck, deck, new SeededRandom(1));
+        game.Player1.Honor = 20;
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FixedBidBotPolicy(5), new FixedBidBotPolicy(0), roundCap: 50);
+
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(game.Winner, Is.EqualTo(game.Player1));
+        Assert.That(game.RoundNumber, Is.EqualTo(1), "the win is detected mid-round-1, well before the round cap");
     }
 }

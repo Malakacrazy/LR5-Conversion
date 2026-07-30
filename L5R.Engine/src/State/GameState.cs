@@ -30,6 +30,34 @@ public sealed class GameState
     /// </summary>
     public Player? Winner { get; set; }
 
+    /// <summary>
+    /// ringteki game.js checkWinCondition(): honor &gt;= 25 wins; the opponent's honor &lt;= 0
+    /// also wins (their dishonor). Real ringteki calls this after essentially every state-
+    /// changing action (checkGameState()); this engine has no such automatic hook, so
+    /// GameLoop calls it explicitly at the points honor can move (the Draw phase bid
+    /// transfer, after each resolved conflict). Checked in first-player order so a
+    /// simultaneous double-threshold resolves the same way ringteki's own iteration order
+    /// would. No-ops once Winner is already set (conquest, or an earlier call this same
+    /// state change) - same idempotent convention as Winner's own doc comment.
+    /// </summary>
+    public void CheckWinCondition()
+    {
+        if (Winner is not null)
+            return;
+
+        var first = ActivePlayer;
+        var other = Opponent(first);
+
+        foreach (var player in new[] { first, other })
+        {
+            if (player.Honor >= 25 || Opponent(player).Honor <= 0)
+            {
+                Winner = player;
+                return;
+            }
+        }
+    }
+
     /// <summary>All cards controlled by either player, regardless of zone.</summary>
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
 

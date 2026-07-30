@@ -117,6 +117,9 @@ public sealed class GameLoop
             other.Honor += diff;
         }
 
+        _game.CheckWinCondition();
+        if (_game.Winner is not null) yield break;
+
         foreach (var player in Players())
         {
             var context = new AbilityContext { Game = _game, Player = player, Source = player.Stronghold! };
@@ -153,6 +156,7 @@ public sealed class GameLoop
                 _game.ConflictDeclarationsThisPhase.Add((current, false));
                 consecutivePasses = 0;
                 ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)]);
+                _game.CheckWinCondition();
                 if (_game.Winner is not null) yield break;
             }
 

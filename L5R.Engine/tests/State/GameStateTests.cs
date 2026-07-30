@@ -12,6 +12,64 @@ public class GameStateTests
     }
 
     [Test]
+    public void CheckWinCondition_HonorAtOrAbove25_Wins()
+    {
+        var game = NewGame(Phase.Fate);
+        game.Player1.Honor = 25;
+
+        game.CheckWinCondition();
+
+        Assert.That(game.Winner, Is.EqualTo(game.Player1));
+    }
+
+    [Test]
+    public void CheckWinCondition_OpponentHonorAtOrBelow0_TheOtherPlayerWinsByDishonor()
+    {
+        var game = NewGame(Phase.Fate);
+        game.Player2.Honor = 0;
+
+        game.CheckWinCondition();
+
+        Assert.That(game.Winner, Is.EqualTo(game.Player1));
+    }
+
+    [Test]
+    public void CheckWinCondition_NeitherThresholdMet_NoWinner()
+    {
+        var game = NewGame(Phase.Fate);
+        game.Player1.Honor = 10;
+        game.Player2.Honor = 10;
+
+        game.CheckWinCondition();
+
+        Assert.That(game.Winner, Is.Null);
+    }
+
+    [Test]
+    public void CheckWinCondition_SimultaneousThresholds_FirstPlayerTakesPrecedence()
+    {
+        var game = NewGame(Phase.Fate);
+        game.Player1.Honor = 25;
+        game.Player2.Honor = 25;
+
+        game.CheckWinCondition();
+
+        Assert.That(game.Winner, Is.EqualTo(game.ActivePlayer), "ActivePlayer (the first player) is checked first");
+    }
+
+    [Test]
+    public void CheckWinCondition_DoesNotOverwriteAnAlreadyRecordedWinner()
+    {
+        var game = NewGame(Phase.Fate);
+        game.Winner = game.Player2;
+        game.Player1.Honor = 25;
+
+        game.CheckWinCondition();
+
+        Assert.That(game.Winner, Is.EqualTo(game.Player2), "idempotent - the first recorded winner sticks");
+    }
+
+    [Test]
     public void AdvancePhase_CyclesThroughTheRoundInOrder()
     {
         var game = NewGame(Phase.Dynasty);
