@@ -155,6 +155,16 @@ public sealed class GameState
     /// <summary>Active takeControl effects - see ControlChange's own doc comment for why this is a direct-mutation-plus-explicit-revert mechanism rather than an on-demand sum like LastingEffects/Restrictions.</summary>
     public List<ControlChange> ControlChanges { get; } = new();
 
+    /// <summary>
+    /// kitsu-spiritcaller's own "then" follow-up (a cardLastingEffect wrapping a
+    /// delayedEffect keyed on onConflictFinished, returnToDeck bottom): cards to send to the
+    /// bottom of their controller's deck once the current conflict ends. Deliberately a
+    /// plain list consulted by EndConflict() rather than a general delayed-effect/event
+    /// system - no other ported card needs an arbitrary deferred action, just this one
+    /// specific zone move.
+    /// </summary>
+    public List<Card> EndOfConflictReturns { get; } = new();
+
     /// <summary>ringteki effects.js takeControl: moves the card to newController's play area and records the original controller so EndConflict()/AdvancePhase() can revert it.</summary>
     public void TakeControl(Card card, Player newController, string duration)
     {
@@ -594,5 +604,9 @@ public sealed class GameState
         PlayerRestrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         CostReductions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         RevertControlChanges(c => c.Duration == "untilEndOfConflict");
+
+        foreach (var card in EndOfConflictReturns)
+            ZoneMover.MoveTo(card, card.Controller.Deck, "deck");
+        EndOfConflictReturns.Clear();
     }
 }
