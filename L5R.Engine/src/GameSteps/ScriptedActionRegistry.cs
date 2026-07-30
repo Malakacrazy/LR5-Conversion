@@ -20,7 +20,8 @@ public sealed class ScriptedActionRegistry
         ["bayushi-shoju"] = new BayushiShojuBotAction(),
         ["outwit"] = new OutwitBotAction(),
         ["rout"] = new RoutBotAction(),
-        ["strength-in-numbers"] = new StrengthInNumbersBotAction()
+        ["strength-in-numbers"] = new StrengthInNumbersBotAction(),
+        ["jade-tetsubo"] = new JadeTetsuboBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
