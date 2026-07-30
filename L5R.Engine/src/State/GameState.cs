@@ -165,6 +165,17 @@ public sealed class GameState
     /// </summary>
     public List<Card> EndOfConflictReturns { get; } = new();
 
+    /// <summary>
+    /// togashi-yokuni's own "gainAbility ... until end of phase": (card, ability) pairs
+    /// representing an action a card has temporarily gained by copying another card's
+    /// printed ability. Always untilEndOfPhase (the only duration any ported card needs),
+    /// so no separate Duration field - cleared unconditionally by AdvancePhase(), same as
+    /// LastingEffects/Restrictions/etc. Using the copied ability is exactly like using any
+    /// other ActionDefinition (AbilityExecutor.Execute with the gaining card as source) -
+    /// this list only tracks that the grant is currently active.
+    /// </summary>
+    public List<(Card Target, Dsl.ActionDefinition Ability)> GainedAbilities { get; } = new();
+
     /// <summary>ringteki effects.js takeControl: moves the card to newController's play area and records the original controller so EndConflict()/AdvancePhase() can revert it.</summary>
     public void TakeControl(Card card, Player newController, string duration)
     {
@@ -586,6 +597,7 @@ public sealed class GameState
         PlayerRestrictions.Clear();
         CostReductions.Clear();
         RevertControlChanges(_ => true);
+        GainedAbilities.Clear();
     }
 
     /// <summary>

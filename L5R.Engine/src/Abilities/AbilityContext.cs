@@ -128,4 +128,14 @@ public sealed class AbilityContext
     /// convention as every other target field.
     /// </summary>
     public Card? SecondTarget { get; set; }
+
+    /// <summary>
+    /// togashi-yokuni's own "target.mode: 'ability'" - which specific printed ability on the
+    /// chosen character is being copied. This engine has no generic "enumerate a card's
+    /// printed abilities" registry to pick from (every other script/test loads a card's own
+    /// ActionDefinition directly from its JSON rather than through a live per-card action
+    /// list), so the caller supplies the chosen ActionDefinition directly, same trust-the-
+    /// caller convention as every other target/choice field.
+    /// </summary>
+    public Dsl.ActionDefinition? ChosenAbility { get; set; }
 }
