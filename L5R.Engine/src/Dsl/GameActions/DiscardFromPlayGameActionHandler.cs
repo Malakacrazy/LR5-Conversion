@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
 
 namespace L5R.Engine.Dsl.GameActions;
 
@@ -15,7 +16,9 @@ namespace L5R.Engine.Dsl.GameActions;
 /// separate Owner distinct from Controller - see Card.cs). Discarding an attachment
 /// *directly* (context.Target is the attachment itself) never hits this cascade, matching
 /// ringteki's own isContingent gate: ancestral only saves a card from leaving alongside its
-/// parent, not from being discarded on its own.
+/// parent, not from being discarded on its own. Also fires any eligible vengeful-berserker
+/// reactions the discarded character's own controller controls - see
+/// VengefulBerserkerFirer's own doc comment.
 /// </summary>
 public sealed class DiscardFromPlayGameActionHandler : IGameActionHandler
 {
@@ -38,5 +41,7 @@ public sealed class DiscardFromPlayGameActionHandler : IGameActionHandler
             else
                 ZoneMover.MoveTo(attachment, attachment.Controller.Discard, "discard");
         }
+
+        VengefulBerserkerFirer.FireEligibleReactions(context.Game, card);
     }
 }
