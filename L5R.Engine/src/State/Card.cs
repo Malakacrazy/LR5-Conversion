@@ -65,13 +65,15 @@ public sealed class Card
     public bool Broken { get; set; }
 
     /// <summary>
-    /// Which of a player's province slots this card currently sits in (e.g. "province-1"),
-    /// null if it isn't in one. Player.Provinces stays a flat list (no ported card's
-    /// executable slice needs positional identity beyond this) - borderlands-fortifications/
-    /// rebuild/akodo-gunso are the first three that need to know/preserve *which* slot a
-    /// card occupies across a swap or refill, so it's tracked here directly rather than by
-    /// reshaping Provinces into an indexed/fixed-size structure. Set directly by the caller,
-    /// same convention as every other positional/identity field.
+    /// Which of a player's province slots this card currently sits in ("0".."3"), null if it
+    /// isn't in one. Player.Provinces stays a flat list (no ported card's executable slice
+    /// needs positional identity beyond this) - borderlands-fortifications/rebuild/akodo-gunso
+    /// are the three that need to know/preserve *which* slot a card occupies across a swap or
+    /// refill, so it's tracked here directly rather than by reshaping Provinces into an
+    /// indexed/fixed-size structure. Assigned by GameSetup.DealProvinces (initial deal) and
+    /// GameLoop.DynastyPhaseStep (refilling a broken province's vacated slot); cleared when a
+    /// character is played from a province (GameLoop.RunPlayWindow) since it's only meaningful
+    /// while a card actually occupies a province.
     /// </summary>
     public string? ProvinceSlot { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();

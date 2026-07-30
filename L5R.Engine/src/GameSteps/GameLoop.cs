@@ -98,6 +98,7 @@ public sealed class GameLoop
                 player.DynastyDeck.RemoveAt(0);
                 card.Facedown = true;
                 card.Location = "province";
+                card.ProvinceSlot = NextFreeProvinceSlot(player);
                 player.Provinces.Add(card);
             }
 
@@ -112,6 +113,27 @@ public sealed class GameLoop
         _game.AdvancePhase();
         LogPhaseChanged();
         yield break;
+    }
+
+    /// <summary>
+    /// Player.Provinces is a plain list, not a fixed-size indexed structure (see
+    /// Card.ProvinceSlot's own doc comment for why), so there's no stored record of which of
+    /// the ProvinceCount slots is free - derived instead from which slot identities ("0".."3")
+    /// are currently occupied. A broken province is removed from Provinces without clearing
+    /// its own ProvinceSlot (ConflictResolver.TryBreakProvince), so this naturally reassigns
+    /// exactly the vacated slot to a refill, not just the next unused number.
+    /// </summary>
+    private static string NextFreeProvinceSlot(Player player)
+    {
+        var occupied = player.Provinces.Select(p => p.ProvinceSlot).Where(slot => slot is not null).ToHashSet();
+        for (var i = 0; i < ProvinceCount; i++)
+        {
+            var candidate = i.ToString();
+            if (!occupied.Contains(candidate))
+                return candidate;
+        }
+
+        throw new InvalidOperationException($"'{player.Name}' has no free province slot to assign a new dynasty card to.");
     }
 
     private IEnumerator DrawPhaseStep()
@@ -254,8 +276,13 @@ public sealed class GameLoop
             else
             {
                 consecutivePasses = 0;
+                string? provinceSlot = null;
                 if (location == "province")
+                {
                     current.Provinces.Remove(card);
+                    provinceSlot = card.ProvinceSlot;
+                    card.ProvinceSlot = null;
+                }
 
                 var context = new AbilityContext { Game = _game, Player = current, Source = card };
                 new PlayCardGameActionHandler().Execute(context, null);
@@ -265,6 +292,10 @@ public sealed class GameLoop
                 {
                     EventResolver.ResolveAndDiscard(_game, card, current, _policies[current].ResolveEventScript(card.Id));
                     _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id });
+                }
+                else if (card.Type == CardType.Character && provinceSlot is not null)
+                {
+                    AkodoGunsoFirer.FireIfLegal(_game, card, provinceSlot);
                 }
             }
 

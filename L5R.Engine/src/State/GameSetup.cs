@@ -53,6 +53,7 @@ public static class GameSetup
             player.DynastyDeck.RemoveAt(0);
             card.Facedown = true;
             card.Location = "province";
+            card.ProvinceSlot = i.ToString();
             player.Provinces.Add(card);
         }
     }

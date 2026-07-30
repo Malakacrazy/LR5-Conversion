@@ -41,6 +41,7 @@ public class GameSetupTests
         Assert.That(game.Player1.Honor, Is.EqualTo(10), "set from the stronghold's printed honor");
         Assert.That(game.Player1.Provinces, Has.Count.EqualTo(4));
         Assert.That(game.Player1.Provinces, Has.All.Matches<Card>(c => c.Facedown && c.Location == "province"));
+        Assert.That(game.Player1.Provinces.Select(c => c.ProvinceSlot), Is.EquivalentTo(new[] { "0", "1", "2", "3" }));
         Assert.That(game.Player1.DynastyDeck, Has.Count.EqualTo(1), "5 dynasty cards - 4 dealt to provinces");
         Assert.That(game.Player1.Hand, Has.Count.EqualTo(4));
         Assert.That(game.Player1.Deck, Has.Count.EqualTo(1), "5 conflict cards - 4 drawn to hand");

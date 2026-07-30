@@ -182,4 +182,37 @@ public class GameLoopTests
         Assert.That(p1.PlayArea, Does.Not.Contain(vanillaEvent));
         Assert.That(p1.Hand, Does.Not.Contain(vanillaEvent));
     }
+
+    [Test]
+    public void RunPlayWindow_PlayingAkodoGunsoFromAProvince_RefillsTheVacatedSlotFromTheConflictDeck()
+    {
+        // DynastyPhaseStep deals gunso into province slot "0" (the only dynasty card, hence
+        // the only province) - proves the whole pipeline end to end: slot assignment at deal
+        // time, capture-and-clear when played from a province, and akodo-gunso's own refill.
+        var p1 = new Player { Name = "Player1", Honor = 5, Fate = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var gunso = new Card { Id = "akodo-gunso", Type = CardType.Character, Controller = p1, PrintedCost = 0, Fate = 1 };
+        p1.DynastyDeck.Add(gunso);
+        // Unaffordable on purpose: once the refill lands in Provinces it's a legal province
+        // play too (Facedown false, per akodo-gunso's own script), and FirstLegalActionBotPolicy
+        // would immediately play it in the same Dynasty phase window otherwise - correct bot
+        // behavior, but it would leave Provinces empty before this test's own assertions run.
+        var refill = new Card { Id = "refill-card", Type = CardType.Character, Controller = p1, PrintedCost = 10 };
+        p1.Deck.Add(refill);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.PlayArea, Contains.Item(gunso));
+        Assert.That(gunso.ProvinceSlot, Is.Null, "cleared once it entered play");
+        Assert.That(p1.Provinces, Contains.Item(refill));
+        Assert.That(refill.ProvinceSlot, Is.EqualTo("0"), "refilled the same slot gunso vacated");
+        Assert.That(p1.Deck, Does.Not.Contain(refill));
+    }
 }
