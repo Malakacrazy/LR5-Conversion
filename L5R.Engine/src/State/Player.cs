@@ -27,10 +27,26 @@ public sealed class Player
     public List<Card> Discard { get; } = new();
 
     /// <summary>
-    /// Single deck for now (not yet split into dynasty/conflict decks) - grows when a
-    /// card needs that distinction. Index 0 is the top of the deck.
+    /// The conflict deck - drawn to hand (DrawGameActionHandler), same deck know-the-world/
+    /// shrewd-yasuki's own "conflict deck" text refers to. Named plainly "Deck" from when
+    /// this was the only deck; kept as-is rather than renamed to avoid touching every
+    /// existing reference across the whole ported card set for a milestone that doesn't need
+    /// to. Index 0 is the top of the deck. See DynastyDeck's own doc comment for a caveat
+    /// this split exposes in a handful of pre-existing scripts.
     /// </summary>
     public List<Card> Deck { get; } = new();
+
+    /// <summary>
+    /// The dynasty deck - fills provinces (GameSetup, and refills them after a dynasty card
+    /// is played/discarded from one). Added for GameSetup's real game-start flow; a handful
+    /// of pre-existing scripts written back when only one deck existed (akodo-gunso's own
+    /// province refill, rebuild, shrewd-yasuki) reference the plain Deck field above for
+    /// what should really be *this* deck - left as-is (their own tests still pass, since
+    /// those tests populate whichever field the script reads) rather than fixed as a
+    /// tangent to this milestone; worth reconciling whenever one of those cards is revisited.
+    /// Index 0 is the top of the deck.
+    /// </summary>
+    public List<Card> DynastyDeck { get; } = new();
 
     /// <summary>
     /// A flat list rather than ringteki's 5 fixed, individually-named slots (stronghold +
