@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.Logging;
 using L5R.Engine.Scheduling;
@@ -21,6 +22,16 @@ namespace L5R.Engine.GameSteps;
 /// the conflict-specific list): the Draw/Fate phases' action windows (no ported card's bot-
 /// relevant behavior needs one yet), and imperial favor's glory count at the end of the
 /// Conflict phase.
+///
+/// One real gap this surfaced once actual usable actions started mattering (Phase B):
+/// LegalActions.GetLegalActions/IBotPolicy.ChooseAction existed and were tested in isolation
+/// since M1, but nothing here ever actually consulted them during a simulated game - a card
+/// like adept-of-shadows' "pay 1 honor, return to hand" action was fully wired end to end in
+/// its own test but unreachable through a real game. RunActionWindow (ringteki's own
+/// "preConflict" ActionWindow placement) closes that: one generic window, right before
+/// conflicts are declared, where either player may activate any currently-legal CardAction
+/// (plain JSON abilities.actions[] via ChooseAction, or - once adopted - a Phase B scripted
+/// action via ChooseScriptedAction) or pass.
 /// </summary>
 public sealed class GameLoop
 {
@@ -143,6 +154,8 @@ public sealed class GameLoop
 
     private IEnumerator ConflictPhaseStep()
     {
+        RunActionWindow();
+
         var current = _game.ActivePlayer;
         var consecutivePasses = 0;
 
@@ -247,6 +260,38 @@ public sealed class GameLoop
                 var context = new AbilityContext { Game = _game, Player = current, Source = card };
                 new PlayCardGameActionHandler().Execute(context, null);
                 _eventLog?.Record("cardPlayed", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id, ["from"] = location });
+            }
+
+            current = _game.Opponent(current);
+        }
+    }
+
+    /// <summary>
+    /// A generic action window (ringteki's "preConflict" ActionWindow): alternating priority,
+    /// either player may activate any currently-legal CardAction or pass; two consecutive
+    /// passes ends it. AbilityExecutor is constructed fresh here rather than shared/injected -
+    /// it's stateless (CostRegistry/GameActionRegistry are plain lookup dictionaries), same
+    /// convention as CardFactory building its own per BuildCard call.
+    /// </summary>
+    private void RunActionWindow()
+    {
+        var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
+        var current = _game.ActivePlayer;
+        var consecutivePasses = 0;
+
+        while (consecutivePasses < 2)
+        {
+            var action = _policies[current].ChooseAction(_game, current);
+            if (action is null)
+            {
+                consecutivePasses++;
+            }
+            else
+            {
+                consecutivePasses = 0;
+                var context = new AbilityContext { Game = _game, Player = current, Source = action.Card };
+                executor.Execute(action.Definition!, context);
+                _eventLog?.Record("actionActivated", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = action.Card.Id, ["action"] = action.Title });
             }
 
             current = _game.Opponent(current);

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards;
 using L5R.Engine.GameSteps;
 using L5R.Engine.Randomness;
 using L5R.Engine.Scheduling;
@@ -105,5 +106,30 @@ public class GameLoopTests
 
         Assert.That(game.Winner, Is.EqualTo(game.Player1));
         Assert.That(game.RoundNumber, Is.EqualTo(1), "the win is detected mid-round-1, well before the round cap");
+    }
+
+    [Test]
+    public void RunActionWindow_LetsABotActivateAPlainAbilitiesActionsEntryOnAnInPlayCard()
+    {
+        // adept-of-shadows.json's "Return to hand" action (abilities.actions[]) was fully
+        // wired end to end since M1 (CardFactory bridges it into Card.Actions, LegalActions/
+        // ChooseAction can find it) but nothing in GameLoop ever actually consulted it during
+        // a simulated game until RunActionWindow was added - this proves that gap is closed.
+        var p1 = new Player { Name = "Player1", Honor = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var adept = CardFactory.BuildCard(LoadJson("adept-of-shadows"), p1);
+        p1.PlayArea.Add(adept);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.Hand, Contains.Item(adept), "the bot activated adept-of-shadows' own action during the pre-conflict action window");
+        Assert.That(p1.Honor, Is.EqualTo(4), "payHonor(1) was paid to activate it");
     }
 }
