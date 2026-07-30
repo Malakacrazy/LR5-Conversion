@@ -1,5 +1,6 @@
 using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Dsl;
 
 namespace L5R.Engine.Dsl.GameActions;
 
@@ -8,6 +9,8 @@ namespace L5R.Engine.Dsl.GameActions;
 /// Execute (throws), not CanAffect - see MoveToConflictGameActionHandler's doc comment for
 /// why: a restriction like sashimono's "doesNotBow" (while attached, during a military
 /// conflict) must block every call path, not just the shared-target-race one CanAffect covers.
+/// Also offers ready-for-battle a chance to react if the target's own controller didn't
+/// cause the bow themselves - see ReadyForBattleFirer's own doc comment.
 /// </summary>
 public sealed class BowGameActionHandler : IGameActionHandler
 {
@@ -23,5 +26,7 @@ public sealed class BowGameActionHandler : IGameActionHandler
             throw new InvalidOperationException($"'{context.Target.Id}' cannot be bowed.");
 
         context.Target.Bowed = true;
+
+        ReadyForBattleFirer.FireIfLegal(context.Game, context.Player, context.Target);
     }
 }
