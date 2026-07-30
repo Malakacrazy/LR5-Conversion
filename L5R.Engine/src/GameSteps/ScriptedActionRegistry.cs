@@ -39,7 +39,8 @@ public sealed class ScriptedActionRegistry
         ["ide-trader"] = new IdeTraderBotAction(),
         ["secluded-temple"] = new SecludedTempleBotAction(),
         ["kitsu-spiritcaller"] = new KitsuSpiritcallerBotAction(),
-        ["togashi-kazue"] = new TogashiKazueStealFateBotAction()
+        ["togashi-kazue"] = new TogashiKazueStealFateBotAction(),
+        ["niten-master"] = new NitenMasterBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
