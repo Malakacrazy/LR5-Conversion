@@ -1,10 +1,16 @@
 using L5R.Engine.GameSteps;
+using L5R.Engine.State;
 using L5R.Engine.Tests.Harness;
 
 namespace L5R.Engine.Tests.Replay;
 
-/// <summary>One fixed scenario for the golden replay suite - everything needed to reproduce a game deterministically, plus which committed fixture file it must match.</summary>
-public sealed record GoldenScenario(string Name, ulong Seed, Func<IBotPolicy> Player1Policy, Func<IBotPolicy> Player2Policy, int RoundCap)
+/// <summary>
+/// One fixed scenario for the golden replay suite - everything needed to reproduce a game
+/// deterministically, plus which committed fixture file it must match. Deck defaults to null
+/// (BotVsBotHarness.RunGame's own default, FixedDeck) so the original 4 scenarios don't need
+/// to name it explicitly.
+/// </summary>
+public sealed record GoldenScenario(string Name, ulong Seed, Func<IBotPolicy> Player1Policy, Func<IBotPolicy> Player2Policy, int RoundCap, Func<DeckList>? Deck = null)
 {
     public string FixtureFileName => $"{Name}.log";
 
@@ -34,6 +40,7 @@ public class GoldenReplayTests
         new GoldenScenario("first-legal-vs-first-legal-202", 202, () => new FirstLegalActionBotPolicy(), () => new FirstLegalActionBotPolicy(), 15),
         new GoldenScenario("first-legal-vs-always-pass-303", 303, () => new FirstLegalActionBotPolicy(), () => new AlwaysPassBotPolicy(), 15),
         new GoldenScenario("always-pass-vs-always-pass-404", 404, () => new AlwaysPassBotPolicy(), () => new AlwaysPassBotPolicy(), 5),
+        new GoldenScenario("scriptoverride-rich-vs-rich-505", 505, () => new FirstLegalActionBotPolicy(), () => new FirstLegalActionBotPolicy(), 20, () => BotVsBotHarness.RichDeck()),
     };
 
     [TestCaseSource(nameof(Scenarios))]
@@ -41,7 +48,7 @@ public class GoldenReplayTests
     {
         var expected = File.ReadAllBytes(Path.Combine(FixturesDir, scenario.FixtureFileName));
 
-        var result = BotVsBotHarness.RunGame(scenario.Seed, scenario.Player1Policy(), scenario.Player2Policy(), scenario.RoundCap);
+        var result = BotVsBotHarness.RunGame(scenario.Seed, scenario.Player1Policy(), scenario.Player2Policy(), scenario.RoundCap, scenario.Deck?.Invoke());
         var actual = result.EventLog.ToCanonicalBytes();
 
         Assert.That(actual, Is.EqualTo(expected),

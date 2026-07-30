@@ -37,4 +37,21 @@ public class BotVsBotHarnessTests
 
         Assert.That(result.FinalState, Is.EqualTo(StepState.Idle));
     }
+
+    [Test]
+    public void RichDeck_WithEveryScriptOverrideCardAdopted_PlaysACompleteGameWithoutThrowing()
+    {
+        // Runs several ScriptedActionRegistry entries and dedicated firers (artisan-academy,
+        // secluded-temple, akodo-gunso, solemn-scholar, banzai, i-am-ready, outwit,
+        // way-of-the-unicorn) through a real simulated game, not just their own isolated
+        // per-card/per-firer tests - proves the completed Phase B action space actually
+        // composes with Phase A's round loop/conflict resolution end to end.
+        HarnessResult? result = null;
+        Assert.DoesNotThrow(() => result = BotVsBotHarness.RunGame(
+            seed: 505, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 20, BotVsBotHarness.RichDeck()));
+
+        Assert.That(result!.FinalState, Is.EqualTo(StepState.Idle));
+        var reachedCap = result.Game.RoundNumber > 20;
+        Assert.That(result.Game.Winner is not null || reachedCap, Is.True);
+    }
 }

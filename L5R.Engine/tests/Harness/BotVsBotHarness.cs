@@ -37,10 +37,12 @@ public static class BotVsBotHarness
     }
 
     /// <summary>
-    /// A small, fixed, generic-DSL-only Core Set deck - no scriptOverride cards, since the
-    /// bot's action space doesn't cover them yet (the plan's own Phase B, tracked separately).
-    /// Both players use the same decklist; nothing about the harness requires that, it's just
-    /// the simplest fixed pool that still exercises real stats/skills/provinces/rings end to end.
+    /// A small, fixed, generic-DSL-only Core Set deck. Both players use the same decklist;
+    /// nothing about the harness requires that, it's just the simplest fixed pool that still
+    /// exercises real stats/skills/provinces/rings end to end. Backs the original 4 golden
+    /// fixtures - left untouched so they never need regenerating for an unrelated reason;
+    /// see RichDeck for the deck that actually exercises the completed scriptOverride/Phase B
+    /// bot action space.
     /// </summary>
     public static DeckList FixedDeck() => new(
         Stronghold: LoadJson("city-of-the-open-hand"),
@@ -48,15 +50,33 @@ public static class BotVsBotHarness
         DynastyCards: new[] { "moto-horde", "naive-student", "serene-warrior", "unassuming-yojimbo", "tattooed-wanderer", "kaiu-envoy" }.Select(LoadJson).ToArray(),
         ConflictCards: new[] { "bayushi-liar", "doji-whisperer", "eager-scout", "kaiu-envoy", "matsu-berserker", "serene-warrior" }.Select(LoadJson).ToArray());
 
-    public static HarnessResult RunGame(ulong seed, IBotPolicy player1Policy, IBotPolicy player2Policy, int roundCap = 50)
+    /// <summary>
+    /// Now that every scriptOverride card is bot-drivable (either through
+    /// ScriptedActionRegistry or a dedicated firer/offerer - see ScriptedActionRegistry's own
+    /// doc comment), this deck deliberately mixes several of them in with plain generic-DSL
+    /// cards: two registry-driven holdings (artisan-academy, secluded-temple), a
+    /// zone/timing-driven character (akodo-gunso, needs Card.ProvinceSlot), a conflict-outcome
+    /// character (solemn-scholar), and four registry-driven events (banzai, i-am-ready,
+    /// outwit, way-of-the-unicorn - the last one CanPlay-gated to the Fate phase only). Proves
+    /// the completed Phase B action space actually plays through a real, complete game, not
+    /// just its own isolated per-card/per-firer tests.
+    /// </summary>
+    public static DeckList RichDeck() => new(
+        Stronghold: LoadJson("city-of-the-open-hand"),
+        Role: null,
+        DynastyCards: new[] { "artisan-academy", "secluded-temple", "akodo-gunso", "solemn-scholar", "naive-student", "unassuming-yojimbo" }.Select(LoadJson).ToArray(),
+        ConflictCards: new[] { "banzai", "i-am-ready", "outwit", "way-of-the-unicorn", "eager-scout", "bayushi-liar" }.Select(LoadJson).ToArray());
+
+    /// <summary>deck defaults to FixedDeck so every existing call site (3 harness tests, 4 golden fixtures) is unaffected.</summary>
+    public static HarnessResult RunGame(ulong seed, IBotPolicy player1Policy, IBotPolicy player2Policy, int roundCap = 50, DeckList? deck = null)
     {
         var p1 = new Player { Name = "Player1" };
         var p2 = new Player { Name = "Player2" };
         var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
         var eventLog = new EventLog();
 
-        var deck = FixedDeck();
-        GameSetup.SetUpGame(game, deck, deck, new SeededRandom(seed), eventLog);
+        var actualDeck = deck ?? FixedDeck();
+        GameSetup.SetUpGame(game, actualDeck, actualDeck, new SeededRandom(seed), eventLog);
 
         var scheduler = new Scheduler();
         var loop = new GameLoop(game, scheduler, player1Policy, player2Policy, roundCap, eventLog);
