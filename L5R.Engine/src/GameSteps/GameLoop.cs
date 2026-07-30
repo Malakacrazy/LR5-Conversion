@@ -261,6 +261,8 @@ public sealed class GameLoop
             ring.ClaimedBy = null;
         }
 
+        WayOfTheUnicornOfferer.TryPlay(_game, _game.ActivePlayer);
+
         _game.AdvancePhase();
         LogPhaseChanged();
         yield break;

@@ -235,4 +235,29 @@ public class GameLoopTests
 
         Assert.That(p1.Stronghold!.Bowed, Is.False);
     }
+
+    [Test]
+    public void FatePhaseStep_PlayingWayOfTheUnicorn_KeepsTheFirstPlayerToken()
+    {
+        // Without way-of-the-unicorn, AdvancePhase's own Dynasty rollover would flip
+        // ActivePlayer to p2 at the end of round 1 - proves the new Fate-phase offerer
+        // actually reaches and cancels that pass through a real simulated round.
+        var p1 = new Player { Name = "Player1", Honor = 5, Fate = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var card = CardFactory.BuildCard(LoadJson("way-of-the-unicorn"), p1);
+        card.Location = "hand";
+        p1.Hand.Add(card);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(game.ActivePlayer, Is.EqualTo(p1));
+        Assert.That(p1.Discard, Contains.Item(card));
+    }
 }

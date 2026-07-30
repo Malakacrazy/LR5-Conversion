@@ -1,4 +1,5 @@
 using L5R.Engine.Abilities;
+using L5R.Engine.State;
 
 namespace L5R.Engine.Cards.Scripts;
 
@@ -10,9 +11,18 @@ namespace L5R.Engine.Cards.Scripts;
 /// it - ringteki's own `event.player === context.player.opponent` check is just "the token
 /// would leave me", equivalent to "I am the current first player" from this side of the
 /// interrupt.
+///
+/// CanPlay restricts this to the Fate phase (the only moment the pass it cancels can even
+/// happen) - added specifically so LegalActions.GetLegalPlays never offers it during the
+/// Dynasty/Draw/Conflict phases' own generic hand-play windows, where a bot would otherwise
+/// play it uselessly (no bridged Card.Actions entry and no ScriptedActionRegistry
+/// registration means it would just discard with no effect - see WayOfTheUnicornOfferer,
+/// the one place its effect can actually happen).
 /// </summary>
 public sealed class WayOfTheUnicornKeepFirstPlayerToken : ICardScript
 {
+    public bool CanPlay(AbilityContext context) => context.Game.CurrentPhase == Phase.Fate;
+
     public void Execute(AbilityContext context)
     {
         if (context.Player != context.Game.ActivePlayer)
