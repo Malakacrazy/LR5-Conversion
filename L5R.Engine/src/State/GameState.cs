@@ -20,6 +20,16 @@ public sealed class GameState
     /// </summary>
     public int RoundNumber { get; set; } = 1;
 
+    /// <summary>
+    /// ringteki game.js recordWinner: null until the game ends. Set directly here for
+    /// conquest (ConflictResolver breaks the stronghold province) since that's detected at
+    /// the moment of breaking, not via a continuous check; honor-threshold wins are
+    /// GameState.CheckWinCondition's job (see its own doc comment). Idempotent by
+    /// convention - once set, callers should not overwrite it, matching ringteki's own
+    /// recordWinner "if(this.winner) return;" no-op-after-first-winner rule.
+    /// </summary>
+    public Player? Winner { get; set; }
+
     /// <summary>All cards controlled by either player, regardless of zone.</summary>
     public IEnumerable<Card> AllCards() => Player1.Hand.Concat(Player1.PlayArea).Concat(Player2.Hand).Concat(Player2.PlayArea);
 
