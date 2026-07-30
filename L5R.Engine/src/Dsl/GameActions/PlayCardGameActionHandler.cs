@@ -28,6 +28,7 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
     public void Execute(AbilityContext context, JsonElement? parameters)
     {
         var card = context.Target ?? context.Source;
+        var wasFromHand = card.Location == "hand";
 
         if (context.Game.IsPlayerRestrictedFrom(context.Player, "play", card))
             throw new InvalidOperationException($"'{context.Player.Name}' cannot play '{card.Id}' right now.");
@@ -58,7 +59,11 @@ public sealed class PlayCardGameActionHandler : IGameActionHandler
         }
 
         if (card.Type == CardType.Character)
+        {
             TriggeredReactionFirer.FireIfLegal(context.Game, card, "onCharacterEntersPlay");
+            if (wasFromHand)
+                ShosuroMiyakoFirer.FireEligibleReactions(context.Game, context.Player);
+        }
 
         WatchCommanderFirer.FireEligibleReactions(context.Game, context.Player);
     }

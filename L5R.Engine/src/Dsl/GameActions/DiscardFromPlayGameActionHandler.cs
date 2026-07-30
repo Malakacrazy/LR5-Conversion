@@ -34,6 +34,9 @@ public sealed class DiscardFromPlayGameActionHandler : IGameActionHandler
         if (StandYourGroundOfferer.TryInterrupt(context.Game, context.Target))
             return;
 
+        if (ReprieveOfferer.TryInterrupt(context.Game, context.Target))
+            return;
+
         var card = context.Target;
         ZoneMover.MoveTo(card, card.Controller.Discard, "discard");
 

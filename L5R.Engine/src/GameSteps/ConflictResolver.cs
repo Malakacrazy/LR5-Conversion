@@ -173,6 +173,7 @@ public static class ConflictResolver
         TriggeredReactionFirer.FireIfLegal(game, province, "onBreakProvince");
 
         province.Broken = true;
+        ShinjoAltansarnaiFirer.FireIfLegal(game, conflict);
 
         if (isStronghold)
         {

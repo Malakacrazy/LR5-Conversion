@@ -139,6 +139,9 @@ public sealed class GameLoop
     private IEnumerator DrawPhaseStep()
     {
         foreach (var player in Players())
+            ForgottenLibraryFirer.FireIfLegal(_game, player);
+
+        foreach (var player in Players())
             player.ShowBid = _policies[player].ChooseHonorBid(_game, player);
 
         var first = _game.ActivePlayer;
@@ -194,6 +197,7 @@ public sealed class GameLoop
             if (declaration is null)
             {
                 _game.ConflictDeclarationsThisPhase.Add((current, true));
+                IntimidatingHidaFirer.FireIfLegal(_game, current);
                 consecutivePasses++;
             }
             else
@@ -231,6 +235,9 @@ public sealed class GameLoop
             current = _game.Opponent(current);
         }
 
+        foreach (var player in Players())
+            ShibaTsukuneFirer.FireIfLegal(_game, player);
+
         _game.AdvancePhase();
         LogPhaseChanged();
         yield break;
@@ -242,16 +249,22 @@ public sealed class GameLoop
     private IEnumerator FatePhaseStep()
     {
         foreach (var player in Players())
+            SteadfastSamuraiFirer.FireIfLegal(_game, player);
+
+        foreach (var player in Players())
         {
             foreach (var character in player.PlayArea.Where(c => c.Type == CardType.Character).ToList())
             {
                 if (character.Fate <= 0)
                 {
+                    if (_game.IsRestrictedFrom(character, "discardFromPlay"))
+                        continue;
+
                     player.PlayArea.Remove(character);
                     character.Location = "discard";
                     player.Discard.Add(character);
                 }
-                else
+                else if (!_game.IsRestrictedFrom(character, "removeFate"))
                 {
                     character.Fate--;
                 }

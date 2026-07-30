@@ -68,7 +68,8 @@ public sealed class ScriptedActionRegistry
         ["display-of-power"] = new DisplayOfPowerBotAction(),
         ["court-games"] = new CourtGamesBotAction(),
         ["mountain-s-anvil-castle"] = new MountainsAnvilCastleBotAction(),
-        ["seeker-initiate"] = new SeekerInitiateBotAction()
+        ["seeker-initiate"] = new SeekerInitiateBotAction(),
+        ["togashi-yokuni"] = new TogashiYokuniBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>

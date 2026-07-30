@@ -237,6 +237,31 @@ public class GameLoopTests
     }
 
     [Test]
+    public void FatePhaseStep_ProtectsASteadfastSamuraiAtZeroFateFromTheNoFateDiscardSweep()
+    {
+        // Before steadfast-samurai, the fate-decrement/no-fate-discard loop mutated
+        // Card.Fate/PlayArea directly rather than going through
+        // RemoveFateGameActionHandler/DiscardFromPlayGameActionHandler - so a restriction
+        // added against those actions would have been silently ignored by this loop. Proves
+        // the loop now actually respects it, through a real simulated Fate phase.
+        var p1 = new Player { Name = "Player1", Honor = 10 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+        var samurai = new Card { Id = "steadfast-samurai", Type = CardType.Character, Controller = p1, Fate = 0 };
+        p1.PlayArea.Add(samurai);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new AlwaysPassBotPolicy(), new AlwaysPassBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.PlayArea, Contains.Item(samurai));
+        Assert.That(p1.Discard, Does.Not.Contain(samurai));
+    }
+
+    [Test]
     public void FatePhaseStep_PlayingWayOfTheUnicorn_KeepsTheFirstPlayerToken()
     {
         // Without way-of-the-unicorn, AdvancePhase's own Dynasty rollover would flip
