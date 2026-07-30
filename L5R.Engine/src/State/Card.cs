@@ -52,6 +52,17 @@ public sealed class Card
     /// Facedown/Bowed - no province-breach-resolution pipeline exists to set it automatically.
     /// </summary>
     public bool Broken { get; set; }
+
+    /// <summary>
+    /// Which of a player's province slots this card currently sits in (e.g. "province-1"),
+    /// null if it isn't in one. Player.Provinces stays a flat list (no ported card's
+    /// executable slice needs positional identity beyond this) - borderlands-fortifications/
+    /// rebuild/akodo-gunso are the first three that need to know/preserve *which* slot a
+    /// card occupies across a swap or refill, so it's tracked here directly rather than by
+    /// reshaping Provinces into an indexed/fixed-size structure. Set directly by the caller,
+    /// same convention as every other positional/identity field.
+    /// </summary>
+    public string? ProvinceSlot { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
     public List<Abilities.CardAction> Actions { get; } = new();
 

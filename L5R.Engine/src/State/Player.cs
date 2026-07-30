@@ -34,10 +34,14 @@ public sealed class Player
 
     /// <summary>
     /// A flat list rather than ringteki's 5 fixed, individually-named slots (stronghold +
-    /// 4 provinces) - no ported card's executable slice needs to distinguish *which*
-    /// province slot a card sits in, only that it's a province (Card.Location = "province")
-    /// and possibly facedown (Card.Facedown). Not touched by ZoneMover yet - no ported
-    /// gameAction moves a card into or out of this zone (flipDynasty only flips the flag).
+    /// 4 provinces) - most ported cards only need to know a card is a province
+    /// (Card.Location = "province") and possibly facedown (Card.Facedown), not which
+    /// specific slot. borderlands-fortifications/rebuild/akodo-gunso are the first three
+    /// that need positional identity across a swap/refill - see Card.ProvinceSlot's own
+    /// doc comment for why that's tracked per-card instead of reshaping this into an
+    /// indexed/fixed-size structure. Not touched by ZoneMover yet - no ported gameAction
+    /// moves a card into or out of this zone via that shared helper (flipDynasty only flips
+    /// the facedown flag; the three scripts above mutate Provinces/ProvinceSlot directly).
     /// </summary>
     public List<Card> Provinces { get; } = new();
 
