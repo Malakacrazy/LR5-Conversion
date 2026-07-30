@@ -91,6 +91,7 @@ public static class ConflictResolver
         EndlessPlainsFirer.FireIfLegal(game, declaration.Province);
         ShamefulDisplayFirer.FireIfLegal(game, declaration.Province);
         PilgrimageFirer.FireIfLegal(game, declaration.Province);
+        SeekerOfRoleFirer.FireIfLegal(game, declaration.Province);
 
         var defenders = defenderPolicy.DeclareDefenders(game, conflict, defender);
         foreach (var card in defenders)
@@ -148,6 +149,8 @@ public static class ConflictResolver
         }
 
         DefendTheWallFirer.FireIfLegal(game, declaration.Province);
+        KeeperOfRoleFirer.FireIfLegal(game, attacker);
+        KeeperOfRoleFirer.FireIfLegal(game, defender);
 
         if (policies is not null)
             ActionWindowRunner.Run(game, defender, policies, eventLog);
