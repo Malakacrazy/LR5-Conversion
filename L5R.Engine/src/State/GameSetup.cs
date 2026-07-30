@@ -1,4 +1,5 @@
 using L5R.Engine.Cards;
+using L5R.Engine.Logging;
 using L5R.Engine.Randomness;
 
 namespace L5R.Engine.State;
@@ -17,13 +18,14 @@ public static class GameSetup
     private const int ProvinceCount = 4;
     private const int StartingHandSize = 4;
 
-    public static void SetUpGame(GameState game, DeckList player1Deck, DeckList player2Deck, SeededRandom rng)
+    /// <summary>eventLog is optional (defaults to null, logging nothing) so M2's own tests, written before EventLog was wired in, don't need updating for a milestone that isn't theirs.</summary>
+    public static void SetUpGame(GameState game, DeckList player1Deck, DeckList player2Deck, SeededRandom rng, EventLog? eventLog = null)
     {
-        SetUpPlayer(game, game.Player1, player1Deck, rng);
-        SetUpPlayer(game, game.Player2, player2Deck, rng);
+        SetUpPlayer(game, game.Player1, player1Deck, rng, eventLog);
+        SetUpPlayer(game, game.Player2, player2Deck, rng, eventLog);
     }
 
-    private static void SetUpPlayer(GameState game, Player player, DeckList deck, SeededRandom rng)
+    private static void SetUpPlayer(GameState game, Player player, DeckList deck, SeededRandom rng, EventLog? eventLog)
     {
         player.Stronghold = CardFactory.BuildCard(deck.Stronghold, player);
         if (deck.Role is { } role)
@@ -31,9 +33,11 @@ public static class GameSetup
 
         player.DynastyDeck.AddRange(deck.DynastyCards.Select(card => CardFactory.BuildCard(card, player)));
         rng.Shuffle(player.DynastyDeck);
+        eventLog?.Record("deckShuffled", new Dictionary<string, string> { ["player"] = player.Name, ["deck"] = "dynasty" });
 
         player.Deck.AddRange(deck.ConflictCards.Select(card => CardFactory.BuildCard(card, player)));
         rng.Shuffle(player.Deck);
+        eventLog?.Record("deckShuffled", new Dictionary<string, string> { ["player"] = player.Name, ["deck"] = "conflict" });
 
         DealProvinces(player);
         DrawStartingHand(player);

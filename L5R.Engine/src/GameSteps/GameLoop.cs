@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using L5R.Engine.Abilities;
 using L5R.Engine.Dsl.GameActions;
+using L5R.Engine.Logging;
 using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 
@@ -30,13 +31,16 @@ public sealed class GameLoop
     private readonly Scheduler _scheduler;
     private readonly IReadOnlyDictionary<Player, IBotPolicy> _policies;
     private readonly int _roundCap;
+    private readonly EventLog? _eventLog;
 
-    public GameLoop(GameState game, Scheduler scheduler, IBotPolicy player1Policy, IBotPolicy player2Policy, int roundCap = 50)
+    /// <summary>eventLog is optional (defaults to null, logging nothing) so M3/M4's own tests, written before EventLog was wired in, don't need updating for a milestone that isn't theirs.</summary>
+    public GameLoop(GameState game, Scheduler scheduler, IBotPolicy player1Policy, IBotPolicy player2Policy, int roundCap = 50, EventLog? eventLog = null)
     {
         _game = game;
         _scheduler = scheduler;
         _policies = new Dictionary<Player, IBotPolicy> { [game.Player1] = player1Policy, [game.Player2] = player2Policy };
         _roundCap = roundCap;
+        _eventLog = eventLog;
     }
 
     public void Start() => _scheduler.QueueStep(BeginRound());
@@ -95,6 +99,7 @@ public sealed class GameLoop
         RunPlayWindow("province");
 
         _game.AdvancePhase();
+        LogPhaseChanged();
         yield break;
     }
 
@@ -118,7 +123,11 @@ public sealed class GameLoop
         }
 
         _game.CheckWinCondition();
-        if (_game.Winner is not null) yield break;
+        if (_game.Winner is not null)
+        {
+            LogGameWon();
+            yield break;
+        }
 
         foreach (var player in Players())
         {
@@ -128,6 +137,7 @@ public sealed class GameLoop
         }
 
         _game.AdvancePhase();
+        LogPhaseChanged();
         yield break;
     }
 
@@ -155,15 +165,24 @@ public sealed class GameLoop
             {
                 _game.ConflictDeclarationsThisPhase.Add((current, false));
                 consecutivePasses = 0;
+                LogConflictDeclared(current, declaration);
+
                 ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)]);
+                LogConflictResolved(declaration);
+
                 _game.CheckWinCondition();
-                if (_game.Winner is not null) yield break;
+                if (_game.Winner is not null)
+                {
+                    LogGameWon();
+                    yield break;
+                }
             }
 
             current = _game.Opponent(current);
         }
 
         _game.AdvancePhase();
+        LogPhaseChanged();
         yield break;
     }
 
@@ -203,6 +222,7 @@ public sealed class GameLoop
         }
 
         _game.AdvancePhase();
+        LogPhaseChanged();
         yield break;
     }
 
@@ -226,9 +246,47 @@ public sealed class GameLoop
 
                 var context = new AbilityContext { Game = _game, Player = current, Source = card };
                 new PlayCardGameActionHandler().Execute(context, null);
+                _eventLog?.Record("cardPlayed", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id, ["from"] = location });
             }
 
             current = _game.Opponent(current);
         }
     }
+
+    private void LogPhaseChanged() =>
+        _eventLog?.Record("phaseChanged", new Dictionary<string, string> { ["phase"] = _game.CurrentPhase.ToString(), ["round"] = _game.RoundNumber.ToString() });
+
+    private void LogConflictDeclared(Player attacker, ConflictDeclaration declaration) =>
+        _eventLog?.Record("conflictDeclared", new Dictionary<string, string>
+        {
+            ["attacker"] = attacker.Name,
+            ["ring"] = declaration.Ring,
+            ["province"] = declaration.Province.Id,
+            ["attackers"] = string.Join(",", declaration.Attackers.Select(c => c.Id))
+        });
+
+    /// <summary>
+    /// Folds "province broken"/"ring claimed" (their own listed event categories in the plan)
+    /// into this single event's data rather than firing three separate event types - both are
+    /// simple observable facts about the conflict that just resolved, not additional decisions
+    /// or state transitions worth their own event name.
+    /// </summary>
+    private void LogConflictResolved(ConflictDeclaration declaration)
+    {
+        var conflict = _game.ConflictRecord[^1];
+        var ring = _game.Rings.First(r => r.Element == declaration.Ring);
+
+        _eventLog?.Record("conflictResolved", new Dictionary<string, string>
+        {
+            ["winner"] = conflict.Winner?.Name ?? "none",
+            ["skillDifference"] = conflict.SkillDifference.ToString(),
+            ["unopposed"] = conflict.Unopposed.ToString(),
+            ["provinceBroken"] = declaration.Province.Broken.ToString(),
+            ["ringClaimed"] = ring.Claimed.ToString(),
+            ["ringClaimedBy"] = ring.ClaimedBy?.Name ?? "none"
+        });
+    }
+
+    private void LogGameWon() =>
+        _eventLog?.Record("gameWon", new Dictionary<string, string> { ["winner"] = _game.Winner!.Name });
 }
