@@ -196,6 +196,16 @@ public sealed class GameState
     public List<Conflict> ConflictRecord { get; } = new();
 
     /// <summary>
+    /// way-of-the-unicorn's wouldInterrupt("onPassFirstPlayer"): ringteki's FatePhase queues
+    /// an unconditional passFirstPlayer() step every round (fatephase.js), flipping the
+    /// first-player token - this engine's ActivePlayer, per isFirstPlayer's own doc comment -
+    /// to the other player. AdvancePhase() now performs that same flip on every Dynasty
+    /// rollover; this flag, set by WayOfTheUnicornKeepFirstPlayerToken, cancels one such flip
+    /// and is consumed (reset to false) by AdvancePhase() itself.
+    /// </summary>
+    public bool FirstPlayerPassCancelled { get; set; }
+
+    /// <summary>
     /// way-of-the-phoenix's own "cannotDeclareRing" grants - see RingDeclarationRestriction's
     /// own doc comment for why this is a queryable list rather than an enforced pipeline.
     /// Cleared unconditionally by AdvancePhase(), same as every other untilEndOfPhase list.
@@ -609,10 +619,12 @@ public sealed class GameState
     /// FatePhase, then loops back into a new DynastyPhase - Regroup is a real Phases enum
     /// value in Constants.ts, but this ringteki version's round loop never actually queues
     /// a separate Regroup phase (FatePhase's own steps cover readying cards/returning rings
-    /// instead), so it's unreachable here too. This method only moves CurrentPhase/
-    /// RoundNumber forward and expires untilEndOfPhase lasting effects; no other side
-    /// effects yet (no fate collection, no card flipping) - those are added only once a
-    /// card actually needs them.
+    /// instead), so it's unreachable here too. This method moves CurrentPhase/RoundNumber
+    /// forward, expires untilEndOfPhase lasting effects, and - on the Dynasty rollover only -
+    /// flips ActivePlayer to mirror fatephase.js's unconditional passFirstPlayer() step (see
+    /// FirstPlayerPassCancelled's own doc comment for how way-of-the-unicorn cancels it). No
+    /// other side effects yet (no fate collection, no card flipping) - those are added only
+    /// once a card actually needs them.
     /// </summary>
     public void AdvancePhase()
     {
@@ -629,6 +641,10 @@ public sealed class GameState
         {
             RoundNumber++;
             ConflictRecord.Clear();
+
+            if (!FirstPlayerPassCancelled)
+                ActivePlayer = Opponent(ActivePlayer);
+            FirstPlayerPassCancelled = false;
         }
 
         LastingEffects.Clear();

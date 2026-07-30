@@ -47,6 +47,43 @@ public class GameStateTests
     }
 
     [Test]
+    public void AdvancePhase_FlipsActivePlayer_OnlyOnTheDynastyRollover()
+    {
+        var game = NewGame(Phase.Dynasty);
+        var p1 = game.ActivePlayer;
+        var p2 = game.Opponent(p1);
+
+        game.AdvancePhase(); // -> Draw
+        Assert.That(game.ActivePlayer, Is.EqualTo(p1), "only the Dynasty rollover flips it, not every phase change");
+
+        game.AdvancePhase(); // -> Conflict
+        game.AdvancePhase(); // -> Fate
+        Assert.That(game.ActivePlayer, Is.EqualTo(p1));
+
+        game.AdvancePhase(); // -> Dynasty (round 2)
+        Assert.That(game.ActivePlayer, Is.EqualTo(p2), "mirrors fatephase.js's unconditional passFirstPlayer() step");
+    }
+
+    [Test]
+    public void AdvancePhase_KeepsActivePlayer_WhenFirstPlayerPassCancelled_AndConsumesTheFlag()
+    {
+        var game = NewGame(Phase.Fate);
+        var p1 = game.ActivePlayer;
+        var p2 = game.Opponent(p1);
+        game.FirstPlayerPassCancelled = true;
+
+        game.AdvancePhase(); // -> Dynasty (round 2), pass cancelled
+        Assert.That(game.ActivePlayer, Is.EqualTo(p1), "way-of-the-unicorn kept the token");
+        Assert.That(game.FirstPlayerPassCancelled, Is.False, "the flag only cancels one pass");
+
+        game.AdvancePhase(); // -> Draw
+        game.AdvancePhase(); // -> Conflict
+        game.AdvancePhase(); // -> Fate
+        game.AdvancePhase(); // -> Dynasty (round 3), nothing cancels this one
+        Assert.That(game.ActivePlayer, Is.EqualTo(p2), "without the flag set again, the token passes normally");
+    }
+
+    [Test]
     public void AdvancePhase_ThrowsFromRegroup_SinceTheRealRoundLoopNeverReachesIt()
     {
         var game = NewGame(Phase.Regroup);
