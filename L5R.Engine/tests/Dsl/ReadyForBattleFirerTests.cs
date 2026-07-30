@@ -1,4 +1,6 @@
+using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards;
 using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.Costs;
 using L5R.Engine.Dsl.GameActions;
@@ -79,5 +81,24 @@ public class ReadyForBattleFirerTests
 
         Assert.That(target.Bowed, Is.True, "BowSelfCostHandler doesn't route through BowGameActionHandler, so ready-for-battle never even gets a chance to fire");
         Assert.That(p1.Hand, Contains.Item(readyForBattle));
+    }
+
+    [Test]
+    public void IsNeverOfferedAsAnOrdinaryHandPlay()
+    {
+        // Regression coverage for a real bug found while adopting breakthrough - see
+        // WouldInterruptOffererTests' own equivalent test for the full explanation.
+        var p1 = new Player { Name = "Player1", Fate = 5 };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var path = Path.Combine(AppContext.BaseDirectory, "Cards", "01-Core", "ready-for-battle.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var card = CardFactory.BuildCard(document.RootElement, p1);
+        card.Location = "hand";
+        p1.Hand.Add(card);
+
+        var legalPlays = LegalActions.GetLegalPlays(game, p1, "hand");
+
+        Assert.That(legalPlays, Does.Not.Contain(card));
     }
 }

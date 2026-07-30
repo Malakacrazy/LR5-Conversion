@@ -1,4 +1,6 @@
+using System.Text.Json;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards;
 using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.State;
@@ -54,5 +56,24 @@ public class StandYourGroundOffererTests
         Assert.That(p1.PlayArea, Contains.Item(target));
         Assert.That(target.IsHonored, Is.False);
         Assert.That(p1.Discard, Contains.Item(standYourGround));
+    }
+
+    [Test]
+    public void IsNeverOfferedAsAnOrdinaryHandPlay()
+    {
+        // Regression coverage for a real bug found while adopting breakthrough - see
+        // WouldInterruptOffererTests' own equivalent test for the full explanation.
+        var p1 = new Player { Name = "Player1", Fate = 5 };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var path = Path.Combine(AppContext.BaseDirectory, "Cards", "01-Core", "stand-your-ground.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var card = CardFactory.BuildCard(document.RootElement, p1);
+        card.Location = "hand";
+        p1.Hand.Add(card);
+
+        var legalPlays = LegalActions.GetLegalPlays(game, p1, "hand");
+
+        Assert.That(legalPlays, Does.Not.Contain(card));
     }
 }

@@ -29,5 +29,9 @@
         "gameAction": { "name": "cancel" }
       }
     ]
+  },
+  "scriptOverride": {
+    "reason": "Same reasoning as forged-edict's own scriptOverride: this card's whole effect is the wouldInterrupt triggeredAbility above, resolved exclusively by WouldInterruptOfferer, so CanPlay is overridden to forbid the ordinary hand-play path entirely.",
+    "handler": "L5R.Engine.Cards.Scripts.VoiceOfHonorCannotPlayNormally"
   }
 }

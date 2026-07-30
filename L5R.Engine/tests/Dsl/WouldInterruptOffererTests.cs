@@ -1,4 +1,5 @@
 using System.Text.Json;
+using L5R.Engine.Abilities;
 using L5R.Engine.Cards;
 using L5R.Engine.GameSteps;
 using L5R.Engine.State;
@@ -97,5 +98,30 @@ public class WouldInterruptOffererTests
 
         Assert.That(p1.Discard, Contains.Item(target), "0 honored characters on each side isn't 'ahead', so voice-of-honor couldn't be played");
         Assert.That(p1.Hand, Contains.Item(voiceOfHonor));
+    }
+
+    [Test]
+    public void ForgedEdictAndVoiceOfHonor_AreNeverOfferedAsOrdinaryHandPlays()
+    {
+        // Regression coverage for a real bug found while adopting breakthrough: neither card
+        // has a bridged Card.Actions entry or a ScriptedActionRegistry registration, so
+        // without their own CanPlay override, LegalActions.GetLegalPlays (which only checks
+        // affordability/type, not a card's real trigger condition) would offer them as
+        // ordinary hand plays - a bot would then discard them with no effect the moment
+        // they're affordable, wasting them before WouldInterruptOfferer ever gets a chance.
+        var p1 = new Player { Name = "Player1", Fate = 5 };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var forgedEdict = LoadCard("forged-edict", p1);
+        var voiceOfHonor = LoadCard("voice-of-honor", p1);
+        forgedEdict.Location = "hand";
+        voiceOfHonor.Location = "hand";
+        p1.Hand.Add(forgedEdict);
+        p1.Hand.Add(voiceOfHonor);
+
+        var legalPlays = LegalActions.GetLegalPlays(game, p1, "hand");
+
+        Assert.That(legalPlays, Does.Not.Contain(forgedEdict));
+        Assert.That(legalPlays, Does.Not.Contain(voiceOfHonor));
     }
 }

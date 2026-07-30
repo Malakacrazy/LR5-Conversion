@@ -19,5 +19,9 @@
         "gameAction": { "name": "cancel" }
       }
     ]
+  },
+  "scriptOverride": {
+    "reason": "This card's whole effect is the wouldInterrupt triggeredAbility above, resolved exclusively by the engine's WouldInterruptOfferer at the exact moment another event initiates its effects - it's never legal to play as an ordinary hand play, so CanPlay is overridden to forbid that path entirely (LegalActions.GetLegalPlays otherwise has no way to know this, since it only checks affordability/type). Same shape as good-omen/blackmail's own CanPlay-only scriptOverride, just forbidding the normal path outright instead of narrowing it.",
+    "handler": "L5R.Engine.Cards.Scripts.ForgedEdictCannotPlayNormally"
   }
 }

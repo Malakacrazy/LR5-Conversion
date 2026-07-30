@@ -11,9 +11,19 @@ namespace L5R.Engine.Cards.Scripts;
 /// was caused by the reacting player themself (which should NOT trigger this - e.g. bowing
 /// your own character as a cost) is a caller-set fact: see
 /// AbilityContext.BowCausedBySelf's own doc comment.
+///
+/// CanPlay is unconditionally false: LegalActions.GetLegalPlays doesn't know about this
+/// card's real trigger condition (a bow it didn't cause), only affordability/type/CanPlay -
+/// without this, a bot's generic hand-play window would happily "play" it at any time (it
+/// has no bridged Card.Actions entry and isn't in ScriptedActionRegistry), discarding it
+/// with no effect before ReadyForBattleFirer's own BowGameActionHandler hook ever gets a
+/// chance. That firer bypasses PlayCardGameActionHandler entirely, so this restriction only
+/// blocks the generic path, not the card's real one.
 /// </summary>
 public sealed class ReadyForBattleReadyOnOpponentOrRingBow : ICardScript
 {
+    public bool CanPlay(AbilityContext context) => false;
+
     public void Execute(AbilityContext context)
     {
         var target = context.Target
