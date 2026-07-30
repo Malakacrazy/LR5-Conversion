@@ -56,7 +56,17 @@ public sealed class ScriptedActionRegistry
         ["kakita-asami"] = new KakitaAsamiBotAction(),
         ["kakita-kaezin"] = new KakitaKaezinBotAction(),
         ["mirumoto-raitsugu"] = new MirumotoRaitsuguBotAction(),
-        ["duelist-training"] = new DuelistTrainingBotAction()
+        ["duelist-training"] = new DuelistTrainingBotAction(),
+        ["banzai"] = new BanzaiBotAction(),
+        ["indomitable-will"] = new IndomitableWillBotAction(),
+        ["for-greater-glory"] = new ForGreaterGloryBotAction(),
+        ["fallen-in-battle"] = new FallenInBattleBotAction(),
+        ["spies-at-court"] = new SpiesAtCourtBotAction(),
+        ["mantra-of-fire"] = new MantraOfFireBotAction(),
+        ["the-perfect-gift"] = new ThePerfectGiftBotAction(),
+        ["calling-in-favors"] = new CallingInFavorsBotAction(),
+        ["display-of-power"] = new DisplayOfPowerBotAction(),
+        ["court-games"] = new CourtGamesBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
