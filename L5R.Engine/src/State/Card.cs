@@ -24,6 +24,17 @@ public sealed class Card
     public int? PrintedProvinceStrength { get; init; }
 
     /// <summary>
+    /// card-schema.json's "militaryBonus"/"politicalBonus" - "applied automatically by
+    /// ringteki's base attachment framework, not scripted per-card" per its own schema
+    /// description. Parsed into every ported attachment's JSON already, but unread anywhere
+    /// until GameState.EffectiveStat's attachment-bonus scan (added once fine-katana/
+    /// fiery-madness/kitsuki-s-method/ornate-fan/way-of-the-dragon's per-card tests exposed
+    /// that this generic mechanic had never actually been wired up).
+    /// </summary>
+    public int? PrintedMilitaryBonus { get; init; }
+    public int? PrintedPoliticalBonus { get; init; }
+
+    /// <summary>
     /// A stronghold's own printed honor/fate-income/province-strength-bonus (card-schema.json
     /// "honor"/"fate"/"strengthBonus") - see GameState.SetHonorFromStronghold/FateIncomeFor/
     /// StrongholdStrengthBonusFor for what each drives. PrintedFateIncome is named distinctly
@@ -64,6 +75,15 @@ public sealed class Card
     /// </summary>
     public string? ProvinceSlot { get; set; }
     public IReadOnlyList<string> Traits { get; init; } = Array.Empty<string>();
+
+    /// <summary>
+    /// card-schema.json's "keywords" array (covert/sincerity/restricted/ancestral/etc.) -
+    /// unread anywhere until now; GameState.HasKeyword previously only checked *granted*
+    /// keywords (whileAttached/persistentEffect "addKeyword"), leaving a printed keyword with
+    /// no scripted behavior of its own (e.g. unassuming-yojimbo's printed "covert") unqueryable.
+    /// Same empty-by-default convention as Traits/PersistentEffects - most tests don't need it.
+    /// </summary>
+    public IReadOnlyList<string> PrintedKeywords { get; init; } = Array.Empty<string>();
     public List<Abilities.CardAction> Actions { get; } = new();
 
     /// <summary>

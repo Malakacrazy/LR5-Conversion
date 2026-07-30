@@ -7,8 +7,9 @@ using L5R.Engine.State;
 namespace L5R.Engine.Tests.Cards.PerCard;
 
 /// <summary>
-/// Only way-of-the-dragon's persistentEffects block (attachmentLimit/attachmentMyControlOnly)
-/// is exercised here - its whileAttached "increaseLimitOnAbilities" needs an ability-use-limit
+/// way-of-the-dragon's persistentEffects block (attachmentLimit/attachmentMyControlOnly) and
+/// its printed +1/+1 stat bonus (GameState.EffectiveStat's attachment-bonus scan) are
+/// exercised here - its whileAttached "increaseLimitOnAbilities" needs an ability-use-limit
 /// tracking subsystem this engine doesn't have yet (no ported card's "limit" field has ever
 /// been enforced), same convention as court-mask/favored-mount only testing the inverse slice
 /// of their own shared attachmentMyControlOnly declaration.
@@ -50,6 +51,21 @@ public class WayOfTheDragonTests
         p1.PlayArea.Add(dragon);
 
         Assert.That(game.ExceedsAttachmentLimit(dragon), Is.False);
+    }
+
+    [Test]
+    public void WhileAttached_AddsItsPrintedBonusesToItsParent()
+    {
+        var p1 = new Player { Name = "Player1" };
+        var p2 = new Player { Name = "Player2" };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        var bearer = new Card { Id = "bearer", Type = CardType.Character, Controller = p1, PrintedMilitarySkill = 2, PrintedPoliticalSkill = 1 };
+        var dragon = new Card { Id = "way-of-the-dragon", Type = CardType.Attachment, Controller = p1, AttachedTo = bearer, PrintedMilitaryBonus = 1, PrintedPoliticalBonus = 1 };
+        p1.PlayArea.Add(bearer);
+        p1.PlayArea.Add(dragon);
+
+        Assert.That(game.EffectiveMilitarySkill(bearer), Is.EqualTo(3));
+        Assert.That(game.EffectivePoliticalSkill(bearer), Is.EqualTo(2));
     }
 
     [Test]

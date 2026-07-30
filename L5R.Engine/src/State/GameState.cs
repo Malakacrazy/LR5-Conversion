@@ -117,9 +117,23 @@ public sealed class GameState
 
         total += SumStatDeltas(ActivePersistentEffectsAffecting(card), stat);
         total += SumStatDeltas(ActiveWhileAttachedEffectsFor(card), stat);
+        total += AttachmentBonusFor(card, stat);
 
         return total;
     }
+
+    /// <summary>
+    /// card-schema.json's "militaryBonus"/"politicalBonus": every attachment currently
+    /// attached to this card contributes its own printed bonus automatically - this is
+    /// ringteki's base attachment framework behavior, not something any individual card
+    /// scripts (see fine-katana/fiery-madness/kitsuki-s-method/ornate-fan/way-of-the-dragon).
+    /// </summary>
+    private int AttachmentBonusFor(Card card, string stat) => stat switch
+    {
+        "military" => AllCards().Where(a => a.AttachedTo == card).Sum(a => a.PrintedMilitaryBonus ?? 0),
+        "political" => AllCards().Where(a => a.AttachedTo == card).Sum(a => a.PrintedPoliticalBonus ?? 0),
+        _ => 0
+    };
 
     /// <summary>
     /// Shared by both the persistentEffects and whileAttached scans. Checks
@@ -479,10 +493,14 @@ public sealed class GameState
     /// asahina-storyteller/magnificent-kimono/tattooed-wanderer's keywords (sincerity/pride/
     /// covert). No predicate op consumes keywords yet (nothing in the executable set needs
     /// to ask "does this card have keyword X"), so this is queried directly rather than
-    /// through hasTrait's wiring - still real engine behavior, not a no-op.
+    /// through hasTrait's wiring - still real engine behavior, not a no-op. Also checks
+    /// Card.PrintedKeywords (its own card-schema.json "keywords" array) alongside granted
+    /// ones, so a card's own printed keyword (unassuming-yojimbo's "covert") is queryable
+    /// without something else having to addKeyword it first.
     /// </summary>
     public bool HasKeyword(Card card, string keyword) =>
-        HasAddEffect(card, "addKeyword", keyword)
+        card.PrintedKeywords.Contains(keyword)
+        || HasAddEffect(card, "addKeyword", keyword)
         || LastingKeywordGrants.Any(g => g.Target == card && g.Keyword == keyword
             && (g.Condition is not { } condition || PredicateEvaluator.Evaluate(condition, card, SourceContextFor(card))));
 
