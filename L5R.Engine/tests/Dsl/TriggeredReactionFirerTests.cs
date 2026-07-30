@@ -133,6 +133,35 @@ public class TriggeredReactionFirerTests
     }
 
     [Test]
+    public void HirumaAmbusher_TargetingAFriendlyShugenjaWithShibaYojimboInPlay_GetsCancelled()
+    {
+        // Proves the Prepare -> offer shiba-yojimbo -> Resolve split: without shiba-yojimbo in
+        // play, this exact setup would restrict the shugenja (see the sibling test above) -
+        // here it must not, because shiba-yojimbo cancels the pending ability first.
+        var (p1, p2, game) = NewGame();
+        var shugenja = new Card { Id = "my-shugenja", Type = CardType.Character, Controller = p1, Traits = new[] { "shugenja" } };
+        var ambusher = new Card { Id = "hiruma-ambusher", Type = CardType.Character, Controller = p1, TriggeredAbilities = new[] { LoadAbility("hiruma-ambusher") } };
+        var yojimbo = new Card { Id = "shiba-yojimbo", Type = CardType.Character, Controller = p1 };
+        // Insertion order matters: TargetResolver.ResolveLegalTargets picks the first
+        // character-type candidate in GameState.AllCards() order, so shugenja must be added
+        // before ambusher/yojimbo for it to be the one hiruma-ambusher's reaction targets.
+        p1.PlayArea.Add(shugenja);
+        p1.PlayArea.Add(ambusher);
+        p1.PlayArea.Add(yojimbo);
+        var attacker = new Card { Id = "attacker", Type = CardType.Character, Controller = p2 };
+        p2.PlayArea.Add(attacker);
+
+        var conflict = new Conflict { AttackingPlayer = p2, DefendingPlayer = p1 };
+        conflict.Defenders.Add(ambusher);
+        conflict.Attackers.Add(attacker);
+        game.CurrentConflict = conflict;
+
+        TriggeredReactionFirer.FireIfLegal(game, ambusher, "onCharacterEntersPlay");
+
+        Assert.That(game.IsRestrictedFrom(shugenja, "triggerAbilities"), Is.False);
+    }
+
+    [Test]
     public void ElementalFury_DuringAConflict_SwitchesTheContestedRing()
     {
         var (p1, p2, game) = NewGame();

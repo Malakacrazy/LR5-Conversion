@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using L5R.Engine.Abilities;
+using L5R.Engine.Cards.Scripts;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Dsl;
@@ -29,6 +30,14 @@ namespace L5R.Engine.Dsl;
 /// ChosenRingElement, chosenDiscard's ChosenDiscardCards) - handled by name here, since it's
 /// the uniform JSON shape driving these (not bespoke C#, unlike scriptOverride), so one
 /// generic firer covers all of them instead of a hand-written adapter per card.
+///
+/// Splits Prepare from Resolve (rather than the one-shot ExecuteTriggered) specifically so
+/// shiba-yojimbo - the one scriptOverride card shaped as a triggered-ability interrupt - gets
+/// a real gap to cancel a pending reaction before it resolves, the same PendingAbility/Cancel
+/// mechanics AbilityExecutor already exposes for JSON "cancel" gameActions (forged-edict,
+/// voice-of-honor). No general priority window exists for this - just this one, fixed check
+/// against a plain chosenTarget, since shiba-yojimbo is the only ported card in this whole
+/// backlog that needs it.
 /// </summary>
 public static class TriggeredReactionFirer
 {
@@ -55,7 +64,32 @@ public static class TriggeredReactionFirer
             return;
 
         var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
-        executor.ExecuteTriggered(ability, context, card, chosenTarget);
+        var pending = executor.PrepareTriggered(ability, context, card, chosenTarget);
+
+        OfferShibaYojimboInterrupt(game, pending);
+
+        executor.Resolve(pending);
+    }
+
+    /// <summary>
+    /// shiba-yojimbo's own script requires the target to be a shugenja its controller
+    /// controls in play - checked here first (cheaply, no side effects) so a shiba-yojimbo
+    /// that isn't actually eligible never gets invoked at all, matching every other adapter's
+    /// own IsLegal-before-Invoke convention. "Always cancel when legal" - same trivial-bot
+    /// heuristic as every other adopted card, not the real "may" choice.
+    /// </summary>
+    private static void OfferShibaYojimboInterrupt(GameState game, PendingAbility pending)
+    {
+        var target = pending.ChosenTarget;
+        if (target is null || !target.Traits.Contains("shugenja") || target.Location != "play area")
+            return;
+
+        var yojimbo = target.Controller.PlayArea.FirstOrDefault(c => c.Id == "shiba-yojimbo" && !game.IsBlanked(c));
+        if (yojimbo is null)
+            return;
+
+        var interruptContext = new AbilityContext { Game = game, Player = target.Controller, Source = yojimbo, InterruptedAbility = pending };
+        new ShibaYojimboCancelShugenjaTargetedAbility().Execute(interruptContext);
     }
 
     private static bool TryPopulateGameActionFacts(AbilityContext context, TriggeredAbilityDefinition ability)
