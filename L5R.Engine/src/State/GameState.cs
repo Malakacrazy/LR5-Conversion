@@ -176,6 +176,43 @@ public sealed class GameState
     /// </summary>
     public List<(Card Target, Dsl.ActionDefinition Ability)> GainedAbilities { get; } = new();
 
+    /// <summary>
+    /// breakthrough/meddling-mediator's own "how many conflicts has this player declared
+    /// this phase" (game.getConflicts(player).filter(!passed).length) - a per-phase
+    /// declaration count distinct from a single Conflict object, since a "pass" produces no
+    /// Conflict at all. No conflict-declaration pipeline populates this automatically
+    /// (matches this engine's general lack of one), so entries are caller-set facts, same
+    /// convention as every Conflict field. Cleared unconditionally by AdvancePhase().
+    /// </summary>
+    public List<(Player Player, bool Passed)> ConflictDeclarationsThisPhase { get; } = new();
+
+    /// <summary>
+    /// hida-kisada/moto-youth's own "game.conflictRecord" - finished Conflict objects this
+    /// round (reuses the class as-is; it already carries Winner/AttackingPlayer/
+    /// ConflictType). No conflict-declaration pipeline appends to this automatically -
+    /// caller-set, same convention as every other Conflict fact. Cleared only when
+    /// AdvancePhase() rolls into a new round (Phase.Dynasty), not every phase change.
+    /// </summary>
+    public List<Conflict> ConflictRecord { get; } = new();
+
+    /// <summary>
+    /// way-of-the-phoenix's own "cannotDeclareRing" grants - see RingDeclarationRestriction's
+    /// own doc comment for why this is a queryable list rather than an enforced pipeline.
+    /// Cleared unconditionally by AdvancePhase(), same as every other untilEndOfPhase list.
+    /// </summary>
+    public List<RingDeclarationRestriction> RingDeclarationRestrictions { get; } = new();
+
+    public bool CannotDeclareRingWith(Player player, string element) =>
+        RingDeclarationRestrictions.Any(r => r.Player == player && r.Element == element);
+
+    /// <summary>
+    /// hida-kisada's own "firstActionEvent" tracking (cancels only the first action ability
+    /// the opponent tries to use each conflict) - reset to false in EndConflict(), the
+    /// existing per-conflict lifecycle hook, representing "the next conflict's first action
+    /// isn't cancelled yet."
+    /// </summary>
+    public bool FirstActionCancelledThisConflict { get; set; }
+
     /// <summary>ringteki effects.js takeControl: moves the card to newController's play area and records the original controller so EndConflict()/AdvancePhase() can revert it.</summary>
     public void TakeControl(Card card, Player newController, string duration)
     {
@@ -589,7 +626,10 @@ public sealed class GameState
         };
 
         if (CurrentPhase == Phase.Dynasty)
+        {
             RoundNumber++;
+            ConflictRecord.Clear();
+        }
 
         LastingEffects.Clear();
         LastingKeywordGrants.Clear();
@@ -598,14 +638,18 @@ public sealed class GameState
         CostReductions.Clear();
         RevertControlChanges(_ => true);
         GainedAbilities.Clear();
+        ConflictDeclarationsThisPhase.Clear();
+        RingDeclarationRestrictions.Clear();
     }
 
     /// <summary>
     /// Clears the current conflict and expires its "untilEndOfConflict" lasting effects and
-    /// restrictions - "untilEndOfPhase" ones outlive it, since a Conflict phase can (once the
-    /// engine models it) contain several conflicts declared one after another. No caller in
-    /// this engine yet drives repeated conflicts within a single phase, so this is exercised
-    /// directly by tests for now rather than by a phase-step loop.
+    /// restrictions - "untilEndOfPhase" ones outlive it, since a Conflict phase can contain
+    /// several conflicts declared one after another (breakthrough's own "declare a second
+    /// conflict" is the first ported card that drives this - callers append the finished
+    /// Conflict to ConflictRecord and set a fresh one as CurrentConflict directly, still no
+    /// phase-step loop). Also resets FirstActionCancelledThisConflict (hida-kisada's own
+    /// per-conflict tracking) - see its own doc comment.
     /// </summary>
     public void EndConflict()
     {
@@ -616,6 +660,7 @@ public sealed class GameState
         PlayerRestrictions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         CostReductions.RemoveAll(r => r.Duration == "untilEndOfConflict");
         RevertControlChanges(c => c.Duration == "untilEndOfConflict");
+        FirstActionCancelledThisConflict = false;
 
         foreach (var card in EndOfConflictReturns)
             ZoneMover.MoveTo(card, card.Controller.Deck, "deck");
