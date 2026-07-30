@@ -25,7 +25,9 @@ public sealed class ScriptedActionRegistry
         ["meddling-mediator"] = new MeddlingMediatorBotAction(),
         ["way-of-the-phoenix"] = new WayOfThePhoenixBotAction(),
         ["ascetic-visionary"] = new AsceticVisionaryBotAction(),
-        ["shinjo-tatsuo"] = new ShinjoTatsuoBotAction()
+        ["shinjo-tatsuo"] = new ShinjoTatsuoBotAction(),
+        ["artisan-academy"] = new ArtisanAcademyBotAction(),
+        ["i-am-ready"] = new IAmReadyBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
