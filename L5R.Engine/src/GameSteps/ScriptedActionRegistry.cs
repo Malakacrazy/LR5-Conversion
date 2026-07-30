@@ -40,7 +40,10 @@ public sealed class ScriptedActionRegistry
         ["secluded-temple"] = new SecludedTempleBotAction(),
         ["kitsu-spiritcaller"] = new KitsuSpiritcallerBotAction(),
         ["togashi-kazue"] = new TogashiKazueStealFateBotAction(),
-        ["niten-master"] = new NitenMasterBotAction()
+        ["niten-master"] = new NitenMasterBotAction(),
+        ["hida-kisada"] = new HidaKisadaBotAction(),
+        ["tattooed-wanderer"] = new TattooedWandererBotAction(),
+        ["yogo-hiroue"] = new YogoHiroueBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
