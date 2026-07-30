@@ -55,4 +55,7 @@ public sealed class Conflict
     /// ResolveConflictRingGameActionHandler before resolving anything.
     /// </summary>
     public bool RingEffectsCancelled { get; set; }
+
+    /// <summary>event.conflict.conflictUnopposed (display-of-power's own trigger condition) - true when the defending player declared no defenders. No conflict-declaration pipeline computes participation automatically (matches this engine's general lack of one), so it's a caller-set fact, same convention as every other Conflict field above.</summary>
+    public bool Unopposed { get; set; }
 }
