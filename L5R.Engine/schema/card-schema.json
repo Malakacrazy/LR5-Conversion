@@ -427,7 +427,11 @@
           "description": "cautious-scout's persistentEffect match: candidate is the current conflict's declared province (Conflict.DeclaredProvince)." },
         { "type": "object", "additionalProperties": false, "required": ["op"], "properties": {
           "op": { "const": "isFirstPlayer" } },
-          "description": "meishodo-wielder's condition: this ability's controller is GameState.ActivePlayer (this engine's equivalent of ringteki's getFirstPlayer())." }
+          "description": "meishodo-wielder's condition: this ability's controller is GameState.ActivePlayer (this engine's equivalent of ringteki's getFirstPlayer())." },
+        { "type": "object", "additionalProperties": false, "required": ["op", "type"], "properties": {
+          "op": { "const": "isFirstConflictOfType" },
+          "type": { "enum": ["military", "political"] } },
+          "description": "moto-youth's condition: no completed conflict this round (GameState.ConflictRecord) was declared/switched to the given type." }
       ]
     },
 

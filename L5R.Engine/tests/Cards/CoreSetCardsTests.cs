@@ -373,6 +373,7 @@ public class CoreSetCardsTests
     [TestCase("cautious-scout")]
     [TestCase("seeker-of-enlightenment")]
     [TestCase("meishodo-wielder")]
+    [TestCase("moto-youth")]
     public void Card_NoLongerNeedsScriptOverride_AfterTheVocabularyGrewToCoverIt(string cardId)
     {
         // kaiu-shuichi needed a per-player dynamic count (valueRef "for"); grasp-of-earth
@@ -383,8 +384,9 @@ public class CoreSetCardsTests
         // persistentEffects; seeker-of-enlightenment needed a ring-fate-sum dynamic
         // (fateOnUnclaimedRings); meishodo-wielder needed a "first player" predicate op
         // (isFirstPlayer) plus GameState.EffectiveCost scanning persistentEffects for a new
-        // "modifyCost" effect. All were originally scriptOverride; this pins down that they
-        // now load generically.
+        // "modifyCost" effect; moto-youth needed a "first conflict of type this round"
+        // predicate op (isFirstConflictOfType) once GameState.ConflictRecord existed. All
+        // were originally scriptOverride; this pins down that they now load generically.
         var loader = new CardLoader(RingtekiCatalog.Effects, RingtekiCatalog.GameActions, RingtekiCatalog.Costs);
         var path = Path.Combine(CardsDir, $"{cardId}.json");
 

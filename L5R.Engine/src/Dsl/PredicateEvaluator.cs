@@ -38,6 +38,12 @@ public static class PredicateEvaluator
             // meishodo-wielder's condition (this.game.getFirstPlayer() === context.player) -
             // this engine has no separate "first player" concept from GameState.ActivePlayer.
             "isFirstPlayer" => context.Player == context.Game.ActivePlayer,
+            // moto-youth's condition: no completed conflict this round was declared/switched
+            // to the given type. GameState.ConflictRecord only ever holds completed conflicts
+            // (see its own doc comment), so ringteki's own "!completed || is the current
+            // conflict" disjuncts are always true for exactly the entries that would matter -
+            // the whole check collapses to a plain existential check over ConflictRecord.
+            "isFirstConflictOfType" => !context.Game.ConflictRecord.Any(c => c.ConflictType == predicate.GetProperty("type").GetString()),
             _ => throw new NotSupportedException($"PredicateEvaluator does not yet support op '{op}'.")
         };
     }
