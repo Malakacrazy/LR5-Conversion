@@ -260,6 +260,12 @@ public sealed class GameLoop
                 var context = new AbilityContext { Game = _game, Player = current, Source = card };
                 new PlayCardGameActionHandler().Execute(context, null);
                 _eventLog?.Record("cardPlayed", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id, ["from"] = location });
+
+                if (card.Type == CardType.Event)
+                {
+                    EventResolver.ResolveAndDiscard(_game, card, current);
+                    _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id });
+                }
             }
 
             current = _game.Opponent(current);
@@ -269,12 +275,18 @@ public sealed class GameLoop
     /// <summary>
     /// A generic action window (ringteki's "preConflict" ActionWindow): alternating priority,
     /// either player may activate any currently-legal CardAction (plain JSON abilities.actions[])
-    /// or - once adopted, Phase B - a scripted action, or pass; two consecutive passes ends it.
-    /// Scripted actions are checked first each turn, plain CardActions second - a minor,
-    /// arbitrary ordering choice (a card is unlikely to offer both at once in practice), not a
-    /// real priority rule. AbilityExecutor is constructed fresh here rather than shared/
-    /// injected - it's stateless (CostRegistry/GameActionRegistry are plain lookup
-    /// dictionaries), same convention as CardFactory building its own per BuildCard call.
+    /// or - once adopted, Phase B - a scripted action, play a card from hand, or pass; two
+    /// consecutive passes ends it. Checked in that order each turn - scripted, then plain
+    /// CardAction, then a hand play - a minor, arbitrary priority choice (a card is unlikely
+    /// to offer more than one at once in practice), not a real rule. Playing a card from hand
+    /// was a real, separate gap from the event-resolution one it was found alongside:
+    /// RunPlayWindow only ever ran for Dynasty's "province" location, so hand cards (every
+    /// conflict-deck character/holding/attachment/event) could never be played by a bot at
+    /// all - unlike Dynasty's dedicated province window, hand plays share this same window
+    /// with actions, matching how ringteki's own conflict-phase action windows work.
+    /// AbilityExecutor is constructed fresh here rather than shared/injected - it's stateless
+    /// (CostRegistry/GameActionRegistry are plain lookup dictionaries), same convention as
+    /// CardFactory building its own per BuildCard call.
     ///
     /// usedThisWindow guards against an infinite loop: several Phase B scripted actions
     /// (e.g. fearsome-mystic) have no bow-self cost or other self-invalidating side effect,
@@ -315,7 +327,24 @@ public sealed class GameLoop
                 }
                 else
                 {
-                    consecutivePasses++;
+                    var handCard = _policies[current].ChoosePlay(_game, current, "hand");
+                    if (handCard is not null)
+                    {
+                        consecutivePasses = 0;
+                        var context = new AbilityContext { Game = _game, Player = current, Source = handCard };
+                        new PlayCardGameActionHandler().Execute(context, null);
+                        _eventLog?.Record("cardPlayed", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = handCard.Id, ["from"] = "hand" });
+
+                        if (handCard.Type == CardType.Event)
+                        {
+                            EventResolver.ResolveAndDiscard(_game, handCard, current);
+                            _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = handCard.Id });
+                        }
+                    }
+                    else
+                    {
+                        consecutivePasses++;
+                    }
                 }
             }
 

@@ -133,4 +133,52 @@ public class GameLoopTests
         Assert.That(p1.Hand, Contains.Item(adept), "the bot activated adept-of-shadows' own action during the pre-conflict action window");
         Assert.That(p1.Honor, Is.EqualTo(4), "payHonor(1) was paid to activate it");
     }
+
+    [Test]
+    public void RunActionWindow_LetsABotPlayACardFromHand()
+    {
+        // RunPlayWindow only ever ran for Dynasty's "province" location - hand cards (every
+        // conflict-deck character/holding/attachment/event) could never be played by a bot at
+        // all until RunActionWindow learned to offer ChoosePlay("hand") too. This proves a
+        // plain character now makes it from hand into play through a real simulated game.
+        var p1 = new Player { Name = "Player1", Honor = 5, Fate = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var scout = CardFactory.BuildCard(LoadJson("eager-scout"), p1);
+        scout.Fate = 1; // survives the same round's Fate phase (0-fate characters are discarded there - see FatePhaseStep), so the play itself is what this test observes
+        p1.Hand.Add(scout);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.PlayArea, Contains.Item(scout));
+        Assert.That(p1.Hand, Does.Not.Contain(scout));
+    }
+
+    [Test]
+    public void RunActionWindow_PlayingAnEventFromHand_ResolvesItThenDiscardsIt()
+    {
+        var p1 = new Player { Name = "Player1", Honor = 5, Fate = 5 };
+        var p2 = new Player { Name = "Player2", Honor = 5 };
+        var game = new GameState { Player1 = p1, Player2 = p2, ActivePlayer = p1 };
+        p1.Stronghold = new Card { Id = "sh1", Type = CardType.Stronghold, Controller = p1, PrintedFateIncome = 0, PrintedHonor = 5 };
+        p2.Stronghold = new Card { Id = "sh2", Type = CardType.Stronghold, Controller = p2, PrintedFateIncome = 0, PrintedHonor = 5 };
+
+        var vanillaEvent = new Card { Id = "test-vanilla-event", Type = CardType.Event, Controller = p1, PrintedCost = 0 };
+        p1.Hand.Add(vanillaEvent);
+
+        var scheduler = new Scheduler();
+        var loop = new GameLoop(game, scheduler, new FirstLegalActionBotPolicy(), new FirstLegalActionBotPolicy(), roundCap: 1);
+        loop.Start();
+        scheduler.Pump();
+
+        Assert.That(p1.Discard, Contains.Item(vanillaEvent), "an event never lingers in play - it resolves once, then discards");
+        Assert.That(p1.PlayArea, Does.Not.Contain(vanillaEvent));
+        Assert.That(p1.Hand, Does.Not.Contain(vanillaEvent));
+    }
 }
