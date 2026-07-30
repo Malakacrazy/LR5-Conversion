@@ -31,7 +31,8 @@ public sealed class ScriptedActionRegistry
         ["giver-of-gifts"] = new GiverOfGiftsBotAction(),
         ["rebuild"] = new RebuildBotAction(),
         ["niten-adept"] = new NitenAdeptBotAction(),
-        ["shrewd-yasuki"] = new ShrewdYasukiBotAction()
+        ["shrewd-yasuki"] = new ShrewdYasukiBotAction(),
+        ["spyglass"] = new SpyglassBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
