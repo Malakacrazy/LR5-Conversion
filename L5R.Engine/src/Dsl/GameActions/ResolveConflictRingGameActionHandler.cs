@@ -29,6 +29,18 @@ public sealed class ResolveConflictRingGameActionHandler : IGameActionHandler
         var element = conflict.Elements.FirstOrDefault()
             ?? throw new InvalidOperationException("resolveConflictRing requires the conflict to have a declared ring element.");
 
+        ResolveElement(element, context);
+    }
+
+    /// <summary>
+    /// The actual per-element effect dispatch, shared with ResolveRingEffectGameActionHandler
+    /// (shiba-tsukune's own "resolve up to 2 [unclaimed, conflict-independent] rings" -
+    /// ringteki itself models this as a separate gameAction, "resolveRingEffect", distinct
+    /// from "resolveConflictRing" - see RingtekiCatalog's own two entries). Neither handler
+    /// re-implements the five elements' own effects twice.
+    /// </summary>
+    internal static void ResolveElement(string element, AbilityContext context)
+    {
         switch (element)
         {
             case "air":

@@ -54,7 +54,8 @@ public sealed class GameActionRegistry
             ["discardCard"] = new DiscardCardGameActionHandler(),
             ["returnToDeck"] = new ReturnToDeckGameActionHandler(),
             ["attach"] = new AttachGameActionHandler(),
-            ["resolveConflictRing"] = new ResolveConflictRingGameActionHandler()
+            ["resolveConflictRing"] = new ResolveConflictRingGameActionHandler(),
+            ["resolveRingEffect"] = new ResolveRingEffectGameActionHandler()
         };
 
         // cardMenu is the first handler that needs to invoke *another* gameAction by name
