@@ -87,6 +87,10 @@ public static class ConflictResolver
 
         declaration.Province.Facedown = false;
         TriggeredReactionFirer.FireIfLegal(game, declaration.Province, "onCardRevealed");
+        SecretCacheFirer.FireIfLegal(game, declaration.Province);
+        EndlessPlainsFirer.FireIfLegal(game, declaration.Province);
+        ShamefulDisplayFirer.FireIfLegal(game, declaration.Province);
+        PilgrimageFirer.FireIfLegal(game, declaration.Province);
 
         var defenders = defenderPolicy.DeclareDefenders(game, conflict, defender);
         foreach (var card in defenders)
@@ -142,6 +146,8 @@ public static class ConflictResolver
                 conflict.RingClaimedThisConflict = true;
             }
         }
+
+        DefendTheWallFirer.FireIfLegal(game, declaration.Province);
 
         if (policies is not null)
             ActionWindowRunner.Run(game, defender, policies, eventLog);
