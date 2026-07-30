@@ -151,6 +151,8 @@ public static class ConflictResolver
         DefendTheWallFirer.FireIfLegal(game, declaration.Province);
         KeeperOfRoleFirer.FireIfLegal(game, attacker);
         KeeperOfRoleFirer.FireIfLegal(game, defender);
+        KeeperInitiateFirer.FireIfLegal(game, attacker);
+        KeeperInitiateFirer.FireIfLegal(game, defender);
 
         if (policies is not null)
             ActionWindowRunner.Run(game, defender, policies, eventLog);
