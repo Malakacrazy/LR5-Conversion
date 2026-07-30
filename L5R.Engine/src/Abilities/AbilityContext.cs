@@ -138,4 +138,12 @@ public sealed class AbilityContext
     /// caller convention as every other target/choice field.
     /// </summary>
     public Dsl.ActionDefinition? ChosenAbility { get; set; }
+
+    /// <summary>
+    /// akodo-gunso's own "event.originalLocation" (which province slot it entered play
+    /// from) - a snapshot fact from a zone-move event this engine doesn't record
+    /// automatically (the card's own Card.ProvinceSlot is already cleared by the time it's
+    /// in play). Caller-set, same convention as every other event-shaped fact.
+    /// </summary>
+    public string? ProvinceSlot { get; set; }
 }
