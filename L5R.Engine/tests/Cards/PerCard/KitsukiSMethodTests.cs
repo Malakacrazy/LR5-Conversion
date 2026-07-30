@@ -4,13 +4,10 @@ namespace L5R.Engine.Tests.Cards.PerCard;
 
 /// <summary>
 /// Same generic attachment-bonus mechanism as fine-katana/ornate-fan (political only here),
-/// plus two printed keywords - "ancestral" (return-to-hand-on-parent-leaving-play: not yet
-/// implemented anywhere in this engine, a separate gap from the stat bonus) and "restricted"
-/// (the 2-per-character cap: also not yet implemented - GameState.ExceedsAttachmentLimit only
-/// tracks a card's own declared attachmentLimit, e.g. way-of-the-dragon's "no second copy of
-/// itself", not the broader "restricted" keyword's cross-card count). Only the printed-keyword
-/// presence and the stat bonus are verified below; the other two rules need their own engine
-/// support before they can be tested meaningfully.
+/// plus two printed keywords - "ancestral" (DiscardFromPlayGameActionHandler's return-to-hand
+/// cascade) and "restricted" (GameState.ExceedsRestrictedAttachmentLimit's 2-per-character
+/// cap). Both rules' actual behavior is exercised via AncestralDaishoTests instead of being
+/// duplicated here - this file just confirms the printed keywords are present.
 /// </summary>
 public class KitsukiSMethodTests
 {

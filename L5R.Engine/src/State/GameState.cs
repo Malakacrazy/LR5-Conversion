@@ -466,6 +466,21 @@ public sealed class GameState
     }
 
     /// <summary>
+    /// The "restricted" keyword's own rule (basecard.ts checkForIllegalAttachments): a
+    /// character may have at most 2 restricted attachments - a 3rd+ makes its restricted
+    /// attachments illegal until the controller discards down to 2 (ringteki prompts for
+    /// which one). Same pure-query convention as ExceedsAttachmentLimit - no prompt/UI layer
+    /// exists here to drive the discard choice itself, just the fact a test can assert.
+    /// </summary>
+    public bool ExceedsRestrictedAttachmentLimit(Card attachment)
+    {
+        if (!HasKeyword(attachment, "restricted") || attachment.AttachedTo is not { } parent)
+            return false;
+
+        return AllCards().Count(c => c.AttachedTo == parent && HasKeyword(c, "restricted")) > 2;
+    }
+
+    /// <summary>
     /// way-of-the-dragon/court-mask/favored-mount/daimyo-s-favor's "attachmentMyControlOnly" -
     /// ringteki basecard.ts.canAttach: legal only if the acting player controls the target
     /// character, or the attachment's own controller does. Wired into

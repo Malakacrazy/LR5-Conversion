@@ -4,8 +4,9 @@ namespace L5R.Engine.Tests.Cards.PerCard;
 
 /// <summary>
 /// Same generic attachment-bonus mechanism as fine-katana/kitsuki-s-method (political only),
-/// plus the printed "restricted" keyword (its 2-per-character cap isn't implemented anywhere
-/// yet - see KitsukiSMethodTests' own doc comment).
+/// plus the printed "restricted" keyword - its 2-per-character cap
+/// (GameState.ExceedsRestrictedAttachmentLimit) is exercised via AncestralDaishoTests instead
+/// of being duplicated here.
 /// </summary>
 public class OrnateFanTests
 {
