@@ -1,0 +1,5 @@
+# Golden replay fixtures are compared byte-for-byte against a runtime-generated LF-only
+# EventLog.ToCanonicalBytes() output (see GoldenReplayTests.cs). core.autocrlf=true would
+# otherwise rewrite these to CRLF on checkout, breaking the comparison on every fresh clone
+# for reasons that have nothing to do with an actual regression.
+L5R.Engine/tests/Replay/Fixtures/*.log -text
