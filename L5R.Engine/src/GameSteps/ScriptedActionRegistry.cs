@@ -53,7 +53,10 @@ public sealed class ScriptedActionRegistry
         ["honored-blade"] = new HonoredBladeBotAction(),
         ["ikoma-eiji"] = new IkomaEijiBotAction(),
         ["vengeful-oathkeeper"] = new VengefulOathkeeperBotAction(),
-        ["kakita-asami"] = new KakitaAsamiBotAction()
+        ["kakita-asami"] = new KakitaAsamiBotAction(),
+        ["kakita-kaezin"] = new KakitaKaezinBotAction(),
+        ["mirumoto-raitsugu"] = new MirumotoRaitsuguBotAction(),
+        ["duelist-training"] = new DuelistTrainingBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
