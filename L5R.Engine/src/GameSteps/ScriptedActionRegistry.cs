@@ -21,7 +21,10 @@ public sealed class ScriptedActionRegistry
         ["outwit"] = new OutwitBotAction(),
         ["rout"] = new RoutBotAction(),
         ["strength-in-numbers"] = new StrengthInNumbersBotAction(),
-        ["jade-tetsubo"] = new JadeTetsuboBotAction()
+        ["jade-tetsubo"] = new JadeTetsuboBotAction(),
+        ["meddling-mediator"] = new MeddlingMediatorBotAction(),
+        ["way-of-the-phoenix"] = new WayOfThePhoenixBotAction(),
+        ["ascetic-visionary"] = new AsceticVisionaryBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
