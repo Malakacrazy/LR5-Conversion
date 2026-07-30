@@ -32,7 +32,14 @@ public sealed class ScriptedActionRegistry
         ["rebuild"] = new RebuildBotAction(),
         ["niten-adept"] = new NitenAdeptBotAction(),
         ["shrewd-yasuki"] = new ShrewdYasukiBotAction(),
-        ["spyglass"] = new SpyglassBotAction()
+        ["spyglass"] = new SpyglassBotAction(),
+        ["obstinate-recruit"] = new ObstinateRecruitBotAction(),
+        ["radiant-orator"] = new RadiantOratorBotAction(),
+        ["enlightened-warrior"] = new EnlightenedWarriorBotAction(),
+        ["ide-trader"] = new IdeTraderBotAction(),
+        ["secluded-temple"] = new SecludedTempleBotAction(),
+        ["kitsu-spiritcaller"] = new KitsuSpiritcallerBotAction(),
+        ["togashi-kazue"] = new TogashiKazueStealFateBotAction()
     };
 
     public IBotScriptAction? Resolve(string cardId) =>
