@@ -8,23 +8,29 @@ namespace L5R.Engine.GameSteps;
 /// now (step 11's literal ask: "duas estrategias triviais"), a real player-facing prompt
 /// pipeline later. Every method is a pure decision (no state mutation) so GameLoop/
 /// ConflictResolver stay the only things that actually change GameState.
+///
+/// Every method returns a Task so a real UI-backed policy can pause - the Task doesn't
+/// complete until the human answers - while GameLoop/ActionWindowRunner/ConflictResolver
+/// yield a StepAwait wrapping it and let Scheduler genuinely suspend instead of blocking a
+/// thread. Bot policies just return Task.FromResult(...): an already-completed Task never
+/// actually suspends anything, so bot-only games behave exactly as before this existed.
 /// </summary>
 public interface IBotPolicy
 {
     /// <summary>Dynasty/Fate action windows: which legal CardAction to play, or null to pass.</summary>
-    CardAction? ChooseAction(GameState game, Player player);
+    Task<CardAction?> ChooseAction(GameState game, Player player);
 
     /// <summary>Dynasty/Conflict-phase play windows: which card to play from "hand" or "province" (LegalActions.GetLegalPlays), or null to pass.</summary>
-    Card? ChoosePlay(GameState game, Player player, string location);
+    Task<Card?> ChoosePlay(GameState game, Player player, string location);
 
     /// <summary>Draw phase's honor bid - the raw ShowBid value (ringteki's honor dial, conventionally 1-5).</summary>
-    int ChooseHonorBid(GameState game, Player player);
+    Task<int> ChooseHonorBid(GameState game, Player player);
 
     /// <summary>Conflict phase priority: declare a conflict, or null to pass this opportunity.</summary>
-    ConflictDeclaration? DeclareConflict(GameState game, Player player);
+    Task<ConflictDeclaration?> DeclareConflict(GameState game, Player player);
 
     /// <summary>Which of the defender's eligible characters (see ConflictResolver.EligibleDefenders) commit to defend - may be empty (an unopposed conflict).</summary>
-    IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender);
+    Task<IReadOnlyList<Card>> DeclareDefenders(GameState game, Conflict conflict, Player defender);
 
     /// <summary>
     /// Phase B: a scripted (scriptOverride) action this bot wants to use this decision point,
@@ -33,7 +39,7 @@ public interface IBotPolicy
     /// instead of a plain abilities.actions[] entry. Null if none apply (including for
     /// policies, like AlwaysPassBotPolicy, that never consult a registry at all).
     /// </summary>
-    (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player);
+    Task<(Card Source, IBotScriptAction Action)?> ChooseScriptedAction(GameState game, Player player);
 
     /// <summary>
     /// Phase B: this specific card's adopted scripted action, if any - used by EventResolver
@@ -42,5 +48,5 @@ public interface IBotPolicy
     /// not adopted (including for policies, like AlwaysPassBotPolicy, that never consult a
     /// registry at all).
     /// </summary>
-    IBotScriptAction? ResolveEventScript(string cardId);
+    Task<IBotScriptAction?> ResolveEventScript(string cardId);
 }

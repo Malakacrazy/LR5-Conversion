@@ -1,5 +1,7 @@
 using L5R.Engine.Abilities;
 using L5R.Engine.GameSteps;
+using L5R.Engine.Logging;
+using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 
 namespace L5R.Engine.Tests.GameSteps;
@@ -11,17 +13,30 @@ public sealed class FixedDefendersBotPolicy : IBotPolicy
 
     public FixedDefendersBotPolicy(params Card[] defenders) => _defenders = defenders;
 
-    public CardAction? ChooseAction(GameState game, Player player) => throw new NotSupportedException();
-    public Card? ChoosePlay(GameState game, Player player, string location) => throw new NotSupportedException();
-    public int ChooseHonorBid(GameState game, Player player) => throw new NotSupportedException();
-    public ConflictDeclaration? DeclareConflict(GameState game, Player player) => throw new NotSupportedException();
-    public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => _defenders;
-    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => throw new NotSupportedException();
-    public IBotScriptAction? ResolveEventScript(string cardId) => throw new NotSupportedException();
+    public Task<CardAction?> ChooseAction(GameState game, Player player) => throw new NotSupportedException();
+    public Task<Card?> ChoosePlay(GameState game, Player player, string location) => throw new NotSupportedException();
+    public Task<int> ChooseHonorBid(GameState game, Player player) => throw new NotSupportedException();
+    public Task<ConflictDeclaration?> DeclareConflict(GameState game, Player player) => throw new NotSupportedException();
+    public Task<IReadOnlyList<Card>> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Task.FromResult(_defenders);
+    public Task<(Card Source, IBotScriptAction Action)?> ChooseScriptedAction(GameState game, Player player) => throw new NotSupportedException();
+    public Task<IBotScriptAction?> ResolveEventScript(string cardId) => throw new NotSupportedException();
 }
 
 public class ConflictResolverTests
 {
+    /// <summary>
+    /// ConflictResolver.Resolve is an IEnumerator (see its own doc comment - it can pause on
+    /// a human-backed policy's DeclareDefenders/mid-conflict window), so calling it directly
+    /// does nothing until something drives it. Every bot policy here resolves synchronously
+    /// (Task.FromResult), so a single Scheduler.Pump() always drains it in one shot.
+    /// </summary>
+    private static void Resolve(GameState game, Player attacker, ConflictDeclaration declaration, IBotPolicy defenderPolicy, IBotPolicy? attackerPolicy = null, EventLog? eventLog = null)
+    {
+        var scheduler = new Scheduler();
+        scheduler.QueueStep(ConflictResolver.Resolve(game, attacker, declaration, defenderPolicy, attackerPolicy, eventLog));
+        scheduler.Pump();
+    }
+
     private static (GameState game, Player p1, Player p2) NewGame()
     {
         var p1 = new Player { Name = "Player1" };
@@ -41,7 +56,7 @@ public class ConflictResolverTests
         p1.PlayArea.Add(attacker);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
 
         var conflict = game.ConflictRecord.Single();
         Assert.That(conflict.Winner, Is.EqualTo(p1));
@@ -61,7 +76,7 @@ public class ConflictResolverTests
         p1.PlayArea.Add(attacker);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("air", province, new[] { attacker }), new FixedDefendersBotPolicy());
+        Resolve(game, p1, new ConflictDeclaration("air", province, new[] { attacker }), new FixedDefendersBotPolicy());
 
         Assert.That(province.Broken, Is.False);
         Assert.That(p2.Provinces, Contains.Item(province));
@@ -79,7 +94,7 @@ public class ConflictResolverTests
         p2.PlayArea.Add(defenderChar);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("water", province, new[] { attacker }), new FixedDefendersBotPolicy(defenderChar));
+        Resolve(game, p1, new ConflictDeclaration("water", province, new[] { attacker }), new FixedDefendersBotPolicy(defenderChar));
 
         var conflict = game.ConflictRecord.Single();
         Assert.That(conflict.Winner, Is.EqualTo(p2));
@@ -99,7 +114,7 @@ public class ConflictResolverTests
         p2.PlayArea.Add(defenderChar);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy(defenderChar));
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy(defenderChar));
 
         Assert.That(game.ConflictRecord.Single().Winner, Is.EqualTo(p1));
     }
@@ -113,7 +128,7 @@ public class ConflictResolverTests
         p1.PlayArea.Add(attacker);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
 
         Assert.That(game.ConflictRecord.Single().Winner, Is.Null);
         Assert.That(province.Broken, Is.False, "no winner means the attacker didn't win, so nothing breaks");
@@ -129,7 +144,7 @@ public class ConflictResolverTests
         p1.PlayArea.Add(attacker);
         p2.Provinces.Add(province);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
 
         Assert.That(game.ConflictRecord.Single().Unopposed, Is.True);
         Assert.That(p2.Honor, Is.EqualTo(4));
@@ -146,7 +161,7 @@ public class ConflictResolverTests
 
         Assert.That(ConflictResolver.AttackableProvinces(p2), Contains.Item(p2.Stronghold));
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", p2.Stronghold!, new[] { attacker }), new FixedDefendersBotPolicy());
+        Resolve(game, p1, new ConflictDeclaration("fire", p2.Stronghold!, new[] { attacker }), new FixedDefendersBotPolicy());
 
         Assert.That(p2.Stronghold!.Broken, Is.True);
         Assert.That(game.Winner, Is.EqualTo(p1));
@@ -189,7 +204,7 @@ public class ConflictResolverTests
         var attackerPolicy = new FirstLegalActionBotPolicy(registry);
         var defenderPolicy = new FirstLegalActionBotPolicy(registry);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
 
         var conflict = game.ConflictRecord.Single();
         Assert.That(conflict.Defenders, Does.Not.Contain(weakDefender), "outwit sent it home before skill was summed");
@@ -222,7 +237,7 @@ public class ConflictResolverTests
         var attackerPolicy = new FirstLegalActionBotPolicy(registry);
         var defenderPolicy = new FirstLegalActionBotPolicy(registry);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
+        Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { myCourtier }), defenderPolicy, attackerPolicy);
 
         // The skill bonus itself is an untilEndOfConflict LastingEffect, already wiped by
         // Resolve's own EndConflict() cleanup by the time this test can observe it - bowing
@@ -252,7 +267,7 @@ public class ConflictResolverTests
         var attackerPolicy = new FirstLegalActionBotPolicy(registry);
         var defenderPolicy = new FirstLegalActionBotPolicy(registry);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("earth", province, new[] { blackmailArtist }), defenderPolicy, attackerPolicy);
+        Resolve(game, p1, new ConflictDeclaration("earth", province, new[] { blackmailArtist }), defenderPolicy, attackerPolicy);
 
         var conflict = game.ConflictRecord.Single();
         Assert.That(conflict.Winner, Is.EqualTo(p1));

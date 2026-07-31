@@ -108,7 +108,9 @@ public sealed class GameLoop
             player.Fate += _game.FateIncomeFor(player);
         }
 
-        RunPlayWindow("province");
+        var playWindow = RunPlayWindow("province");
+        while (playWindow.MoveNext())
+            yield return playWindow.Current;
 
         _game.AdvancePhase();
         LogPhaseChanged();
@@ -142,7 +144,11 @@ public sealed class GameLoop
             ForgottenLibraryFirer.FireIfLegal(_game, player);
 
         foreach (var player in Players())
-            player.ShowBid = _policies[player].ChooseHonorBid(_game, player);
+        {
+            var bidTask = _policies[player].ChooseHonorBid(_game, player);
+            yield return new StepAwait(bidTask);
+            player.ShowBid = bidTask.Result;
+        }
 
         var first = _game.ActivePlayer;
         var other = _game.Opponent(first);
@@ -179,7 +185,9 @@ public sealed class GameLoop
 
     private IEnumerator ConflictPhaseStep()
     {
-        RunActionWindow();
+        var actionWindow = RunActionWindow();
+        while (actionWindow.MoveNext())
+            yield return actionWindow.Current;
 
         var current = _game.ActivePlayer;
         var consecutivePasses = 0;
@@ -193,7 +201,10 @@ public sealed class GameLoop
                 continue;
             }
 
-            var declaration = _policies[current].DeclareConflict(_game, current);
+            var declarationTask = _policies[current].DeclareConflict(_game, current);
+            yield return new StepAwait(declarationTask);
+            var declaration = declarationTask.Result;
+
             if (declaration is null)
             {
                 _game.ConflictDeclarationsThisPhase.Add((current, true));
@@ -206,7 +217,9 @@ public sealed class GameLoop
                 consecutivePasses = 0;
                 LogConflictDeclared(current, declaration);
 
-                ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
+                var mainConflict = ConflictResolver.Resolve(_game, current, declaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
+                while (mainConflict.MoveNext())
+                    yield return mainConflict.Current;
                 LogConflictResolved(declaration);
 
                 _game.CheckWinCondition();
@@ -216,18 +229,27 @@ public sealed class GameLoop
                     yield break;
                 }
 
-                var bonusDeclaration = BreakthroughOfferer.TryDeclareBonusConflict(_game, current, _policies[current]);
-                if (bonusDeclaration is not null)
+                if (BreakthroughOfferer.IsEligible(_game, current, out var breakthroughCard, out var breakthroughCost))
                 {
-                    LogConflictDeclared(current, bonusDeclaration);
-                    ConflictResolver.Resolve(_game, current, bonusDeclaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
-                    LogConflictResolved(bonusDeclaration);
+                    var bonusTask = _policies[current].DeclareConflict(_game, current);
+                    yield return new StepAwait(bonusTask);
+                    var bonusDeclaration = bonusTask.Result;
 
-                    _game.CheckWinCondition();
-                    if (_game.Winner is not null)
+                    if (bonusDeclaration is not null)
                     {
-                        LogGameWon();
-                        yield break;
+                        BreakthroughOfferer.Commit(_game, current, breakthroughCard!, breakthroughCost);
+                        LogConflictDeclared(current, bonusDeclaration);
+                        var bonusConflict = ConflictResolver.Resolve(_game, current, bonusDeclaration, _policies[_game.Opponent(current)], _policies[current], _eventLog);
+                        while (bonusConflict.MoveNext())
+                            yield return bonusConflict.Current;
+                        LogConflictResolved(bonusDeclaration);
+
+                        _game.CheckWinCondition();
+                        if (_game.Winner is not null)
+                        {
+                            LogGameWon();
+                            yield break;
+                        }
                     }
                 }
             }
@@ -296,14 +318,17 @@ public sealed class GameLoop
         yield break;
     }
 
-    private void RunPlayWindow(string location)
+    private IEnumerator RunPlayWindow(string location)
     {
         var current = _game.ActivePlayer;
         var consecutivePasses = 0;
 
         while (consecutivePasses < 2)
         {
-            var card = _policies[current].ChoosePlay(_game, current, location);
+            var playTask = _policies[current].ChoosePlay(_game, current, location);
+            yield return new StepAwait(playTask);
+            var card = playTask.Result;
+
             if (card is null)
             {
                 consecutivePasses++;
@@ -325,7 +350,9 @@ public sealed class GameLoop
 
                 if (card.Type == CardType.Event)
                 {
-                    EventResolver.ResolveAndDiscard(_game, card, current, _policies[current].ResolveEventScript(card.Id));
+                    var scriptTask = _policies[current].ResolveEventScript(card.Id);
+                    yield return new StepAwait(scriptTask);
+                    EventResolver.ResolveAndDiscard(_game, card, current, scriptTask.Result);
                     _eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = card.Id });
                 }
                 else if (card.Type == CardType.Character && provinceSlot is not null)
@@ -343,7 +370,7 @@ public sealed class GameLoop
     /// starting with the current first player - see ActionWindowRunner for the actual shared
     /// loop, also used mid-conflict by ConflictResolver.
     /// </summary>
-    private void RunActionWindow() => ActionWindowRunner.Run(_game, _game.ActivePlayer, _policies, _eventLog);
+    private IEnumerator RunActionWindow() => ActionWindowRunner.Run(_game, _game.ActivePlayer, _policies, _eventLog);
 
     private void LogPhaseChanged() =>
         _eventLog?.Record("phaseChanged", new Dictionary<string, string> { ["phase"] = _game.CurrentPhase.ToString(), ["round"] = _game.RoundNumber.ToString() });

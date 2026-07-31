@@ -33,51 +33,49 @@ public class BreakthroughOffererTests
     }
 
     [Test]
-    public void TryDeclareBonusConflict_AfterBreakingAProvinceAsTheOnlyDeclarationThisPhase_ReturnsADeclaration()
+    public void IsEligible_AfterBreakingAProvinceAsTheOnlyDeclarationThisPhase_IsTrueAndCommitSpendsTheCard()
     {
         var (game, p1, card) = NewScenario();
         var policy = new FirstLegalActionBotPolicy();
 
-        var declaration = BreakthroughOfferer.TryDeclareBonusConflict(game, p1, policy);
-
+        Assert.That(BreakthroughOfferer.IsEligible(game, p1, out var breakthroughCard, out var cost), Is.True);
+        var declaration = policy.DeclareConflict(game, p1).Result;
         Assert.That(declaration, Is.Not.Null);
+
+        BreakthroughOfferer.Commit(game, p1, breakthroughCard!, cost);
+
         Assert.That(p1.Hand, Does.Not.Contain(card));
         Assert.That(p1.Discard, Contains.Item(card));
     }
 
     [Test]
-    public void TryDeclareBonusConflict_WhenTheProvinceDidNotBreak_ReturnsNullAndKeepsTheCard()
+    public void IsEligible_WhenTheProvinceDidNotBreak_IsFalseAndKeepsTheCard()
     {
         var (game, p1, card) = NewScenario(provinceBroken: false);
-        var policy = new FirstLegalActionBotPolicy();
 
-        var declaration = BreakthroughOfferer.TryDeclareBonusConflict(game, p1, policy);
-
-        Assert.That(declaration, Is.Null);
+        Assert.That(BreakthroughOfferer.IsEligible(game, p1, out _, out _), Is.False);
         Assert.That(p1.Hand, Contains.Item(card));
     }
 
     [Test]
-    public void TryDeclareBonusConflict_WhenThisWasNotTheOnlyDeclarationThisPhase_ReturnsNull()
+    public void IsEligible_WhenThisWasNotTheOnlyDeclarationThisPhase_IsFalse()
     {
         var (game, p1, _) = NewScenario(declarationsThisPhase: 2);
-        var policy = new FirstLegalActionBotPolicy();
 
-        var declaration = BreakthroughOfferer.TryDeclareBonusConflict(game, p1, policy);
-
-        Assert.That(declaration, Is.Null);
+        Assert.That(BreakthroughOfferer.IsEligible(game, p1, out _, out _), Is.False);
     }
 
     [Test]
-    public void TryDeclareBonusConflict_WithNoEligibleSecondAttacker_ReturnsNullAndKeepsTheCard()
+    public void IsEligible_WithNoEligibleSecondAttacker_IsTrueButThePolicyDeclinesAndTheCardIsNeverSpent()
     {
         var (game, p1, card) = NewScenario();
         p1.PlayArea.Single().Bowed = true; // the only attacker is already bowed
         var policy = new FirstLegalActionBotPolicy();
 
-        var declaration = BreakthroughOfferer.TryDeclareBonusConflict(game, p1, policy);
+        Assert.That(BreakthroughOfferer.IsEligible(game, p1, out _, out _), Is.True, "breakthrough's own preconditions don't check attacker eligibility - that's the policy's job");
+        var declaration = policy.DeclareConflict(game, p1).Result;
 
         Assert.That(declaration, Is.Null);
-        Assert.That(p1.Hand, Contains.Item(card), "never spent since no legal second attack existed");
+        Assert.That(p1.Hand, Contains.Item(card), "never spent since Commit is only called when the policy actually returns a declaration");
     }
 }

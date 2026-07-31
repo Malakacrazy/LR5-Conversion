@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using L5R.Engine.Abilities;
 using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.Logging;
+using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 
 namespace L5R.Engine.GameSteps;
@@ -63,7 +65,15 @@ public static class ConflictResolver
             .Where(c => c.Type == CardType.Character && !c.Bowed && !game.IsRestrictedFrom(c, "declareAsDefender"))
             .ToList();
 
-    public static void Resolve(GameState game, Player attacker, ConflictDeclaration declaration, IBotPolicy defenderPolicy, IBotPolicy? attackerPolicy = null, EventLog? eventLog = null)
+    /// <summary>
+    /// An IEnumerator so a real (human-backed) policy can pause on DeclareDefenders or
+    /// anywhere inside either action window - see ActionWindowRunner's own doc comment for
+    /// why callers forward this via `foreach...yield return` rather than treating it as an
+    /// independent Scheduler frame. Bot-only callers (ConflictResolverTests,
+    /// TriggeredReactionFirerTests) drain it via `new Scheduler().QueueStep(...).Pump()`,
+    /// which completes in one shot since every bot Task is already-completed.
+    /// </summary>
+    public static IEnumerator Resolve(GameState game, Player attacker, ConflictDeclaration declaration, IBotPolicy defenderPolicy, IBotPolicy? attackerPolicy = null, EventLog? eventLog = null)
     {
         var defender = game.Opponent(attacker);
         var ring = game.Rings.First(r => r.Element == declaration.Ring);
@@ -93,8 +103,9 @@ public static class ConflictResolver
         PilgrimageFirer.FireIfLegal(game, declaration.Province);
         SeekerOfRoleFirer.FireIfLegal(game, declaration.Province);
 
-        var defenders = defenderPolicy.DeclareDefenders(game, conflict, defender);
-        foreach (var card in defenders)
+        var defendersTask = defenderPolicy.DeclareDefenders(game, conflict, defender);
+        yield return new StepAwait(defendersTask);
+        foreach (var card in defendersTask.Result)
         {
             conflict.Defenders.Add(card);
             card.Bowed = true;
@@ -105,7 +116,11 @@ public static class ConflictResolver
             : null;
 
         if (policies is not null)
-            ActionWindowRunner.Run(game, defender, policies, eventLog);
+        {
+            var midConflictWindow = ActionWindowRunner.Run(game, defender, policies, eventLog);
+            while (midConflictWindow.MoveNext())
+                yield return midConflictWindow.Current;
+        }
 
         // Recomputed after the mid-conflict window, not at declaration time - a participant
         // sent home there (outwit, rout) can turn an opposed conflict unopposed, matching
@@ -155,7 +170,11 @@ public static class ConflictResolver
         KeeperInitiateFirer.FireIfLegal(game, defender);
 
         if (policies is not null)
-            ActionWindowRunner.Run(game, defender, policies, eventLog);
+        {
+            var postResolutionWindow = ActionWindowRunner.Run(game, defender, policies, eventLog);
+            while (postResolutionWindow.MoveNext())
+                yield return postResolutionWindow.Current;
+        }
 
         ring.Contested = false;
         game.ConflictRecord.Add(conflict);

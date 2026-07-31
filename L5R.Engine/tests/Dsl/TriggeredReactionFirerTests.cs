@@ -3,6 +3,7 @@ using L5R.Engine.Abilities;
 using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.GameSteps;
+using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 using L5R.Engine.Tests.GameSteps;
 
@@ -297,7 +298,9 @@ public class TriggeredReactionFirerTests
         var attacker = new Card { Id = "attacker", Type = CardType.Character, Controller = p1, PrintedMilitarySkill = 5 };
         p1.PlayArea.Add(attacker);
 
-        ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy());
+        var scheduler = new Scheduler();
+        scheduler.QueueStep(ConflictResolver.Resolve(game, p1, new ConflictDeclaration("fire", province, new[] { attacker }), new FixedDefendersBotPolicy()));
+        scheduler.Pump();
 
         Assert.That(province.Broken, Is.True);
         Assert.That(p2.Hand, Has.Count.EqualTo(3), "the-art-of-war's own reaction drew 3 cards for its controller (p2), not the winning attacker");

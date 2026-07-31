@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using L5R.Engine.Abilities;
 using L5R.Engine.Dsl;
 using L5R.Engine.Dsl.GameActions;
 using L5R.Engine.Logging;
+using L5R.Engine.Scheduling;
 using L5R.Engine.State;
 
 namespace L5R.Engine.GameSteps;
@@ -31,7 +33,14 @@ namespace L5R.Engine.GameSteps;
 /// </summary>
 public static class ActionWindowRunner
 {
-    public static void Run(GameState game, Player startingPlayer, IReadOnlyDictionary<Player, IBotPolicy> policies, EventLog? eventLog)
+    /// <summary>
+    /// An IEnumerator so a real (human-backed) policy can pause mid-window: each policy call
+    /// is wrapped in a StepAwait, so Scheduler genuinely suspends here instead of the caller
+    /// blocking a thread waiting for an instant answer. Callers forward this via `foreach (var
+    /// _ in Run(...)) yield return _;` rather than treating it as an independent Scheduler
+    /// frame - see GameLoop/ConflictResolver's own call sites.
+    /// </summary>
+    public static IEnumerator Run(GameState game, Player startingPlayer, IReadOnlyDictionary<Player, IBotPolicy> policies, EventLog? eventLog)
     {
         var executor = new AbilityExecutor(new CostRegistry(), new GameActionRegistry());
         var current = startingPlayer;
@@ -40,7 +49,10 @@ public static class ActionWindowRunner
 
         while (consecutivePasses < 2)
         {
-            var scripted = policies[current].ChooseScriptedAction(game, current);
+            var scriptedTask = policies[current].ChooseScriptedAction(game, current);
+            yield return new StepAwait(scriptedTask);
+            var scripted = scriptedTask.Result;
+
             if (scripted is { } chosen && usedThisWindow.Add(chosen.Source))
             {
                 consecutivePasses = 0;
@@ -49,7 +61,10 @@ public static class ActionWindowRunner
             }
             else
             {
-                var action = policies[current].ChooseAction(game, current);
+                var actionTask = policies[current].ChooseAction(game, current);
+                yield return new StepAwait(actionTask);
+                var action = actionTask.Result;
+
                 if (action is not null && usedThisWindow.Add(action.Card))
                 {
                     consecutivePasses = 0;
@@ -59,7 +74,10 @@ public static class ActionWindowRunner
                 }
                 else
                 {
-                    var handCard = policies[current].ChoosePlay(game, current, "hand");
+                    var playTask = policies[current].ChoosePlay(game, current, "hand");
+                    yield return new StepAwait(playTask);
+                    var handCard = playTask.Result;
+
                     if (handCard is not null)
                     {
                         consecutivePasses = 0;
@@ -69,7 +87,9 @@ public static class ActionWindowRunner
 
                         if (handCard.Type == CardType.Event)
                         {
-                            EventResolver.ResolveAndDiscard(game, handCard, current, policies[current].ResolveEventScript(handCard.Id));
+                            var scriptTask = policies[current].ResolveEventScript(handCard.Id);
+                            yield return new StepAwait(scriptTask);
+                            EventResolver.ResolveAndDiscard(game, handCard, current, scriptTask.Result);
                             eventLog?.Record("eventResolved", new Dictionary<string, string> { ["player"] = current.Name, ["card"] = handCard.Id });
                         }
                     }

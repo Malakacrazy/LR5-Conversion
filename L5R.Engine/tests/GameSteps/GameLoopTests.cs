@@ -16,13 +16,13 @@ public sealed class FixedBidBotPolicy : IBotPolicy
 
     public FixedBidBotPolicy(int bid) => _bid = bid;
 
-    public CardAction? ChooseAction(GameState game, Player player) => null;
-    public Card? ChoosePlay(GameState game, Player player, string location) => null;
-    public int ChooseHonorBid(GameState game, Player player) => _bid;
-    public ConflictDeclaration? DeclareConflict(GameState game, Player player) => null;
-    public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Array.Empty<Card>();
-    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => null;
-    public IBotScriptAction? ResolveEventScript(string cardId) => null;
+    public Task<CardAction?> ChooseAction(GameState game, Player player) => Task.FromResult<CardAction?>(null);
+    public Task<Card?> ChoosePlay(GameState game, Player player, string location) => Task.FromResult<Card?>(null);
+    public Task<int> ChooseHonorBid(GameState game, Player player) => Task.FromResult(_bid);
+    public Task<ConflictDeclaration?> DeclareConflict(GameState game, Player player) => Task.FromResult<ConflictDeclaration?>(null);
+    public Task<IReadOnlyList<Card>> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Task.FromResult<IReadOnlyList<Card>>(Array.Empty<Card>());
+    public Task<(Card Source, IBotScriptAction Action)?> ChooseScriptedAction(GameState game, Player player) => Task.FromResult<(Card Source, IBotScriptAction Action)?>(null);
+    public Task<IBotScriptAction?> ResolveEventScript(string cardId) => Task.FromResult<IBotScriptAction?>(null);
 }
 
 public class GameLoopTests

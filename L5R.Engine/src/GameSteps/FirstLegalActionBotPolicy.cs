@@ -19,41 +19,41 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
 
     public FirstLegalActionBotPolicy(ScriptedActionRegistry? scriptedActions = null) => _scriptedActions = scriptedActions;
 
-    public CardAction? ChooseAction(GameState game, Player player) =>
-        LegalActions.GetLegalActions(game, player).FirstOrDefault();
+    public Task<CardAction?> ChooseAction(GameState game, Player player) =>
+        Task.FromResult(LegalActions.GetLegalActions(game, player).FirstOrDefault());
 
-    public Card? ChoosePlay(GameState game, Player player, string location) =>
-        LegalActions.GetLegalPlays(game, player, location).FirstOrDefault();
+    public Task<Card?> ChoosePlay(GameState game, Player player, string location) =>
+        Task.FromResult(LegalActions.GetLegalPlays(game, player, location).FirstOrDefault());
 
-    public int ChooseHonorBid(GameState game, Player player) => 1;
+    public Task<int> ChooseHonorBid(GameState game, Player player) => Task.FromResult(1);
 
-    public ConflictDeclaration? DeclareConflict(GameState game, Player player)
+    public Task<ConflictDeclaration?> DeclareConflict(GameState game, Player player)
     {
         var attackers = ConflictResolver.EligibleAttackers(game, player);
         if (attackers.Count == 0)
-            return null;
+            return Task.FromResult<ConflictDeclaration?>(null);
 
         var provinces = ConflictResolver.AttackableProvinces(game.Opponent(player));
         if (provinces.Count == 0)
-            return null;
+            return Task.FromResult<ConflictDeclaration?>(null);
 
         var ring = game.Rings.FirstOrDefault(r => !r.Claimed && !r.Contested);
         if (ring is null)
-            return null;
+            return Task.FromResult<ConflictDeclaration?>(null);
 
-        return new ConflictDeclaration(ring.Element, provinces[0], new[] { attackers[0] });
+        return Task.FromResult<ConflictDeclaration?>(new ConflictDeclaration(ring.Element, provinces[0], new[] { attackers[0] }));
     }
 
-    public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender)
+    public Task<IReadOnlyList<Card>> DeclareDefenders(GameState game, Conflict conflict, Player defender)
     {
         var eligible = ConflictResolver.EligibleDefenders(game, defender);
-        return eligible.Count > 0 ? new[] { eligible[0] } : Array.Empty<Card>();
+        return Task.FromResult<IReadOnlyList<Card>>(eligible.Count > 0 ? new[] { eligible[0] } : Array.Empty<Card>());
     }
 
-    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player)
+    public Task<(Card Source, IBotScriptAction Action)?> ChooseScriptedAction(GameState game, Player player)
     {
         if (_scriptedActions is null)
-            return null;
+            return Task.FromResult<(Card Source, IBotScriptAction Action)?>(null);
 
         // Event-typed scripted actions (outwit, rout, ...) only ever fire as part of playing
         // the card (EventResolver.ResolveAndDiscard, via ResolveEventScript) - never as a
@@ -63,7 +63,7 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
         {
             var action = _scriptedActions.Resolve(card.Id);
             if (action is not null && action.IsLegal(game, card, player))
-                return (card, action);
+                return Task.FromResult<(Card Source, IBotScriptAction Action)?>((card, action));
         }
 
         // GameState.AllCards() deliberately excludes Player.Stronghold (Hand+PlayArea only) -
@@ -74,11 +74,11 @@ public sealed class FirstLegalActionBotPolicy : IBotPolicy
         {
             var strongholdAction = _scriptedActions.Resolve(stronghold.Id);
             if (strongholdAction is not null && strongholdAction.IsLegal(game, stronghold, player))
-                return (stronghold, strongholdAction);
+                return Task.FromResult<(Card Source, IBotScriptAction Action)?>((stronghold, strongholdAction));
         }
 
-        return null;
+        return Task.FromResult<(Card Source, IBotScriptAction Action)?>(null);
     }
 
-    public IBotScriptAction? ResolveEventScript(string cardId) => _scriptedActions?.Resolve(cardId);
+    public Task<IBotScriptAction?> ResolveEventScript(string cardId) => Task.FromResult(_scriptedActions?.Resolve(cardId));
 }

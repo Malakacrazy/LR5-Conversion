@@ -6,17 +6,17 @@ namespace L5R.Engine.GameSteps;
 /// <summary>One of step 11's two trivial strategies: never acts, never attacks, never defends. Bids 0 (the honor dial's minimum) every Draw phase.</summary>
 public sealed class AlwaysPassBotPolicy : IBotPolicy
 {
-    public CardAction? ChooseAction(GameState game, Player player) => null;
+    public Task<CardAction?> ChooseAction(GameState game, Player player) => Task.FromResult<CardAction?>(null);
 
-    public Card? ChoosePlay(GameState game, Player player, string location) => null;
+    public Task<Card?> ChoosePlay(GameState game, Player player, string location) => Task.FromResult<Card?>(null);
 
-    public int ChooseHonorBid(GameState game, Player player) => 0;
+    public Task<int> ChooseHonorBid(GameState game, Player player) => Task.FromResult(0);
 
-    public ConflictDeclaration? DeclareConflict(GameState game, Player player) => null;
+    public Task<ConflictDeclaration?> DeclareConflict(GameState game, Player player) => Task.FromResult<ConflictDeclaration?>(null);
 
-    public IReadOnlyList<Card> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Array.Empty<Card>();
+    public Task<IReadOnlyList<Card>> DeclareDefenders(GameState game, Conflict conflict, Player defender) => Task.FromResult<IReadOnlyList<Card>>(Array.Empty<Card>());
 
-    public (Card Source, IBotScriptAction Action)? ChooseScriptedAction(GameState game, Player player) => null;
+    public Task<(Card Source, IBotScriptAction Action)?> ChooseScriptedAction(GameState game, Player player) => Task.FromResult<(Card Source, IBotScriptAction Action)?>(null);
 
-    public IBotScriptAction? ResolveEventScript(string cardId) => null;
+    public Task<IBotScriptAction?> ResolveEventScript(string cardId) => Task.FromResult<IBotScriptAction?>(null);
 }
