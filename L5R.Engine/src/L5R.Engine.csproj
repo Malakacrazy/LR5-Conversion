@@ -27,4 +27,20 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
+  <!-- Auto-syncs the Unity client's plugin DLL on every netstandard2.1 build (any
+       configuration, any caller - dotnet build, an IDE, build-engine-plugin.ps1) so no one
+       has to remember a separate manual copy step after an engine change. Silently does
+       nothing if L5R.Client isn't checked out at the expected path (e.g. CI, a machine
+       without the Unity project) - never fails the engine build over a missing sibling repo.
+       UnityClientPluginsDir can be overridden per-machine, e.g. `dotnet build
+       -p:UnityClientPluginsDir=C:\path\to\L5R.Client\Assets\Scripts\Engine\Plugins`. -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1' and '$(UnityClientPluginsDir)' == ''">
+    <UnityClientPluginsDir>$(USERPROFILE)\OneDrive\Documentos\L5R.Client\Assets\Scripts\Engine\Plugins</UnityClientPluginsDir>
+  </PropertyGroup>
+
+  <Target Name="CopyToUnityClient" AfterTargets="Build" Condition="'$(TargetFramework)' == 'netstandard2.1' and Exists('$(UnityClientPluginsDir)')">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(UnityClientPluginsDir)" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Synced $(TargetFileName) -&gt; $(UnityClientPluginsDir)" />
+  </Target>
+
 </Project>
