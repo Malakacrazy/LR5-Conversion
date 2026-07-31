@@ -54,12 +54,18 @@ public static class BotVsBotHarness
     /// Now that every scriptOverride card is bot-drivable (either through
     /// ScriptedActionRegistry or a dedicated firer/offerer - see ScriptedActionRegistry's own
     /// doc comment), this deck deliberately mixes several of them in with plain generic-DSL
-    /// cards: two registry-driven holdings (artisan-academy, secluded-temple), a
-    /// zone/timing-driven character (akodo-gunso, needs Card.ProvinceSlot), a conflict-outcome
-    /// character (solemn-scholar), and four registry-driven events (banzai, i-am-ready,
-    /// outwit, way-of-the-unicorn - the last one CanPlay-gated to the Fate phase only). Proves
-    /// the completed Phase B action space actually plays through a real, complete game, not
-    /// just its own isolated per-card/per-firer tests.
+    /// cards: two registry-driven holdings (artisan-academy, secluded-temple), a firer-driven
+    /// character (akodo-gunso, needs Card.ProvinceSlot), a registry-driven character
+    /// (solemn-scholar), three registry-driven events (banzai, i-am-ready, outwit), and one
+    /// offerer-driven event (way-of-the-unicorn). Requires the caller to construct each
+    /// FirstLegalActionBotPolicy with a real ScriptedActionRegistry, or the registry-driven
+    /// half is unreachable (ChooseScriptedAction/ResolveEventScript both short-circuit to
+    /// null on a null registry) - see BotVsBotHarnessTests' own doc comment for the further
+    /// caveat that even with the registry wired, this deck's small 6-card conflict pool and
+    /// the trivial bot's pre-conflict-only hand-play timing mean the registry-driven cards
+    /// still may never reach a legal firing window in a specific run; only the firer/offerer
+    /// half is guaranteed to fire, since those are hooked unconditionally into shared
+    /// production choke points rather than gated behind a bot's own action choice.
     /// </summary>
     public static DeckList RichDeck() => new(
         Stronghold: LoadJson("city-of-the-open-hand"),

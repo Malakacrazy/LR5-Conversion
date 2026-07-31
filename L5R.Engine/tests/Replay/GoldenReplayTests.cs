@@ -40,7 +40,7 @@ public class GoldenReplayTests
         new GoldenScenario("first-legal-vs-first-legal-202", 202, () => new FirstLegalActionBotPolicy(), () => new FirstLegalActionBotPolicy(), 15),
         new GoldenScenario("first-legal-vs-always-pass-303", 303, () => new FirstLegalActionBotPolicy(), () => new AlwaysPassBotPolicy(), 15),
         new GoldenScenario("always-pass-vs-always-pass-404", 404, () => new AlwaysPassBotPolicy(), () => new AlwaysPassBotPolicy(), 5),
-        new GoldenScenario("scriptoverride-rich-vs-rich-505", 505, () => new FirstLegalActionBotPolicy(), () => new FirstLegalActionBotPolicy(), 20, () => BotVsBotHarness.RichDeck()),
+        new GoldenScenario("scriptoverride-rich-vs-rich-505", 505, () => new FirstLegalActionBotPolicy(new ScriptedActionRegistry()), () => new FirstLegalActionBotPolicy(new ScriptedActionRegistry()), 20, () => BotVsBotHarness.RichDeck()),
     };
 
     [TestCaseSource(nameof(Scenarios))]
